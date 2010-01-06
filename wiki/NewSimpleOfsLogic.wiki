@@ -1,4 +1,4 @@
-#suggest simple logic for the "OFS"
+#summary suggestion: new simple logic for the ofs-jdbc expressions
 
 == Introduction ==
 {{{
