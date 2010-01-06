@@ -1,0 +1,5 @@
+SELECT FORMATTER UA.NB.KL.K013,UA.NB.KL.K013.IMPORT/I/PROCESS,${USER}/${PASS},1.
+TXT:1:   = set ?1  //БЮджетнi установи
+D.OPEN:: = date ?2 //2006-01-01
+ACTIVE.FLAG:: = const Y
+
