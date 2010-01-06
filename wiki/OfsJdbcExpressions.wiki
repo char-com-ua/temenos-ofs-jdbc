@@ -1,4 +1,4 @@
-#list of supported ofs-jdbc expressions
+#summary list of supported ofs-jdbc expressions
 
 = List of supported ofs-jdbc expressions =
 
