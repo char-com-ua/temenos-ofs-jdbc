@@ -3,80 +3,120 @@
 
 	<property name="dest.dir" value="build" />
 	<property name="dest.dir.classes" value="${dest.dir}/classes" />
-	<property name="dest.dir.lib" value="./deploy" />
+	<property name="dest.dir.lib" value="${dest.dir}" />
 	<property name="artefact" value="t24jdbc.jar" />
-	<property name="tc.home" location="./" />
+	<property name="tcclient.home" location="./.tools/tcclient" />
 
-	<path id="build.class.path">
-		<pathelement path="."/>
-		<fileset dir="lib" >
-			<include name="*.jar"/>
-		</fileset>
-		<fileset dir="." >
+	<path id="build.classpath">
+		<fileset dir="${tcclient.home}/lib" >
 			<include name="*.jar"/>
 		</fileset>
 	</path>
 
 	<!-- svnant classpath -->
-	<path id="svn-classpath">
+	<path id="svn.classpath">
 		<fileset dir="./.tools/svnant/lib/">
 			<include name="*.jar"/>
 		</fileset>
 	</path>
 	
-	<path id="run.class.path">
-		<pathelement path="lib/tcclient.jar"/>
+	<path id="test.classpath">
+		<pathelement path="${tcclient.home}/lib/tcclient.jar"/>
 		<pathelement location="${dest.dir.lib}/${artefact}"/>
 	</path>
 	
     <!--define svnant tasks-->
-	<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="svn-classpath" /> 
+	<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="svn.classpath" /> 
 	
 
 	<target name="clean">
 		<delete dir="${dest.dir}" />
 		<delete dir="./log" />
-		<delete file="${dest.dir.lib}/${artefact}" />
 	</target>
 
-	<target name="prepare">
+	<target name="init">
 		<mkdir dir="${dest.dir}" />
 		<mkdir dir="${dest.dir.classes}" />
 		<mkdir dir="${dest.dir.classes}/META-INF"/>
+		<tempfile property="temp.file" destdir="${dest.dir}" deleteonexit="true"/>
+		
+		<tstamp><format property="built.date" pattern="yyyy-MM-dd HH:mm" /></tstamp>
 		<!-- GET SVN REVISION INFORMATION -->
-		<svn svnkit="true" javahl="false">
-			<wcVersion path="." prefix="svn."/>
-		</svn>
-		<tstamp>
-			<format property="built.date" pattern="yyyy-MM-dd HH:mm" />
-		</tstamp>
+		<exec executable="svn" output="${temp.file}">
+			<arg value="info"/>
+			<arg value="."/>
+		</exec>
+		
+		<!--GENERATE VERSION FROM SVN INFO-->
+
+		<loadproperties srcfile="${temp.file}" >
+			<filterchain>
+				<tokenfilter>
+					<containsregex pattern="^Last Changed Rev:\s*(\d+).*$" replace="svn.revision=\1"/>
+				</tokenfilter>
+			</filterchain>
+		</loadproperties>
+		
+		<loadproperties srcfile="${temp.file}" >
+			<filterchain>
+				<tokenfilter>
+					<containsregex pattern="^URL:\s*(.*)$" replace="svn.url=\1"/>
+				</tokenfilter>
+			</filterchain>
+		</loadproperties>
+		
+		<loadproperties srcfile="${temp.file}" >
+			<filterchain>
+				<tokenfilter>
+					<containsregex pattern="^URL:\s*.*" />
+					<replaceregex pattern="^.*/trunk$" replace="svn.version=trunk.r${svn.revision}" flags="g"/>
+					<replaceregex pattern="^.*/tags/(.*)$" replace="svn.version=\1" flags="g"/>
+					<replaceregex pattern="^.*/branches/(.*)$" replace="svn.version=\1.r${svn.revision}b" flags="g"/>
+				</tokenfilter>
+			</filterchain>
+		</loadproperties>
+
+		<echo message="version=${svn.version}" />
+		
 		<manifest file="${dest.dir.classes}/META-INF/manifest.mf">
-			<attribute name="Built-By" value="${user.name}"/>
 			<attribute name="Built-Date" value="${built.date}"/>
 			<section name="SVN">
-				<attribute name="URL" value="${svn.repository.path}"/>
-				<!--attribute name="URL" value="${svn.repository.url}"/-->
-				<attribute name="Revision" value="${svn.committed.max}"/>
+				<attribute name="URL" value="${svn.url}"/>
+				<attribute name="Revision" value="${svn.revision}"/>
+				<attribute name="Version" value="${svn.version}"/>
 			</section>
 		</manifest>
 	</target>
 
-	<target name="build" depends="clean,prepare">
+	<target name="build" depends="clean,init">
 		<javac srcdir="src" destdir="${dest.dir.classes}" includes="**" debug="true" debuglevel="lines,vars,source">
-			<classpath refid="build.class.path" />
+			<classpath refid="build.classpath" />
 		</javac>
 
 		<jar basedir="${dest.dir.classes}" destfile="${dest.dir.lib}/${artefact}" manifest="${dest.dir.classes}/META-INF/manifest.mf"/>
 	</target>
 
-	<target name="run" >
+	<target name="test" >
 		<java classname="Example" dir="." fork="true">
-			<classpath refid="build.class.path" />
-			<sysproperty key="tc.home" value="${tc.home}"/>
+			<classpath refid="test.classpath" />
+			<sysproperty key="tc.home" value="${tcclient.home}"/>
 		</java>
 	</target>
 
-	<target name="deploy-init">
+	<target name="release" depends="clean,init,build" >
+		<copy file="readme.txt" todir="${dest.dir}">
+			<filterchain>
+				<expandproperties/>
+			</filterchain>
+		</copy>
+        <zip zipfile="${dest.dir}/t24jdbc-${svn.version}.zip">
+			<zipfileset dir="${dest.dir}" includes="readme.txt"/>
+			<zipfileset dir="${dest.dir}" includes="*.jar"/>
+        </zip>
+	</target>
+
+	<target name="deploy" >
+		<!--specific target to deploy this driver to my WSAS server-->
 		<echo message="initialize..."/>
 		<property name="scp.local.file" value="${dest.dir.lib}/${artefact}" />
 		<property name="scp.wsas.home" value="/esb/wso2wsas-3.1.0" />
@@ -86,10 +126,7 @@
 		<property name="scp.host" value="flink-${deploy.type}" />
 		<property name="scp.login" value="flink" />
 		<input message ="password for ${scp.login}@${scp.host}" addproperty="scp.pass"/>  
-		<!-- nothing to do here? -->
-	</target>
-	
-	<target name="deploy" depends="deploy-init">
+		
 		<echo message="put new version to server..."/>
 		<scp file="${scp.local.file}" todir="${scp.login}:${scp.pass}@${scp.host}:${scp.wsas.home}/repository/components/lib/" trust="true"/>
 		<sshexec host="${scp.host}"	username="${scp.login}" password="${scp.pass}" trust="true" command="source /home/flink/.bash_profile &amp;&amp; ${scp.wsas.home}/bin/wso2server.sh restart"/>
