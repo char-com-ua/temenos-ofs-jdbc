@@ -1,72 +1,40 @@
 
 <project name="pojo" basedir="." default="build">
 
+	<property environment="env" />
 	<property name="dest.dir" value="build" />
 	<property name="dest.dir.classes" value="${dest.dir}/classes" />
 	<property name="dest.dir.lib" value="${dest.dir}" />
-	<property name="artefact" value="t24jdbc.jar" />
-	<property name="tcclient.home" location="./.tools/tcclient" />
+	<property name="artefact.name" value="t24jdbc" />
+	<property name="artefact" value="${artefact.name}.jar" />
 
-	<path id="build.classpath">
-		<fileset dir="${tcclient.home}/lib" >
-			<include name="*.jar"/>
-		</fileset>
-	</path>
-	
-	<path id="test.classpath">
-		<pathelement path="${tcclient.home}/lib/tcclient.jar"/>
-		<pathelement location="${dest.dir.lib}/${artefact}"/>
-	</path>
-	
 	<target name="clean">
 		<delete dir="${dest.dir}" />
 		<delete dir="./log" />
 	</target>
+	
 
-	<target name="init">
+	<target name="init" depends="svn-version,get-tchome">
 		<mkdir dir="${dest.dir}" />
 		<mkdir dir="${dest.dir.classes}" />
 		<mkdir dir="${dest.dir.classes}/META-INF"/>
-		<tempfile property="temp.file" destdir="${dest.dir}" deleteonexit="true"/>
 		
+		<path id="build.classpath">
+			<fileset dir="${tcclient.home}/lib" >
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${dest.dir}" >
+				<include name="*.jar"/>
+			</fileset>
+		</path>
+	</target>
+
+	<target name="build" depends="clean,init">
+		<javac srcdir="src" destdir="${dest.dir.classes}" includes="**" debug="true" debuglevel="lines,vars,source">
+			<classpath refid="build.classpath" />
+		</javac>
+		<!--MANIFEST-->
 		<tstamp><format property="built.date" pattern="yyyy-MM-dd HH:mm" /></tstamp>
-		<!-- GET SVN REVISION INFORMATION -->
-		<exec executable="svn" output="${temp.file}">
-			<arg value="info"/>
-			<arg value="."/>
-		</exec>
-		
-		<!--GENERATE VERSION FROM SVN INFO-->
-
-		<loadproperties srcfile="${temp.file}" >
-			<filterchain>
-				<tokenfilter>
-					<containsregex pattern="^Last Changed Rev:\s*(\d+).*$" replace="svn.revision=\1"/>
-				</tokenfilter>
-			</filterchain>
-		</loadproperties>
-		
-		<loadproperties srcfile="${temp.file}" >
-			<filterchain>
-				<tokenfilter>
-					<containsregex pattern="^URL:\s*(.*)$" replace="svn.url=\1"/>
-				</tokenfilter>
-			</filterchain>
-		</loadproperties>
-		
-		<loadproperties srcfile="${temp.file}" >
-			<filterchain>
-				<tokenfilter>
-					<containsregex pattern="^URL:\s*.*" />
-					<replaceregex pattern="^.*/trunk$" replace="svn.version=trunk.r${svn.revision}" flags="g"/>
-					<replaceregex pattern="^.*/tags/(.*)$" replace="svn.version=\1" flags="g"/>
-					<replaceregex pattern="^.*/branches/(.*)$" replace="svn.version=\1.r${svn.revision}b" flags="g"/>
-				</tokenfilter>
-			</filterchain>
-		</loadproperties>
-
-		<echo message="version=${svn.version}" />
-		
 		<manifest file="${dest.dir.classes}/META-INF/manifest.mf">
 			<attribute name="Built-Date" value="${built.date}"/>
 			<section name="SVN">
@@ -75,17 +43,11 @@
 				<attribute name="Version" value="${svn.version}"/>
 			</section>
 		</manifest>
-	</target>
-
-	<target name="build" depends="clean,init">
-		<javac srcdir="src" destdir="${dest.dir.classes}" includes="**" debug="true" debuglevel="lines,vars,source">
-			<classpath refid="build.classpath" />
-		</javac>
-
+		<!--JAR-->
 		<jar basedir="${dest.dir.classes}" destfile="${dest.dir.lib}/${artefact}" manifest="${dest.dir.classes}/META-INF/manifest.mf"/>
 	</target>
 
-	<target name="test" >
+	<target name="test" depends="init" >
 		<java classname="Example" dir="." fork="true">
 			<classpath refid="test.classpath" />
 			<sysproperty key="tc.home" value="${tcclient.home}"/>
@@ -98,7 +60,7 @@
 				<expandproperties/>
 			</filterchain>
 		</copy>
-        <zip zipfile="${dest.dir}/t24jdbc-${svn.version}.zip">
+        <zip zipfile="${dest.dir}/${artefact.name}-${svn.version}.zip">
 			<zipfileset dir="${dest.dir}" includes="readme.txt"/>
 			<zipfileset dir="${dest.dir}" includes="*.jar"/>
         </zip>
@@ -129,5 +91,59 @@
 			<arg value=".tools"/>
 		</exec>
 	</target>
+	
+	<target name="svn-version" >
+		<!-- GET SVN REVISION INFORMATION -->
+		<tempfile property="svn.temp" deleteonexit="true"/>
+		
+		<exec executable="svn" output="${svn.temp}">
+			<arg value="info"/>
+			<arg value="."/>
+		</exec>
+		
+		<!--GENERATE VERSION FROM SVN INFO-->
+
+		<loadproperties srcfile="${svn.temp}" >
+			<filterchain>
+				<tokenfilter>
+					<containsregex pattern="^Last Changed Rev:\s*(\d+).*$" replace="svn.revision=\1"/>
+				</tokenfilter>
+			</filterchain>
+		</loadproperties>
+		
+		<loadproperties srcfile="${svn.temp}" >
+			<filterchain>
+				<tokenfilter>
+					<containsregex pattern="^URL:\s*(.*)$" replace="svn.url=\1"/>
+				</tokenfilter>
+			</filterchain>
+		</loadproperties>
+		
+		<loadproperties srcfile="${svn.temp}" >
+			<filterchain>
+				<tokenfilter>
+					<containsregex pattern="^URL:\s*.*" />
+					<replaceregex pattern="^.*/trunk$" replace="svn.version=trunk.r${svn.revision}" flags="g"/>
+					<replaceregex pattern="^.*/tags/(.*)$" replace="svn.version=\1" flags="g"/>
+					<replaceregex pattern="^.*/branches/(.*)$" replace="svn.version=\1.r${svn.revision}b" flags="g"/>
+				</tokenfilter>
+			</filterchain>
+		</loadproperties>
+
+		<echo message="version=${svn.version}" />
+	</target>
+	
+	<target name="get-tchome" depends="get-tchome-check-local,get-tchome-local" unless="local.tchome.present">
+		<property name="tcclient.home" value="${env.TC.HOME}" />
+	</target>
+	
+	<target name="get-tchome-check-local" >
+		<available file="./.tools/tcclient/lib" type="dir" property="local.tchome.present"/>
+	</target>
+	
+	<target name="get-tchome-local" if="local.tchome.present">
+		<property name="tcclient.home" value="./.tools/tcclient" />
+	</target>
+	
 
 </project>
