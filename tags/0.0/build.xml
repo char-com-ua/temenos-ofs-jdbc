@@ -1,0 +1,149 @@
+
+<project name="pojo" basedir="." default="build">
+
+	<property environment="env" />
+	<property name="dest.dir" value="build" />
+	<property name="dest.dir.classes" value="${dest.dir}/classes" />
+	<property name="dest.dir.lib" value="${dest.dir}" />
+	<property name="artefact.name" value="t24jdbc" />
+	<property name="artefact" value="${artefact.name}.jar" />
+
+	<target name="clean">
+		<delete dir="${dest.dir}" />
+		<delete dir="./log" />
+	</target>
+	
+
+	<target name="init" depends="svn-version,get-tchome">
+		<mkdir dir="${dest.dir}" />
+		<mkdir dir="${dest.dir.classes}" />
+		<mkdir dir="${dest.dir.classes}/META-INF"/>
+		
+		<path id="build.classpath">
+			<fileset dir="${tcclient.home}/lib" >
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${dest.dir}" >
+				<include name="*.jar"/>
+			</fileset>
+		</path>
+	</target>
+
+	<target name="build" depends="clean,init">
+		<javac srcdir="src" destdir="${dest.dir.classes}" includes="**" debug="true" debuglevel="lines,vars,source">
+			<classpath refid="build.classpath" />
+		</javac>
+		<!--MANIFEST-->
+		<tstamp><format property="built.date" pattern="yyyy-MM-dd HH:mm" /></tstamp>
+		<manifest file="${dest.dir.classes}/META-INF/manifest.mf">
+			<attribute name="Built-Date" value="${built.date}"/>
+			<section name="SVN">
+				<attribute name="URL" value="${svn.url}"/>
+				<attribute name="Revision" value="${svn.revision}"/>
+				<attribute name="Version" value="${svn.version}"/>
+			</section>
+		</manifest>
+		<!--JAR-->
+		<jar basedir="${dest.dir.classes}" destfile="${dest.dir.lib}/${artefact}" manifest="${dest.dir.classes}/META-INF/manifest.mf"/>
+	</target>
+
+	<target name="test" depends="init" >
+		<java classname="Example" dir="." fork="true">
+			<classpath refid="test.classpath" />
+			<sysproperty key="tc.home" value="${tcclient.home}"/>
+		</java>
+	</target>
+
+	<target name="release" depends="clean,init,build" >
+		<copy file="readme.txt" todir="${dest.dir}">
+			<filterchain>
+				<expandproperties/>
+			</filterchain>
+		</copy>
+        <zip zipfile="${dest.dir}/${artefact.name}-${svn.version}.zip">
+			<zipfileset dir="${dest.dir}" includes="readme.txt"/>
+			<zipfileset dir="${dest.dir}" includes="*.jar"/>
+        </zip>
+	</target>
+
+	<target name="deploy" >
+		<!--specific target to deploy this driver to my WSAS server-->
+		<echo message="initialize..."/>
+		<property name="scp.local.file" value="${dest.dir.lib}/${artefact}" />
+		<property name="scp.wsas.home" value="/esb/wso2wsas-3.1.0" />
+
+		<input message ="select deploy type [ test, prod ]" addproperty="deploy.type"/>  
+		<fail unless="deploy.type" message="Error usage:  ant -Ddeploy.type=type"/>
+		<property name="scp.host" value="flink-${deploy.type}" />
+		<property name="scp.login" value="flink" />
+		<input message ="password for ${scp.login}@${scp.host}" addproperty="scp.pass"/>  
+		
+		<echo message="put new version to server..."/>
+		<scp file="${scp.local.file}" todir="${scp.login}:${scp.pass}@${scp.host}:${scp.wsas.home}/repository/components/lib/" trust="true"/>
+		<sshexec host="${scp.host}"	username="${scp.login}" password="${scp.pass}" trust="true" command="source /home/flink/.bash_profile &amp;&amp; ${scp.wsas.home}/bin/wso2server.sh restart"/>
+	</target>
+
+	<target name="depends" >
+		<!--specific target to get depends into .tools directory-->
+		<exec executable="svn">
+			<arg value="export"/>
+			<arg value="http://temenos-ofs-jdbc.googlecode.com/svn/trunk/.tools@12"/>
+			<arg value=".tools"/>
+		</exec>
+	</target>
+	
+	<target name="svn-version" >
+		<!-- GET SVN REVISION INFORMATION -->
+		<tempfile property="svn.temp" deleteonexit="true"/>
+		
+		<exec executable="svn" output="${svn.temp}">
+			<arg value="info"/>
+			<arg value="."/>
+		</exec>
+		
+		<!--GENERATE VERSION FROM SVN INFO-->
+
+		<loadproperties srcfile="${svn.temp}" >
+			<filterchain>
+				<tokenfilter>
+					<containsregex pattern="^Last Changed Rev:\s*(\d+).*$" replace="svn.revision=\1"/>
+				</tokenfilter>
+			</filterchain>
+		</loadproperties>
+		
+		<loadproperties srcfile="${svn.temp}" >
+			<filterchain>
+				<tokenfilter>
+					<containsregex pattern="^URL:\s*(.*)$" replace="svn.url=\1"/>
+				</tokenfilter>
+			</filterchain>
+		</loadproperties>
+		
+		<loadproperties srcfile="${svn.temp}" >
+			<filterchain>
+				<tokenfilter>
+					<containsregex pattern="^URL:\s*.*" />
+					<replaceregex pattern="^.*/trunk$" replace="svn.version=trunk.r${svn.revision}" flags="g"/>
+					<replaceregex pattern="^.*/tags/(.*)$" replace="svn.version=\1" flags="g"/>
+					<replaceregex pattern="^.*/branches/(.*)$" replace="svn.version=\1.r${svn.revision}b" flags="g"/>
+				</tokenfilter>
+			</filterchain>
+		</loadproperties>
+
+		<echo message="version=${svn.version}" />
+	</target>
+	
+	<target name="get-tchome" depends="get-tchome-check-local,get-tchome-local" unless="local.tchome.present">
+		<property name="tcclient.home" value="${env.TC.HOME}" />
+	</target>
+	
+	<target name="get-tchome-check-local" >
+		<available file="./.tools/tcclient/lib" type="dir" property="local.tchome.present"/>
+	</target>
+	
+	<target name="get-tchome-local" if="local.tchome.present">
+		<property name="tcclient.home" value="./.tools/tcclient" />
+	</target>
+	
+
+</project>
