@@ -1,8 +1,8 @@
 #summary Build Dependency
 
-To build you need:
+==To build you need:==
 
-* ant 1.7 and upper
-* svn command line 1.4 and upper
-* temenos connector client (tcclient) installed
-* set environment variable TC.HOME
+ * ant 1.7 and upper
+ * svn command line 1.4 and upper
+ * temenos connector client (tcclient) installed
+ * set environment variable TC.HOME
