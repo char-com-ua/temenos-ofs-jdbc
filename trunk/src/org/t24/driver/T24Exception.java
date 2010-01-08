@@ -14,5 +14,10 @@ class T24Exception extends SQLException
     	super(s);
 	}
 
+	T24Exception(String s,Throwable cause){
+    	super(s);
+    	this.initCause(cause);
+	}
+
 
 } 
