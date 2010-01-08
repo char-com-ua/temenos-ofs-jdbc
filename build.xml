@@ -125,9 +125,7 @@
 		<!--specific target to get depends into .tools directory-->
 		<exec executable="svn">
 			<arg value="export"/>
-			<arg value="--revision"/>
-			<arg value="12"/>
-			<arg value="http://temenos-ofs-jdbc.googlecode.com/svn/trunk/.tools"/>
+			<arg value="http://temenos-ofs-jdbc.googlecode.com/svn/trunk/.tools@12"/>
 			<arg value=".tools"/>
 		</exec>
 	</target>
