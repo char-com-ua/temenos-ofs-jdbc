@@ -144,9 +144,9 @@ public class T24ResultSet implements ResultSet {
     static {
         try {
             properties.loadFromXML(new FileInputStream("./conf/t24jdbc.xml"));
-            System.out.println("Load local-ref.map");
+            System.out.println("Load ./conf/t24jdbc.xml");
         } catch (IOException e) {
-            System.out.println("Load local-ref.map Exception: " + e);
+            System.out.println("Load ./conf/t24jdbc.xml Exception: " + e);
         }
     }
 
