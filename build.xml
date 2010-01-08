@@ -121,5 +121,15 @@
 		<sshexec host="${scp.host}"	username="${scp.login}" password="${scp.pass}" trust="true" command="source /home/flink/.bash_profile &amp;&amp; ${scp.wsas.home}/bin/wso2server.sh restart"/>
 	</target>
 
+	<target name="depends" >
+		<!--specific target to get depends into .tools directory-->
+		<exec executable="svn">
+			<arg value="export"/>
+			<arg value="--revision"/>
+			<arg value="12"/>
+			<arg value="http://temenos-ofs-jdbc.googlecode.com/svn/trunk/.tools"/>
+			<arg value=".tools"/>
+		</exec>
+	</target>
 
 </project>
