@@ -31,14 +31,14 @@ import java.sql.SQLException;
 
 public class T24ResultSetMetaData implements ResultSetMetaData {
 	
-	private ArrayList header;
+	private List<String> header;
 	
-	protected T24ResultSetMetaData(ArrayList h){
+	protected T24ResultSetMetaData(List<String> h){
 		super();
 		this.header=h;
 	}
 
-    protected ArrayList getHeaderList() {
+    protected List<String> getColumnNames() {
         return header;
     }    
     /**
