@@ -13,15 +13,103 @@ import java.util.ArrayList;
  */
 public class T24QueryFormatter {
 
-    private static SimpleDateFormat sdfDateParse = new SimpleDateFormat("yyyy-MM-dd");
-    private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
-    private T24Statement statement;
+    //private static SimpleDateFormat sdfDateParse = new SimpleDateFormat("yyyy-MM-dd");
+    //private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
+    private T24Connection con;    //connection
+    private String query;         //original query
+    private List<String> param;   //input parameters
+    
+    private static int STATE_DEF=0;
+    private static int STATE_HEAD=1;
+    private static int STATE_POST=3;
 
-    public T24QueryFormatter(T24Statement st) {
-        this.statement = st;
+    public T24QueryFormatter(T24Connection con, String query, List<String> param) {
+        this.con = con;
+        this.query = query;
+        this.param = param;
     }
+    
+	public T24ResultSet execute(){
+		//cut off the optional SELECT keyword
+		if( query.matches("^SELECT\\s"))query=query.substring(7).trim();
+		
+		String ofsHeader;
+		T24ResultSet result;
+		Map<String,String> ofsParam=new LinkedHashMap<String,String>();
+		Map<String,String> postParam=new HashMap<String,String>();
+		
+		int state=0; 
+		StringTokenizer st = new StringTokenizer(query, "\r\n");
+		while(st.hasMoreElements()){
+			String line = st.nextToken().trim();
+			//skip empty and commented lines
+			if (line.length() < 1 || line.startsWith("//")) {
+				continue;
+			}
+			
+			if(line.matches("^SENDOFS\\s")) {
+				switch(state){
+					case STATE_DEF: 
+						break;
+					case STATE_HEAD: 
+						result=executeOfs(ofsHeader,ofsParam);
+						break;
+					case STATE_POST:
+						break;
+					default:
+						throw new T24Exception("Wrong parser status: "+state);
+				}
+				state=STATE_HEAD;
+				ofsHeader=prepareHeader(line);
+			}else if(line.equals("POSTPROCESS")){
+				switch(state){
+					case STATE_HEAD: 
+						result=executeOfs(ofsHeader,ofsParam);
+						break;
+					default:
+						throw new T24Exception("Wrong parser status: "+state);
+				}
+				state=STATE_POST;
+			}else{
+				//usual evaluate lines here
+				switch(state){
+					case STATE_HEAD:
+						evaluate(..., ofsParam);
+					case STATE_POST:
+						postParam.clear();
+						evaluate(..., postParam);
+						applyPostProcess();
+						break;
+					default:
+						throw new T24Exception("Wrong parser status: "+state);
+				}
+			}
+		}
+		//finally
+		if(state==STATE_HEAD){
+			result=executeOfs(ofsHeader,ofsParam);
+		}
+		if(state==STATE_DEF)throw new T24Exception("Wrong parser status: empty query");
+		//return result fron last ofs
+		return result;
+	}
+	
+	public T24ResultSet executeOfs(String ofsHeader,Map<String,String> ofsParam){
+		//do final prepare of the ofs
+		//execute query
+		//convert result into resultset
+		//clear ofs Parameters
+		ofsParam.clear();
+	}
+    
+	protected String prepareHeader(String header){
+		!detect query type
+		!detect if we have to execute query
+	}
 
-    public String prepare(String sql, List<String> param) throws SQLException {
+    
+    /** prepares one single OFS query */
+    protected String prepare(String sql, List<String> param) throws SQLException {
         HashMap<String, String> result = new HashMap<String, String>();
         String ofsBody = "";
         String ofsHeader = "";
@@ -114,8 +202,6 @@ public class T24QueryFormatter {
             evaluateSubstr(fieldName, commandParams, colName, colValue, result);
         } else if ("setIfNull".equals(command)) {
             evaluateSetIfNull(fieldName, commandParams, colName, colValue, result);
-        } else if ("date".equals(command)) {
-            evaluateDate(fieldName, commandParams, colName, colValue, result);
         } else {
             throw new T24Exception("Unknown command : " + command);
         }
@@ -249,21 +335,6 @@ public class T24QueryFormatter {
 
             value = substr(str, indexStart, length);
         //bdec = prepareField(fieldName, bdec);
-        }
-        result.put(fieldName, value);
-    }
-
-    private void evaluateDate(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
-        String value;
-        if (!commandParams.get(0).startsWith("?")) {
-            throw new T24Exception("Incorrect parameters");
-        } else {
-            value = colValue.get(Integer.parseInt(commandParams.get(0).substring(1)) - 1);
-            try {
-                value = sdfDate.format(sdfDateParse.parse(value));
-            } catch (ParseException parseException) {
-                throw new T24Exception(parseException.getMessage());
-            }
         }
         result.put(fieldName, value);
     }
