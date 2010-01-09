@@ -97,7 +97,7 @@ public class T24QueryFormatter {
 	* " ?xxx = expression " must throw not supported exception (maybe in the future we will use it)
 	* " xxx = expression " should go to the result (new column evaluated for each row)
 	*/
-	protected void postEvaluate(String line,T24ResultSet result,List<String> queryParam) throws SQLException{
+	protected void postEvaluate(String line, T24ResultSet result, List<String> queryParam) throws SQLException{
 		Map<String,String> postParam=new HashMap<String,String>(2); //initial count = 2
 		
 		for(int i=1; i <= result.getRowCount(); i++ ) {
@@ -122,6 +122,33 @@ public class T24QueryFormatter {
 		}
 	}
 	
+	protected String prepareHeader(String ofsHeader,List<String> queryParam){
+		//evaluate and replace all {{expression}}
+		//no special formatting here put result as is
+		int p1=0,p2=0;
+		Map<String,String> eval=new HashMap<String,String>(2); //initial count = 2
+		StringBuilder out=new StringBuilder();
+		
+		p1=ofsHeader.indexOf("{{");
+		while ( p1>=0 ) {
+			out.append( ofsHeader.substring(p2,p1) );
+			p2=ofsHeader.indexOf("}}",p1);
+			
+			if(p2<0)throw new Exception("Can't find close tag for header expression: "+ofsHeader);
+			String expression=ofsHeader.substring(p1+2,p2);
+			
+			evaluate("x="+expression,null,queryParam,eval);
+			out.append( eval.get("x") );
+			
+			p1=ofsHeader.indexOf("{{",p2);
+			p2+=2;
+		}
+		if(p2<ofsHeader.length())out.append(ofsHeader.substring(p2));
+		return out.toString();
+	}
+
+    
+	
 	protected T24ResultSet executeOfs(String ofsHeader,Map<String,String> ofsParam, T24ResultSet oldResult){
 		//do final prepare of the ofs
 		
@@ -143,13 +170,6 @@ public class T24QueryFormatter {
 		//return new resultset
 		...
 	}
-    
-	protected String prepareHeader(String ofsHeader,List<String> queryParam){
-		//evaluate and replace all {=expression}
-		//no special formatting here put result as is
-		... 
-	}
-
     
     /** prepares one single OFS query */
     protected String prepare(String sql, List<String> param) throws SQLException {
