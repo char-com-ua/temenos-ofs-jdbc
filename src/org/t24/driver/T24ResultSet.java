@@ -154,6 +154,10 @@ public class T24ResultSet implements ResultSet {
         return data.size();
     }
 
+    protected List<String> getDataRow(int i) {
+        return data.get(i - 1);
+    }
+
     protected T24ResultSet(Statement st, String ofs, String ofsResp) throws SQLException {
         //let's use ofs to detect type
         if (ofs.matches("^ENQUIRY[.]SELECT,.*")) {
@@ -1052,10 +1056,6 @@ public class T24ResultSet implements ResultSet {
      */
     public ResultSetMetaData getMetaData() throws SQLException {
         return md;
-    }
-
-    public ArrayList<ArrayList> getDataRow(int i) {
-        return data.get(i - 1);
     }
 
     /**

@@ -34,7 +34,6 @@ public class T24QueryFormatter {
 		String ofsHeader;
 		T24ResultSet result;
 		Map<String,String> ofsParam=new LinkedHashMap<String,String>();
-		Map<String,String> postParam=new HashMap<String,String>();
 		
 		int state=0; 
 		StringTokenizer st = new StringTokenizer(query, "\r\n");
@@ -72,11 +71,11 @@ public class T24QueryFormatter {
 				//usual evaluate lines here
 				switch(state){
 					case STATE_HEAD:
-						evaluate(line, null /*we don't have names*/, COL_VALUE..., ofsParam);
+						/* we don't have query parameter names */
+						evaluate(line, null, queryParam, ofsParam);
+						break;
 					case STATE_POST:
-						postParam.clear();
-						evaluate(line, COL_NAME..., COL_VALUE..., postParam);
-						postProcess(postParam,result,queryParam);
+						postEvaluate(line,result,queryParam);
 						break;
 					default:
 						throw new T24Exception("Wrong parser status: "+state);
@@ -92,12 +91,35 @@ public class T24QueryFormatter {
 		return result;
 	}
 	
-	protected void postProcess(postParam,result,queryParam){
-		//apply post evaluated parameters to resultset and to query parameters
-		// " ?[0-9] = expression " must go to queryParam
-		// " ?xxx = expression " must throw not supported exception (maybe in the future we will use it)
-		// " xxx = expression " should go to the result (new column evaluated for each row)
-		...
+	/**
+	* apply post evaluated parameters to resultset and to query parameters
+	* " ?[0-9] = expression " must go to queryParam
+	* " ?xxx = expression " must throw not supported exception (maybe in the future we will use it)
+	* " xxx = expression " should go to the result (new column evaluated for each row)
+	*/
+	protected void postEvaluate(String line,T24ResultSet result,List<String> queryParam) throws SQLException{
+		Map<String,String> postParam=new HashMap<String,String>(2); //initial count = 2
+		
+		for(int i=1; i <= result.getRowCount(); i++ ) {
+			evaluate(line, ((T24ResultSet)result.getMetaData()).getColumnNames(), getDataRow(i), postParam);
+			//now go through all key/values
+			for( Map.Entry<String,String> entry : postParam.entrySet() ) {
+				String key=entry.getKey();
+				if(key.startsWith("?")) {
+					//key started with ? so set the value for query parameter
+					try {
+						int index=Integer.parseInt(key.substring(1))-1;
+						queryParam.set(index,entry.getValue());
+					} catch ( Exception e ) {
+						throw new T24Exception("Wrong post process index in expression: "+line,e);
+					}
+				} else {
+					//usual key, so add column for the resultset
+					result.setValue(i,key,entry.getValue());
+				}
+			}
+			
+		}
 	}
 	
 	protected T24ResultSet executeOfs(String ofsHeader,Map<String,String> ofsParam, T24ResultSet oldResult){
