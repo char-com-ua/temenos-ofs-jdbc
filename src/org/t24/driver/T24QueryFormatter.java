@@ -16,20 +16,18 @@ public class T24QueryFormatter {
     //private static SimpleDateFormat sdfDateParse = new SimpleDateFormat("yyyy-MM-dd");
     //private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
     private T24Connection con;    //connection
-    private String query;         //original query
-    private List<String> param;   //input parameters
+    //private String query;         //original query
+    //private List<String> param;   //input parameters
     
     private static int STATE_DEF=0;
     private static int STATE_HEAD=1;
     private static int STATE_POST=3;
 
-    public T24QueryFormatter(T24Connection con, String query, List<String> param) {
+    public T24QueryFormatter(T24Connection con) {
         this.con = con;
-        this.query = query;
-        this.param = param;
     }
     
-	public T24ResultSet execute(){
+	public T24ResultSet execute(String query, List<String> queryParam){
 		//cut off the optional SELECT keyword
 		if( query.matches("^SELECT\\s"))query=query.substring(7).trim();
 		
@@ -52,7 +50,7 @@ public class T24QueryFormatter {
 					case STATE_DEF: 
 						break;
 					case STATE_HEAD: 
-						result=executeOfs(ofsHeader,ofsParam);
+						result=executeOfs(ofsHeader,ofsParam,result);
 						break;
 					case STATE_POST:
 						break;
@@ -64,7 +62,7 @@ public class T24QueryFormatter {
 			}else if(line.equals("POSTPROCESS")){
 				switch(state){
 					case STATE_HEAD: 
-						result=executeOfs(ofsHeader,ofsParam);
+						result=executeOfs(ofsHeader,ofsParam,result);
 						break;
 					default:
 						throw new T24Exception("Wrong parser status: "+state);
@@ -74,11 +72,11 @@ public class T24QueryFormatter {
 				//usual evaluate lines here
 				switch(state){
 					case STATE_HEAD:
-						evaluate(..., ofsParam);
+						evaluate(line, null /*we don't have names*/, COL_VALUE..., ofsParam);
 					case STATE_POST:
 						postParam.clear();
-						evaluate(..., postParam);
-						applyPostProcess();
+						evaluate(line, COL_NAME..., COL_VALUE..., postParam);
+						postProcess(postParam,result,queryParam);
 						break;
 					default:
 						throw new T24Exception("Wrong parser status: "+state);
@@ -87,24 +85,47 @@ public class T24QueryFormatter {
 		}
 		//finally
 		if(state==STATE_HEAD){
-			result=executeOfs(ofsHeader,ofsParam);
+			result=executeOfs(ofsHeader,ofsParam,result);
 		}
 		if(state==STATE_DEF)throw new T24Exception("Wrong parser status: empty query");
 		//return result fron last ofs
 		return result;
 	}
 	
-	public T24ResultSet executeOfs(String ofsHeader,Map<String,String> ofsParam){
+	protected void postProcess(postParam,result,queryParam){
+		//apply post evaluated parameters to resultset and to query parameters
+		// " ?[0-9] = expression " must go to queryParam
+		// " ?xxx = expression " must throw not supported exception (maybe in the future we will use it)
+		// " xxx = expression " should go to the result (new column evaluated for each row)
+		...
+	}
+	
+	protected T24ResultSet executeOfs(String ofsHeader,Map<String,String> ofsParam, T24ResultSet oldResult){
 		//do final prepare of the ofs
+		
+		///ofsHeader:
+		///remove SENDOFS
+		///if next keyword separated by spaces is FALSE then don't execute and just return oldResult
+		///if next keyword separated by spaces is TRUE just remove it
+		///so, [TRUE|FALSE] are optional keywords
+		
+		//detect query type (ENQUIRY|OFS)
+		//add parameters into query
+		
 		//execute query
-		//convert result into resultset
+		//convert it into resultset
+		...
 		//clear ofs Parameters
 		ofsParam.clear();
+		
+		//return new resultset
+		...
 	}
     
-	protected String prepareHeader(String header){
-		!detect query type
-		!detect if we have to execute query
+	protected String prepareHeader(String ofsHeader,List<String> queryParam){
+		//evaluate and replace all {=expression}
+		//no special formatting here put result as is
+		... 
 	}
 
     
@@ -146,7 +167,9 @@ public class T24QueryFormatter {
         }
         return ofs;
     }
-
+    
+    //deprecated?
+    ...
     protected HashMap<String, String> postProcesing(T24ResultSetMetaData metaData, ArrayList data, String postProcesParam) throws SQLException {
         HashMap<String, String> result = new HashMap<String, String>();
         StringTokenizer st = new StringTokenizer(postProcesParam, "\r\n");
