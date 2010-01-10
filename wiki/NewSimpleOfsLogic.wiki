@@ -16,9 +16,6 @@ SELECT
 	SENDOFS TRUE CUSTOMER,UAB.CFI.CU.PI.{{decode ?1 NULL INP AMN}}/I/PROCESS,${USER}/${PASS}/,{{decode ?1 NULL ""}}
 		TAX.ID:1:           = set ?2
 		LAST.NAME:1:        = set ?3           
-		FIRST.NAME:1:       = set ?4           
-		MIDDLE.NAME:1:      = set ?5           
-		DOC.TYPE:1:1        = const 1
 }}}
 
 == Version 2 ==
@@ -38,7 +35,7 @@ SELECT
 	//calculate a new column newname for each row of resultset
 	NEWNAME = decode ?cust.id NULL "" ?cust.id
 
-		
+	//next ofs	
 	SENDOFS ...
 	GO
 }}}
