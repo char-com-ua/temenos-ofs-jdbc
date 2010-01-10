@@ -19,6 +19,11 @@ SELECT
 }}}
 
 == Version 2 ==
+Each SENDOFS must have END
+
+All expressions out of SENDOFS+END considered as resultset/parameters modifiers.
+
+  
 {{{
 SELECT 
 	SENDOFS {{setIfNull ?1 TRUE}} CUSTOMER,UAB.CFI.CU.PI.AMN/I/PROCESS,${USER}/${PASS}/,
@@ -27,7 +32,7 @@ SELECT
 		FIRST.NAME:1:       = set ?4           
 		MIDDLE.NAME:1:      = set ?5           
 		DOC.TYPE:1:1        = const 1
-	GO
+	END
 
 	//expressions to modify last resultset and incoming params
 	//redefine incoming parameter with index 1
@@ -37,7 +42,8 @@ SELECT
 
 	//next ofs	
 	SENDOFS ...
-	GO
+		...
+	END
 }}}
 
 
