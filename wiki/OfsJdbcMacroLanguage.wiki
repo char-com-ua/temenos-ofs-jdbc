@@ -6,14 +6,14 @@
 
 Ofs-jdbc macro language  is a set of simple expressions that helps you to build your OFS query.
 
-It was created to be readable, simple, and fast (I hope). `<`aaa\>
+It was created to be readable, simple, and fast (I hope).
 
 == ofs-jdbc macto language syntax ==
 
 {{{
 SELECT 
 	//comment line
-	SENDOFS [TRUE|FALSE] `<`OFS_HEADER`>`
+	SENDOFS [TRUE|FALSE] <OFS_HEADER>
 		<OFS_COLUMN> = <EXPRESSION>
 		...
 	END
@@ -28,7 +28,7 @@ SELECT
 === keywords ===
 || *keyword* || *meaning* ||
 || SELECT || means nothing just a fake keyword for tools that detects select query by SELECT keyword ||
-|| SENDOFS || declares the beginning of the ofs query to send to server. the whole this line processed with special <INLINE_MACRO> ||
+|| SENDOFS || declares the beginning of the ofs query to send to server. the whole this line processed with special `<`INLINE_MACRO`>` ||
 || TRUE or FALSE || optional keyword that could cancel (in case of FALSE) sending ofs message to server  ||
 || END || end of ofs definition. at this moment ofs query sent to server. must correspont to each SENDOFS. ||
 
