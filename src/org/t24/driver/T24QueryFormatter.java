@@ -19,23 +19,23 @@ public class T24QueryFormatter {
     //private String query;         //original query
     //private List<String> param;   //input parameters
     
-    private static int STATE_DEF=0;
-    private static int STATE_HEAD=1;
-    private static int STATE_POST=3;
+    private final static int STATE_DEF=0;
+    private final static int STATE_OFS=1;
+    //private static int STATE_POST=3;
 
     public T24QueryFormatter(T24Connection con) {
         this.con = con;
     }
     
-	public T24ResultSet execute(String query, List<String> queryParam){
+	public T24ResultSet execute(String query, List<String> queryParam) throws SQLException{
 		//cut off the optional SELECT keyword
 		if( query.matches("^SELECT\\s"))query=query.substring(7).trim();
 		
-		String ofsHeader;
-		T24ResultSet result;
+		String ofsHeader=null;
+		T24ResultSet result=null;
 		Map<String,String> ofsParam=new LinkedHashMap<String,String>();
 		
-		int state=0; 
+		int state=STATE_DEF; 
 		StringTokenizer st = new StringTokenizer(query, "\r\n");
 		while(st.hasMoreElements()){
 			String line = st.nextToken().trim();
@@ -48,51 +48,46 @@ public class T24QueryFormatter {
 				switch(state){
 					case STATE_DEF: 
 						break;
-					case STATE_HEAD: 
-						result=executeOfs(ofsHeader,ofsParam,result);
-						break;
-					case STATE_POST:
-						break;
+					case STATE_OFS: 
+						throw new T24Exception("Parser error: met SENDOFS when previous not END-ed");
 					default:
-						throw new T24Exception("Wrong parser status: "+state);
+						throw new T24Exception("Wrong parser status: "+state); //should not happend
 				}
-				state=STATE_HEAD;
-				ofsHeader=prepareHeader(line);
-			}else if(line.equals("POSTPROCESS")){
+				state=STATE_OFS;
+				ofsHeader=prepareHeader(line, queryParam);
+			}else if(line.equals("END")){
 				switch(state){
-					case STATE_HEAD: 
+					case STATE_DEF: 
+						throw new T24Exception("Parser error: met END without SENDOFS");
+					case STATE_OFS:
 						result=executeOfs(ofsHeader,ofsParam,result);
 						break;
 					default:
-						throw new T24Exception("Wrong parser status: "+state);
+						throw new T24Exception("Wrong parser status: "+state); //should not happend
 				}
-				state=STATE_POST;
+				state=STATE_DEF;
 			}else{
 				//usual evaluate lines here
 				switch(state){
-					case STATE_HEAD:
-						/* we don't have query parameter names */
-						evaluate(line, null, queryParam, ofsParam);
-						break;
-					case STATE_POST:
+					case STATE_DEF:
 						postEvaluate(line,result,queryParam);
+						break;
+					case STATE_OFS:
+						evaluate(line, null, queryParam, ofsParam);
 						break;
 					default:
 						throw new T24Exception("Wrong parser status: "+state);
 				}
 			}
 		}
-		//finally
-		if(state==STATE_HEAD){
-			result=executeOfs(ofsHeader,ofsParam,result);
-		}
-		if(state==STATE_DEF)throw new T24Exception("Wrong parser status: empty query");
-		//return result fron last ofs
+		
+		if(state==STATE_OFS)throw new T24Exception("Parser error: last SENDOFS not ended with END");
+		//return result from last ofs
 		return result;
 	}
 	
 	/**
-	* apply post evaluated parameters to resultset and to query parameters
+	* evaluate the expression and apply evaluated parameters to resultset and to query parameters
 	* " ?[0-9] = expression " must go to queryParam
 	* " ?xxx = expression " must throw not supported exception (maybe in the future we will use it)
 	* " xxx = expression " should go to the result (new column evaluated for each row)
@@ -100,8 +95,9 @@ public class T24QueryFormatter {
 	protected void postEvaluate(String line, T24ResultSet result, List<String> queryParam) throws SQLException{
 		Map<String,String> postParam=new HashMap<String,String>(2); //initial count = 2
 		
+		
 		for(int i=1; i <= result.getRowCount(); i++ ) {
-			evaluate(line, ((T24ResultSet)result.getMetaData()).getColumnNames(), getDataRow(i), postParam);
+			evaluate(line, ((T24ResultSetMetaData)result.getMetaData()).getColumnNames(), result.getDataRow(i), postParam);
 			//now go through all key/values
 			for( Map.Entry<String,String> entry : postParam.entrySet() ) {
 				String key=entry.getKey();
@@ -122,7 +118,7 @@ public class T24QueryFormatter {
 		}
 	}
 	
-	protected String prepareHeader(String ofsHeader,List<String> queryParam){
+	protected String prepareHeader(String ofsHeader,List<String> queryParam)throws SQLException{
 		//evaluate and replace all {{expression}}
 		//no special formatting here put result as is
 		int p1=0,p2=0;
@@ -134,7 +130,7 @@ public class T24QueryFormatter {
 			out.append( ofsHeader.substring(p2,p1) );
 			p2=ofsHeader.indexOf("}}",p1);
 			
-			if(p2<0)throw new Exception("Can't find close tag for header expression: "+ofsHeader);
+			if(p2<0)throw new T24Exception("Can't find close tag for header expression: "+ofsHeader);
 			String expression=ofsHeader.substring(p1+2,p2);
 			
 			evaluate("x="+expression,null,queryParam,eval);
@@ -163,15 +159,17 @@ public class T24QueryFormatter {
 		
 		//execute query
 		//convert it into resultset
-		...
 		//clear ofs Parameters
 		ofsParam.clear();
 		
 		//return new resultset
-		...
+		//!!!!TODO!!!!
+		return null;
 	}
     
     /** prepares one single OFS query */
+    /* !!!!TDOD!!!! must be moved to execute ofs
+    
     protected String prepare(String sql, List<String> param) throws SQLException {
         HashMap<String, String> result = new HashMap<String, String>();
         String ofsBody = "";
@@ -209,21 +207,8 @@ public class T24QueryFormatter {
         }
         return ofs;
     }
+    */
     
-    //deprecated?
-    ...
-    protected HashMap<String, String> postProcesing(T24ResultSetMetaData metaData, ArrayList data, String postProcesParam) throws SQLException {
-        HashMap<String, String> result = new HashMap<String, String>();
-        StringTokenizer st = new StringTokenizer(postProcesParam, "\r\n");
-        ArrayList<String> list = new ArrayList();
-
-        while (st.hasMoreElements()) {
-            String line = st.nextToken();
-            evaluate(line, metaData.getHeaderList(), data, result);
-        }
-        return result;
-    }
-
     /** 
      * evaluate the one-line command
      * @param line one-line command ( CR & LF not expected )
@@ -422,23 +407,22 @@ public class T24QueryFormatter {
         return res;
     }
 
-    private String prepareField(String fieldName, String value, int counter) {
+    private String prepareField(String fieldName, String value, boolean quote) {
         String res;
         if (value == null || value.length() == 0) {
             res = "";
         } else {
             value = value.replace('\"', '\'');
+            /*
             if (statement.getQueryType() == T24Statement.QUERY_TYPE_FMT) {
                 value = value.replaceAll("_", "'_'");
                 value = "\"" + value + "\"";
             }
-            fieldName = fieldName.replaceAll("\\*", Integer.toString(counter));
+            */
             res = "," + fieldName + "=" + value;
+            //!!!!!!TODO!!!!!!
         }
         return res;
     }
 
-    private String prepareField(String fieldName, String value) {
-        return prepareField(fieldName, value, 1);
-    }
 }

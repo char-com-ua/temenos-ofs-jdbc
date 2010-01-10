@@ -9,6 +9,7 @@ package org.t24.driver;
 
 import org.t24.driver.T24Exception;
 import java.util.ArrayList;
+import java.util.List;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 

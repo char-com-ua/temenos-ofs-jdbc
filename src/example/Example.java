@@ -1,8 +1,6 @@
 import java.util.*;
 import java.sql.*;
 import java.io.*;
-import org.t24.driver.T24Connection;
-import org.t24.driver.T24PreparedStatement;
 
 
 public class Example{
