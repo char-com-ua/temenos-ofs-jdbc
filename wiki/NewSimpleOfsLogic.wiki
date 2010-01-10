@@ -1,6 +1,6 @@
 #summary suggestion: new simple logic for the ofs-jdbc expressions
 
-== Introduction ==
+== Version 1 ==
 {{{
 SELECT 
 	SENDOFS {{setIfNull ?1 TRUE}} CUSTOMER,UAB.CFI.CU.PI.AMN/I/PROCESS,${USER}/${PASS}/,
@@ -9,7 +9,7 @@ SELECT
 		FIRST.NAME:1:       = set ?4           
 		MIDDLE.NAME:1:      = set ?5           
 		DOC.TYPE:1:1        = const 1
-		-POSTFORMATTING-
+		POSTPROCESS
 		//redefine incoming parameter
 		?1 = decode ?cust.id NULL "" ?cust.id
 		
@@ -21,5 +21,27 @@ SELECT
 		DOC.TYPE:1:1        = const 1
 }}}
 
-==Why we should do this if it's possible to doit in java?==
-To implement a simple logic in WSO2 Data Services
+== Version 2 ==
+{{{
+SELECT 
+	SENDOFS {{setIfNull ?1 TRUE}} CUSTOMER,UAB.CFI.CU.PI.AMN/I/PROCESS,${USER}/${PASS}/,
+		TAX.ID:1:           = set ?2
+		LAST.NAME:1:        = set ?3           
+		FIRST.NAME:1:       = set ?4           
+		MIDDLE.NAME:1:      = set ?5           
+		DOC.TYPE:1:1        = const 1
+	GO
+
+	//expressions to modify last resultset and incoming params
+	//redefine incoming parameter with index 1
+	?1 = decode ?cust.id NULL "" ?cust.id
+	//calculate a new column newname for each row of resultset
+	NEWNAME = decode ?cust.id NULL "" ?cust.id
+
+		
+	SENDOFS ...
+	GO
+}}}
+
+
+I like more Version 2...
