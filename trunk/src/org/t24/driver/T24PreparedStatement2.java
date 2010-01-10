@@ -24,12 +24,12 @@ public class T24PreparedStatement2 implements PreparedStatement {
 		this.con=con;
 		this.sql=sql.trim();
 		
-	    queryFormatter = new T24QueryFormatter(this);
+	    queryFormatter = new T24QueryFormatter(con);
 	}
 
     public boolean execute() throws SQLException{
-    	
-    	this.result=new T24ResultSet(...);
+    	//!!!!!!!TODO!!!!!!!
+    	this.result=null;
     	return true;
     }
 
@@ -41,6 +41,13 @@ public class T24PreparedStatement2 implements PreparedStatement {
     public int executeUpdate() throws SQLException{
     	execute();
     	return 1;
+    }
+    
+    public void close() throws SQLException {
+        if (this.result != null) {
+            this.result.close();
+        }
+        result = null;
     }
     
     public ResultSet getResultSet() throws SQLException {
@@ -126,8 +133,56 @@ public class T24PreparedStatement2 implements PreparedStatement {
 		setNull(parameterIndex,sqlType);
     }
 
+    public void clearWarnings() throws SQLException {
+    }
+    
+    public SQLWarning getWarnings() throws SQLException {
+        return null;
+    }
+    
+    public int getQueryTimeout() throws SQLException {
+        return 0;
+    }
+    
+    public int getMaxFieldSize() throws SQLException {
+        return 0;
+    }
+
+    public int getMaxRows() throws SQLException {
+        return 0;
+    }
+
 
     /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!====NOT SUPPORTED====!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+
+    public void setMaxFieldSize(int max) throws SQLException {
+        throw new T24FeatureNotSupportedException();
+    }
+    public void setMaxRows(int max) throws SQLException {
+        throw new T24FeatureNotSupportedException();
+    }
+    public void setEscapeProcessing(boolean enable) throws SQLException {
+        throw new T24FeatureNotSupportedException();
+    }
+    public void setQueryTimeout(int seconds) throws SQLException {
+        throw new T24FeatureNotSupportedException();
+    }
+    public void cancel() throws SQLException {
+        throw new T24FeatureNotSupportedException();
+    }
+    public ResultSet executeQuery(String sql) throws SQLException {
+    	throw new T24FeatureNotSupportedException();
+    }
+    public int executeUpdate(String sql) throws SQLException {
+    	throw new T24FeatureNotSupportedException();
+    }
+    public boolean execute(String sql) throws SQLException {
+    	throw new T24FeatureNotSupportedException();
+    }
+    public void setCursorName(String name) throws SQLException {
+        throw new T24FeatureNotSupportedException();
+    }
+    
     public void setBytes(int parameterIndex, byte x[]) throws SQLException{
     	throw new T24FeatureNotSupportedException();
     }
@@ -235,7 +290,7 @@ public class T24PreparedStatement2 implements PreparedStatement {
     }
 
     public boolean getMoreResults(int current) throws SQLException {
-        return moreRs;
+        return getMoreResults();
     }
 
     public ResultSet getGeneratedKeys() throws SQLException {

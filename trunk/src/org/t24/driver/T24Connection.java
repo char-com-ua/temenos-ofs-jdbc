@@ -138,7 +138,7 @@ public class T24Connection implements Connection {
      * @throws SQLException
      */
     public java.sql.Statement createStatement() throws SQLException {
-        return new T24Statement(this);
+        throw new T24FeatureNotSupportedException();
     }
 
     /**
@@ -269,7 +269,7 @@ public class T24Connection implements Connection {
      * @throws SQLException
      */
     public java.sql.CallableStatement prepareCall(String sql) throws SQLException {
-        return new T24CallableStatement(this, sql);
+        throw new T24FeatureNotSupportedException();
     }
 
     /**
@@ -313,7 +313,7 @@ public class T24Connection implements Connection {
      */
     public java.sql.PreparedStatement prepareStatement(String sql)
             throws SQLException {
-        return new T24PreparedStatement(this, sql);
+        return new T24PreparedStatement2(this, sql);
     }
 
     /**
