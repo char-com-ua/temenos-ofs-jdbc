@@ -1,0 +1,55 @@
+#summary ofs-jdbc macro language
+
+== introduction ==
+
+[OFSSyntax OFS] is a specific one line text string that gives a command to temenos t24 system to modify or select data.
+
+Ofs-jdbc macro language  is a set of simple expressions that helps you to build your OFS query.
+
+It was created to be readable, simple, and fast (I hope). `<`aaa\>
+
+== ofs-jdbc macto language syntax ==
+
+{{{
+SELECT 
+	//comment line
+	SENDOFS [TRUE|FALSE] `<`OFS_HEADER`>`
+		<OFS_COLUMN> = <EXPRESSION>
+		...
+	END
+	...
+
+	<RESULTSET_COLUMN> = <EXPRESSION_WITH_RESULTSET_AS_PARAM>
+	...
+	<?PARAMETER_INDEX> = <EXPRESSION_WITH_RESULTSET_AS_PARAM>
+	...
+}}}
+
+=== keywords ===
+|| *keyword* || *meaning* ||
+|| SELECT || means nothing just a fake keyword for tools that detects select query by SELECT keyword ||
+|| SENDOFS || declares the beginning of the ofs query to send to server. the whole this line processed with special <INLINE_MACRO> ||
+|| TRUE or FALSE || optional keyword that could cancel (in case of FALSE) sending ofs message to server  ||
+|| END || end of ofs definition. at this moment ofs query sent to server. must correspont to each SENDOFS. ||
+
+=== `<`definitions`>` ===
+|| *keyword* || *meaning* ||
+|| `<`OFS_HEADER`>` || The OFS header (see [OFSSyntax]). could contain `<`INLINE_MACRO`>` ||
+|| `<`INLINE_MACRO`>` || ofs-jdbc expression quoted with {{ }} . example: {{setIfNull ?1 0}} ||
+|| `<`OFS_COLUMN`>` || the name of the ofs query parameter. ||
+|| `<`EXPRESSION`>` || ofs-jdbc expression. ||
+|| `<`RESULTSET_COLUMN`>`  || column that will be calculated based on each row and added into last result set ||
+|| `<`?PARAMETER_INDEX`>` || parameter intex started with ? . this will redefine input parameter based on last row of the last resultset. ||
+|| `<`EXPRESSION*`>` || ofs-jdbc expression. see below. ||
+
+=== expressions ===
+
+each expression started with function and continues with parameters.
+
+function and parameters are separated with spaces
+
+?PARAMETER : TODO:common parameter description
+
+|| *function* || *parameters* || *description* ||
+|| set || ?PARAMETER || returns value of the parameter specified by ?PARAMETER. in case of  ||
+TODO...
