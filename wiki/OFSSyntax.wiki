@@ -1,0 +1,5 @@
+#summary Temenos OFS message syntax
+
+== Introduction ===
+
+TODO
