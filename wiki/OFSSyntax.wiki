@@ -12,11 +12,7 @@
 || USER || login for Т24 ||
 || PASSWORD || password ||
 || ID || ID of the row of application ||
-|| DATA || Data. If INPUT then format: COLUMN:X:Y=VALUE, where X - multivalue, Y - subvalue. So one column could have several values. 
-
-For example CUSTOMER.NAME in English and in Local language:
-
-{{{NAME:1:="DMITRY",NAME:2:="ДМИТРО"}}} ||
+|| DATA || Data. If INPUT then format: COLUMN:X:Y=VALUE, where X - multivalue, Y - subvalue. So one column could have several values. For example CUSTOMER.NAME in English and in Local language: {{{NAME:1:="DMITRY",NAME:2:="ДМИТРО"}}} ||
 
 *example:*
 
