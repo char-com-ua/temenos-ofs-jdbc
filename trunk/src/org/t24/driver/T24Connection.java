@@ -18,6 +18,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.*;
+import java.io.*;
+
 
 /**
  * Implements standard <code>java.sql.Connection</code> .
@@ -42,24 +45,32 @@ public class T24Connection implements Connection {
     protected String tcUser;
     protected String tcPass;
     private String tcCharset;
+    private static final String TESTCHANNEL="TESTCHANNEL";
 
-    protected String t24Send(String ofs) throws SQLException {
+    public String t24Send(String ofs) throws SQLException {
         //maybe in the future we have to set user/password here ?
         try {
-            String charsetOFS = new String(ofs.getBytes(tcCharset));
+        	String ofsResp;
+        	if(TESTCHANNEL.equals(tcChannel)){
+        		URL url=null;
+        		url=T24Connection.class.getResource("/org/t24/driver/test/enquiry_resp.txt");
+        		ofsResp = (new BufferedReader(new InputStreamReader( url.openStream() ))).readLine();
+        	}else{
+				String charsetOFS = new String(ofs.getBytes(tcCharset));
 
-            TCRequest tcSendRequest = tcFactory.createOfsRequest(charsetOFS, false);
-            //hide password in logs
-			charsetOFS = charsetOFS.replaceAll(tcPass, "*****");
-            System.out.println("OFS: " + charsetOFS);
+				TCRequest tcSendRequest = tcFactory.createOfsRequest(charsetOFS, false);
+				//hide password in logs
+				charsetOFS = charsetOFS.replaceAll(tcPass, "*****");
+				System.out.println("OFS: " + charsetOFS);
 
-            TCResponse tcResponse = tcSendRequest.send(tcConnection);
-            String ofsResp = tcResponse.getOFSString();
-            System.out.println("OFSRESP: " + ofsResp);
+				TCResponse tcResponse = tcSendRequest.send(tcConnection);
+				ofsResp = tcResponse.getOFSString();
+				System.out.println("OFSRESP: " + ofsResp);
+        	}
             return ofsResp;
         } catch (Throwable e) {
             e.printStackTrace(System.out);
-            throw new T24Exception("T24 Send Exception: " + e.getMessage());
+            throw new T24Exception("T24 Send Exception", e);
         }
     }
 
@@ -82,13 +93,17 @@ public class T24Connection implements Connection {
             tcCharset = java.nio.charset.Charset.defaultCharset().name();
         }
         try {
-            if (tcFactory == null) {
-                tcFactory = TCCFactory.getInstance();
-                tcFactory.setDefaultCharSet(tcCharset);
-            }
-            tcConnection = tcFactory.createTCConnection(tcChannel);
-            tcConnection.setMaximumRetryCount(2);
-            tcConnection.setRetryInterval(30);
+        	if(TESTCHANNEL.equals(tcChannel)) {
+        		//don't connect ! it's just a test channel
+        	}else{
+				if (tcFactory == null) {
+					tcFactory = TCCFactory.getInstance();
+					tcFactory.setDefaultCharSet(tcCharset);
+				}
+				tcConnection = tcFactory.createTCConnection(tcChannel);
+				tcConnection.setMaximumRetryCount(2);
+	            tcConnection.setRetryInterval(30);
+        	}
         } catch (Exception e) {
             throw new T24Exception("T24 Connection Error: " + e.getMessage());
         }

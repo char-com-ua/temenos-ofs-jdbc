@@ -33,6 +33,12 @@
 		<javac srcdir="src" destdir="${dest.dir.classes}" includes="**" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="build.classpath" />
 		</javac>
+		<!--TEST RESOURCES-->
+		<copy todir="${dest.dir.classes}">
+			<fileset dir="src" >
+				<include name="**/*.txt"/>
+			</fileset>
+		</copy>
 		<!--MANIFEST-->
 		<tstamp><format property="built.date" pattern="yyyy-MM-dd HH:mm" /></tstamp>
 		<manifest file="${dest.dir.classes}/META-INF/manifest.mf">
@@ -48,8 +54,9 @@
 	</target>
 
 	<target name="test" depends="init" >
-		<java classname="Example" dir="." fork="true">
-			<classpath refid="test.classpath" />
+		<java classname="org.t24.driver.test.Test" dir="." fork="true" output="out.txt">
+			<classpath refid="build.classpath" />
+			<jvmarg value="-Dfile.encoding=utf-8"/>
 			<sysproperty key="tc.home" value="${tcclient.home}"/>
 		</java>
 	</target>
