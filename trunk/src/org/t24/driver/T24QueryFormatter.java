@@ -210,48 +210,6 @@ public class T24QueryFormatter {
 		return rs;
 	}
     
-    /** prepares one single OFS query */
-    /* !!!!TDOD!!!! must be moved to execute ofs
-    
-    protected String prepare(String sql, List<String> param) throws SQLException {
-        HashMap<String, String> result = new HashMap<String, String>();
-        String ofsBody = "";
-        String ofsHeader = "";
-        String ofs = "";
-
-        StringTokenizer st = new StringTokenizer(sql, "\r\n");
-        int lineCount = 0;
-        while (st.hasMoreElements()) {
-            String line = st.nextToken().trim();
-            if (line.length() < 1 || line.startsWith("//")) {
-                continue;
-            }
-            lineCount++;
-            if (lineCount == 1) {
-                ofsHeader = line;
-                try {
-                    if (ofsHeader.matches("^.*(\\?\\d).*$")) {
-                        int index = Integer.parseInt(ofsHeader.replaceAll("^.*\\?(\\d+).*$", "$1"));
-                        ofsHeader = ofsHeader.replaceAll("\\?\\d+", param.get(index));
-                    }
-                } catch (Exception e) {
-                    String paramNum = ofsHeader.replaceAll("\\?\\d+", "$1");
-                    throw new T24Exception("mandatory parameter not found" + paramNum);
-                }
-            } else {
-                evaluate(line, null, param, result);
-                ofs = ofsHeader;
-                for (String columnName : result.keySet()) {
-                    String columnValue = result.get(columnName);
-                    ofsBody = prepareField(columnName, columnValue);
-                    ofs += ofsBody;
-                }
-            }
-        }
-        return ofs;
-    }
-    */
-    
     /** 
      * evaluate the one-line command
      * @param line one-line command ( CR & LF not expected )
