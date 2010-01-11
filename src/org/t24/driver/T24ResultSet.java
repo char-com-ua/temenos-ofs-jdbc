@@ -158,7 +158,7 @@ public class T24ResultSet implements ResultSet {
         return data.get(i - 1);
     }
 
-    protected T24ResultSet(Statement st, String ofs, String ofsResp) throws SQLException {
+    protected T24ResultSet(String ofs, String ofsResp) throws SQLException {
         //let's use ofs to detect type
         if (ofs.matches("^ENQUIRY[.]SELECT,.*")) {
             t24ParseEnquiry(ofsResp);
@@ -168,7 +168,6 @@ public class T24ResultSet implements ResultSet {
 
             t24ParseApp(ofsResp);
         }
-        this.statement = st;
     }
 
     //this method should be used to set evaluated expressions of post processing

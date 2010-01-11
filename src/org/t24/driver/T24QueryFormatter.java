@@ -2,6 +2,8 @@ package org.t24.driver;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.sql.*;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -26,14 +28,13 @@ public class T24QueryFormatter {
 
     //private static int STATE_POST=3;
 
-    public T24QueryFormatter(T24Connection con) {
-        this.con = con;
+    public T24QueryFormatter(Connection con) {
+        this.con = (T24Connection)con;
     }
     public T24QueryFormatter() {
     }
     
 	public T24ResultSet execute(String query, List<String> queryParam) throws SQLException{
-System.out.println("-START-");
 		//cut off the optional SELECT keyword
 		if( query.matches("^SELECT\\s"))query=query.substring(7).trim();
 		
@@ -45,18 +46,15 @@ System.out.println("-START-");
 		StringTokenizer st = new StringTokenizer(query, "\r\n");
 		while(st.hasMoreElements()){
 
-System.out.println("-state-  = " +state);
 
 			String line = st.nextToken().trim();
-System.out.println("-line-  = " +line);
 
 			//skip empty and commented lines
 			if (line.length() < 1 || line.startsWith("//")) {
 				continue;
 			}
-			
+
 			if(line.matches("^SENDOFS\\s.*$")) {
-System.out.println("-sendOFS-");
 				switch(state){
 					case STATE_DEF: 
 						break;
@@ -67,7 +65,6 @@ System.out.println("-sendOFS-");
 				}
 				state = STATE_OFS;
 				ofsHeader = prepareHeader(line, queryParam);
-System.out.println("-ofsHeader-  = " +ofsHeader);
 
 			}else if(line.equals("END")){
 				switch(state){
@@ -93,6 +90,7 @@ System.out.println("-ofsHeader-  = " +ofsHeader);
 						throw new T24Exception("Wrong parser status: "+state);
 				}
 			}
+
 		}
 		
 		if(state==STATE_OFS)throw new T24Exception("Parser error: last SENDOFS not ended with END");
@@ -107,6 +105,7 @@ System.out.println("-ofsHeader-  = " +ofsHeader);
 	* " xxx = expression " should go to the result (new column evaluated for each row)
 	*/
 	protected void postEvaluate(String line, T24ResultSet result, List<String> queryParam) throws SQLException{
+		if (result == null) {return;}
 		Map<String,String> postParam=new HashMap<String,String>(2); //initial count = 2
 		
 		
@@ -160,46 +159,46 @@ System.out.println("-ofsHeader-  = " +ofsHeader);
     
 	
 	protected T24ResultSet executeOfs(String ofsHeader, Map<String,String> ofsParam, T24ResultSet oldResult){
-System.out.println("!!!! executeOFS \n" + ofsHeader + " === " + ofsParam);
+		T24ResultSet rs = null;
 		//do final prepare of the ofs
 		///ofsHeader:
 		///remove SENDOFS
 		ofsHeader = ofsHeader.substring(OFSCODEWORLD.length()).trim();
-		ofsHeader = ofsHeader.replaceAll("^(.*)[\\s](.*)$", "$2");
+		boolean isOfsSend = Boolean.parseBoolean(ofsHeader.replaceAll("^(TRUE|FALSE)\\s+(.*)$", "$1")); 
 
-		if (ofsHeader.matches("^ENQUIRY.SELECT.*$")){
-			queryType = "ENQ";
-		}else {
-			queryType = "APP";
+		if (!isOfsSend){
+			System.out.println("Skip OFS = " + ofsHeader + ofsParam);
+			rs = oldResult;
+		}else{
+			ofsHeader = ofsHeader.replaceAll("^(.*)[\\s+](.*)$", "$2");
+
+			if (ofsHeader.matches("^ENQUIRY.SELECT.*$")){
+				queryType = "ENQ";
+			}else {
+				queryType = "APP";
+			}
+			System.out.println("!! executeOFS_2 \n" + ofsHeader + " === " + ofsParam);
+
+			String ofs = ofsHeader;
+			String ofsBody="";
+			for (String columnName : ofsParam.keySet()) {
+				String columnValue = ofsParam.get(columnName);
+				ofsBody = prepareField(columnName, columnValue, queryType);
+				ofs += ofsBody;
+			}
+
+			try{
+				System.out.println("Send OFS = " + ofs);
+
+				String ofsResp = con.t24Send(ofs);
+				//create resultset from responce
+				rs = new T24ResultSet(ofs, ofsResp);
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 		}
-System.out.println("!! executeOFS2 \n" + ofsHeader + " === " + ofsParam);
 
-        String ofs = ofsHeader;
-		String ofsBody="";
-        for (String columnName : ofsParam.keySet()) {
-            String columnValue = ofsParam.get(columnName);
-            ofsBody = prepareField(columnName, columnValue, queryType);
-            ofs += ofsBody;
-        }
-System.out.println("!! executeOFS3 \n" + "OFS= " + ofs);
-
-		///if next keyword separated by spaces is FALSE then don't execute and just return oldResult
-		///if next keyword separated by spaces is TRUE just remove it
-		///so, [TRUE|FALSE] are optional keywords
-		
-		//detect query type (ENQUIRY|OFS)
-		//add parameters into query
-		
-		//execute query
-        String ofsResp = con.t24Send(ofs);
-        //create resultset from responce
-        rs = new T24ResultSet(this, ofs, ofsResp);
-		//convert it into resultset
-		//clear ofs Parameters
 		ofsParam.clear();
-		
-		//return new resultset
-		//!!!!TODO!!!!
 		return rs;
 	}
     
@@ -303,7 +302,8 @@ System.out.println("!! executeOFS3 \n" + "OFS= " + ofs);
     }
 
     private void evaluateToCent(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
-        if (commandParams == null || colName == null || colValue == null) {
+
+        if (commandParams == null || colValue == null) {
             throw new T24Exception("Incorrect parameters or ResultSet: ");
         }
         if (!commandParams.get(0).startsWith("?")) {
@@ -328,22 +328,32 @@ System.out.println("!! executeOFS3 \n" + "OFS= " + ofs);
         }
     }
 
-    private void evaluateDecode(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
-        String value = "";
-        boolean changed = false;
-
-        if (commandParams == null || colName == null || colValue == null) {
+    private String getValueForComandParam(int paramNumber, List<String> commandParams, List<String> colName, List<String> colValue) throws T24Exception{
+        if (commandParams == null || colValue == null) {
             throw new T24Exception("Incorrect parameters or ResultSet: ");
         }
         if (!commandParams.get(0).startsWith("?")) {
             throw new T24Exception("Incorrect parameter: " + commandParams.get(0));
         } else {
-            int valueIndex = colName.indexOf(commandParams.get(0).substring(1));
-            if (valueIndex == -1) {
-                throw new T24Exception("Incorect result Set parameter : " + commandParams.get(0).substring(1));
-            }
-            value = colValue.get(valueIndex).trim();
+			String key=commandParams.get(paramNumber).substring(1);
+			int valueIndex;
+			try {
+				valueIndex=Integer.valueOf(key)-1;
+			} catch(Exception e) {
+				if(colName==null)throw new T24Exception("Can't get value for named parameter");
+				valueIndex = colName.indexOf(key);
+			}
+			if (valueIndex == -1) {
+				throw new T24Exception("Can't find parameter : " + commandParams.get(0));
+			}
+			return colValue.get(valueIndex).trim();
         }
+	}
+
+    private void evaluateDecode(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
+        String value = "";
+        boolean changed = false;
+		value = getValueForComandParam(0, commandParams, colName, colValue);
         for (int i = 1; i < commandParams.size() - 1; i += 2) {
             if (value.equals(commandParams.get(i).trim())) {
                 value = commandParams.get(i + 1);
@@ -361,67 +371,46 @@ System.out.println("!! executeOFS3 \n" + "OFS= " + ofs);
     }
 
     private void evaluateSet(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
-        String value;
-        if (!commandParams.get(0).startsWith("?")) {
-            throw new T24Exception("Incorrect parameter: " + commandParams.get(0));
-        } else {
-            value = colValue.get(Integer.parseInt(commandParams.get(0).substring(1)) - 1);
-        }
+        String value = getValueForComandParam(0, commandParams, colName, colValue);
         result.put(fieldName, value);
     }
 
     private void evaluateSetIfNull(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
-        int paramIndex = Integer.parseInt(commandParams.get(0).substring(1));
+		String value = getValueForComandParam(0, commandParams, colName, colValue);
 
-        if (colValue.get(paramIndex - 1) == null || "".equals(colValue.get(paramIndex - 1))) {
+        if (value == null || "".equals(value)) {
             result.put(fieldName, commandParams.get(1));
         } else {
-            result.put(fieldName, colValue.get(paramIndex - 1));
+            result.put(fieldName, value);
         }
     }
 
     private void evaluateFromCent(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
-        String value = "";
-        if (!commandParams.get(0).startsWith("?")) {
-            throw new T24Exception("Incorrect parameters");
-        } else {
-            value = colValue.get(Integer.parseInt(commandParams.get(0).substring(1)) - 1);
-            BigDecimal bdec = new BigDecimal(value);
-            bdec = bdec.multiply(new BigDecimal("0.01"));
-            value = bdec.toString();
-        }
+		String value = getValueForComandParam(0, commandParams, colName, colValue);
+        BigDecimal bdec = new BigDecimal(value);
+        bdec = bdec.multiply(new BigDecimal("0.01"));
+        value = bdec.toString();
         result.put(fieldName, value);
     }
 
     private void evaluateSplit(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
-        String value = "";
-        if (!commandParams.get(0).startsWith("?")) {
-            throw new T24Exception("Incorrect parameters");
-        } else {
-            String str = colValue.get(Integer.parseInt(commandParams.get(0).substring(1)) - 1);
+            String str = getValueForComandParam(0, commandParams, colName, colValue);
             int counter = 1;
             int length = Integer.parseInt(commandParams.get(1));
             while (str.length() > 0) {
-                value = substr(str, 0, length);
+                String value = substr(str, 0, length);
                 result.put(fieldName.replaceAll("\\*", Integer.toString(counter)), value);
                 str = substr(str, length, str.length());
                 counter++;
             }
-        }
     }
 
     private void evaluateSubstr(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
-        String value = "";
-        if (!commandParams.get(0).toString().startsWith("?")) {
-            throw new T24Exception("Incorrect parameters");
-        } else {
-            String str = colValue.get(Integer.parseInt(commandParams.get(0).substring(1)) - 1);
-            int indexStart = Integer.parseInt(commandParams.get(1));
-            int length = Integer.parseInt(commandParams.get(2));
+		String str = getValueForComandParam(0, commandParams, colName, colValue);
+        int indexStart = Integer.parseInt(commandParams.get(1));
+        int length = Integer.parseInt(commandParams.get(2));
 
-            value = substr(str, indexStart, length);
-        //bdec = prepareField(fieldName, bdec);
-        }
+        String value = substr(str, indexStart, length);
         result.put(fieldName, value);
     }
 
