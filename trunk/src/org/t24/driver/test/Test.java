@@ -9,6 +9,23 @@ import java.util.*;
 
 public class Test {
 	public static void main(String arg[]) throws Exception{
+		new Test().runTest();
+	}
+
+	int failCount=0;
+	Throwable trace=new Throwable();
+	public void assertTrue(boolean b,String message) {
+		if(!b){
+			failCount++;
+			System.out.println("assertTrue failed: "+message+": "+trace.fillInStackTrace().getStackTrace()[1]);
+		}
+	}
+
+
+
+
+	public void runTest() throws Exception{
+		
 		String driver="org.t24.driver.T24Driver";
 		String url="jdbc:org:t24:TESTCHANNEL?charset=utf-8";
 		String uid="TESTUID";
@@ -18,66 +35,58 @@ public class Test {
 		Class.forName(driver);
 		//Connect to database
 		Connection con = DriverManager.getConnection(url,uid,pwd);
+		T24QueryFormatter q = new T24QueryFormatter(con);
 		
-	    String queryEnq2 = "SENDOFS {{decode ?1 NULL TRUE FALSE}} ENQUIRY.SELECT,,${USER}/${PASS}/,ENQ.MW.CUST.LWEXISTS\n" +
-			"TAX.ID:EQ = set ?2\n" +
-			"SECTOR:EQ = const 2\n" +
-			"DOC.NO:EQ = set ?3\n" +
-			"DATE.OF.BIRTH:EQ = set ?4\n" +
-			"RESIDENCE:EQ  = set ?5\n" +
-			"END\n"+
-			"?1 = decode ?T24.ID NULL 0 ?T24.ID\n"+
+		String query = 
+			"SENDOFS {{decode ?1 NULL TRUE FALSE}} ENQUIRY.SELECT,,{{USER}}/{{PASS}}/,ENQ.LWEXISTS\n" +
+				"F1:EQ  = set   ?2 \n" +
+				"F2:EQ  = const 2  \n" +
+				"F3:EQ  = set   ?3 \n" +
+			"END\n" +
+			
+			"?3 = set      ?FIELD.TEXT\n"       +
+			"?2 = toCent   ?FIELD.NUM\n"        +
+			"?1 = decode   ?FIELD.INT  5 XXX\n" +
+			
+			"SENDOFS CUSTOMER,,{{USER}}/{{PASS}}/,ENQ.LWEXISTS\n" +
+				"F1::  = set    ?2 \n" +
+				"F2::  = set    ?1 \n" +
+				"F3:*: = split  ?3 5 \n" +
+			"END\n" +
+			"";
 
-			"SENDOFS TRUE CUSTOMER,UAB.CFI.CU.PI..{{decode ?1 NULL INP AMN}}/I/PROCESS,${USER}/${PASS}/,\n" +
-			"TAX.ID:1: = set ?2\n" +
-			"LAST.NAME:1: = set ?3\n" +
-			"FIRST.NAME:1: = set ?4\n" +
-			"MIDDLE.NAME:1: = set ?5\n" +
-			"DOC.TYPE:1:1  = const 1\n" +
-			"END\n";
-
-		String [] paramApp = {"asdfasdasd","1999-01-01"};
-		List paramEnq = new ArrayList();
-		paramEnq.add("111111");
-		paramEnq.add("3200701925");
-		paramEnq.add("99");
-		paramEnq.add("");
-		paramEnq.add("");
-
-		execute(con, queryEnq2, paramEnq);
+		List param = new ArrayList();
+		param.add("NULL");
+		param.add("20100102");
+		param.add("");
 		
+
+		T24ResultSet rs = q.execute(query,param);
+		//for(int i=0;i<q.getSentOfsQueries().size();i++)
+		//	System.out.println("OFS"+i+"="+q.getSentOfsQueries().get(i));
+
+		showResult(rs);
+		rs.close();
 		con.close();
 	}
 
-
-
-
-	public static void execute(Connection con, String query,List param)throws Exception{
-
-        T24QueryFormatter queryFormatter = new T24QueryFormatter(con);
-
-		T24ResultSet rs = queryFormatter.execute(query,param);
-
-                               
-        ResultSetMetaData rsmd = rs.getMetaData();
+	public void showResult(ResultSet rs)throws Exception{
+		ResultSetMetaData rsmd = rs.getMetaData();
 		String s="";
-        
-        for (int i=0;i<rsmd.getColumnCount();i++){
-        	s+=rsmd.getColumnName(i+1);
-        	s+="\t";
-        }
-        s+="\n";
-        // print the results
-        while (rs.next()) {
-            for(int i=0;i<rsmd.getColumnCount();i++){
-            	s+=""+rs.getObject(""+(i+1))+"\t";
-            }
-            s+="\n";
-        }
-
-        System.out.println(s);
-		rs.close();
 		
+		for (int i=0;i<rsmd.getColumnCount();i++){
+			s+=rsmd.getColumnName(i+1);
+			s+="\t";
+		}
+		System.out.println(s);
+		// print the results
+		while (rs.next()) {
+			s="";
+			for(int i=0;i<rsmd.getColumnCount();i++){
+				s+=""+rs.getObject(""+(i+1))+"\t";
+			}
+			System.out.println(s);
+		}
 	}
 
 

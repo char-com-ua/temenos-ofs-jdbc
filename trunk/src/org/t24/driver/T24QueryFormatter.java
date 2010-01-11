@@ -24,9 +24,11 @@ public class T24QueryFormatter {
     
     private final static int STATE_DEF = 0;
     private final static int STATE_OFS = 1;
-    private final static String OFSCODEWORLD = "SENDOFS";
     
+    //debugging / testing data
     private List<String> sentOfsQueries=new ArrayList<String>();
+    private String currentLine="<start>";
+    
 
     //private static int STATE_POST=3;
 
@@ -59,8 +61,9 @@ public class T24QueryFormatter {
 			//skip empty and commented lines
 			if (line.length() < 1 || line.startsWith("//")) {
 				continue;
+			
 			}
-
+			currentLine=line;
 			if(line.matches("^SENDOFS\\s.*$")) {
 				switch(state){
 					case STATE_DEF: 
@@ -166,11 +169,15 @@ public class T24QueryFormatter {
 	
 	protected T24ResultSet executeOfs(String ofsHeader, Map<String,String> ofsParam, T24ResultSet oldResult){
 		T24ResultSet rs = null;
+		boolean isOfsSend=true;
 		//do final prepare of the ofs
-		///ofsHeader:
+		
 		///remove SENDOFS
-		ofsHeader = ofsHeader.substring(OFSCODEWORLD.length()).trim();
-		boolean isOfsSend = Boolean.parseBoolean(ofsHeader.replaceAll("^(TRUE|FALSE)\\s+(.*)$", "$1")); 
+		ofsHeader = ofsHeader.substring("SENDOFS".length()).trim();
+		if( ofsHeader.matches("^(TRUE|FALSE)\\s+.*") ) {
+			isOfsSend = Boolean.parseBoolean(ofsHeader.substring(0,5).trim()); 
+			ofsHeader = ofsHeader.substring(5).trim();
+		}
 
 		if (!isOfsSend){
 			System.out.println("Skip OFS = " + ofsHeader + ofsParam);
@@ -253,6 +260,10 @@ public class T24QueryFormatter {
             evaluateSubstr(fieldName, commandParams, colName, colValue, result);
         } else if ("setIfNull".equals(command)) {
             evaluateSetIfNull(fieldName, commandParams, colName, colValue, result);
+        } else if ("USER".equals(command)) {
+            evaluateUSER(fieldName, commandParams, colName, colValue, result);
+        } else if ("PASS".equals(command)) {
+            evaluatePASS(fieldName, commandParams, colName, colValue, result);
         } else {
             throw new T24Exception("Unknown command : " + command);
         }
@@ -265,33 +276,6 @@ public class T24QueryFormatter {
             commnadParams.add(st.nextToken());
         }
         return commnadParams;
-    }
-
-    private void evaluateToCent(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
-
-        if (commandParams == null || colValue == null) {
-            throw new T24Exception("Incorrect parameters or ResultSet: ");
-        }
-        if (!commandParams.get(0).startsWith("?")) {
-            throw new T24Exception("Incorrect parameter: " + commandParams.get(0));
-        } else {
-            int valueIndex = colName.indexOf(commandParams.get(0).substring(1));
-            if (valueIndex != -1) {
-                if ("".equals(colValue.get(valueIndex).trim())) {
-                    result.put(fieldName, "");
-                } else {
-                    try {
-                        BigDecimal value = new BigDecimal(colValue.get(valueIndex).trim());
-                        value = value.multiply(new BigDecimal("100")).setScale(0);
-                        result.put(fieldName, value.toString());
-                    } catch (Exception e) {
-                        result.put(fieldName, "");
-                    }
-                }
-            } else {
-                throw new T24Exception("Incorrect parameter: " + commandParams.get(0));
-            }
-        }
     }
 
     private String getValueForComandParam(int paramNumber, List<String> commandParams, List<String> colName, List<String> colValue) throws T24Exception{
@@ -312,11 +296,26 @@ public class T24QueryFormatter {
 		}
 		
 		if (valueIndex == -1) 
-			throw new T24Exception("Can't find parameter : " + key);
+			throw new T24Exception("Can't find parameter: " + key +"\nline: "+currentLine);
+		
+		if (valueIndex >= colValue.size()) 
+			throw new T24Exception("Can't get value for: " + key +". Values count: " + colValue.size() +"\nline: "+currentLine);
 		
 		String value=colValue.get(valueIndex);
 		return (value==null?"":value.trim());
 	}
+
+    private void evaluateToCent(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
+        String value = getValueForComandParam(0, commandParams, colName, colValue);
+
+		if ( value==null || value.length()==0 ) {
+			result.put(fieldName, "");
+		} else {
+			BigDecimal bdvalue = new BigDecimal(value);
+			bdvalue = bdvalue.multiply(new BigDecimal("100")).setScale(0);
+			result.put(fieldName, bdvalue.toString());
+		}
+    }
 
     private void evaluateDecode(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
         String value = "";
@@ -332,6 +331,14 @@ public class T24QueryFormatter {
             value = commandParams.get(commandParams.size() - 1);
         }
         result.put(fieldName, value);
+    }
+
+    private void evaluatePASS(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) {
+        result.put(fieldName, con.tcPass);
+    }
+
+    private void evaluateUSER(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) {
+        result.put(fieldName, con.tcUser);
     }
 
     private void evaluateConst(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) {

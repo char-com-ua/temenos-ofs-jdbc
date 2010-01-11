@@ -63,7 +63,6 @@ public class T24Driver implements Driver{
 	 * @throws SQLException if any sql exception occured
 	 */
 	public boolean acceptsURL(String url) throws SQLException{
-		System.out.println("T24Driver check "+url);
 		if(url==null)return false;
 		return url.startsWith(myUrl);
 	}

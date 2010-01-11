@@ -53,7 +53,7 @@ public class T24Connection implements Connection {
         	String ofsResp;
         	if(TESTCHANNEL.equals(tcChannel)){
         		URL url=null;
-				if(ofs.matches("^ENQUIRY.SELECT") ){
+				if(ofs.matches("^ENQUIRY\\.SELECT.*") ){
 					url=T24Connection.class.getResource("/org/t24/driver/test/enquiry_resp.txt");
 				}else{
 					url=T24Connection.class.getResource("/org/t24/driver/test/ofs_resp.txt");
