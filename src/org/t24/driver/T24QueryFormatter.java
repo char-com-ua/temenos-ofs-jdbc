@@ -14,6 +14,7 @@ import java.util.ArrayList;
  * @author avityuk
  */
 public class T24QueryFormatter {
+	public enum QueryType { QUERY_APP, QUERY_ENQ }
 
     //private static SimpleDateFormat sdfDateParse = new SimpleDateFormat("yyyy-MM-dd");
     //private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
@@ -24,7 +25,8 @@ public class T24QueryFormatter {
     private final static int STATE_DEF = 0;
     private final static int STATE_OFS = 1;
     private final static String OFSCODEWORLD = "SENDOFS";
-    private String queryType="NONE";
+    
+    private List<String> sentOfsQueries=new ArrayList<String>();
 
     //private static int STATE_POST=3;
 
@@ -34,8 +36,13 @@ public class T24QueryFormatter {
     public T24QueryFormatter() {
     }
     
+    public List<String> getSentOfsQueries(){
+    	return sentOfsQueries.clone();
+    }
+    
 	public T24ResultSet execute(String query, List<String> queryParam) throws SQLException{
 		//cut off the optional SELECT keyword
+		sentOfsQueries.clear();
 		if( query.matches("^SELECT\\s"))query=query.substring(7).trim();
 		
 		String ofsHeader=null;
@@ -90,7 +97,6 @@ public class T24QueryFormatter {
 						throw new T24Exception("Wrong parser status: "+state);
 				}
 			}
-
 		}
 		
 		if(state==STATE_OFS)throw new T24Exception("Parser error: last SENDOFS not ended with END");
@@ -171,13 +177,14 @@ public class T24QueryFormatter {
 			rs = oldResult;
 		}else{
 			ofsHeader = ofsHeader.replaceAll("^(.*)[\\s+](.*)$", "$2");
+			
+			QueryType queryType;
 
 			if (ofsHeader.matches("^ENQUIRY.SELECT.*$")){
-				queryType = "ENQ";
+				queryType = QUERY_ENQ;
 			}else {
-				queryType = "APP";
+				queryType = QUERY_APP;
 			}
-			System.out.println("!! executeOFS_2 \n" + ofsHeader + " === " + ofsParam);
 
 			String ofs = ofsHeader;
 			String ofsBody="";
@@ -189,6 +196,7 @@ public class T24QueryFormatter {
 
 			try{
 				System.out.println("Send OFS = " + ofs);
+				sentOfsQueries.add(ofs);
 
 				String ofsResp = con.t24Send(ofs);
 				//create resultset from responce
@@ -332,22 +340,24 @@ public class T24QueryFormatter {
         if (commandParams == null || colValue == null) {
             throw new T24Exception("Incorrect parameters or ResultSet: ");
         }
-        if (!commandParams.get(0).startsWith("?")) {
-            throw new T24Exception("Incorrect parameter: " + commandParams.get(0));
-        } else {
-			String key=commandParams.get(paramNumber).substring(1);
-			int valueIndex;
-			try {
-				valueIndex=Integer.valueOf(key)-1;
-			} catch(Exception e) {
-				if(colName==null)throw new T24Exception("Can't get value for named parameter");
-				valueIndex = colName.indexOf(key);
-			}
-			if (valueIndex == -1) {
-				throw new T24Exception("Can't find parameter : " + commandParams.get(0));
-			}
-			return colValue.get(valueIndex).trim();
-        }
+		String key=commandParams.get(paramNumber);
+		int valueIndex;
+		
+        if (!key.startsWith("?")) 
+        	throw new T24Exception("Incorrect parameter: " + key);
+        
+		try {
+			valueIndex=Integer.valueOf(key.substring(1))-1;
+		} catch(Exception e) {
+			if(colName==null)throw new T24Exception("Can't get value for named parameter "+key);
+			valueIndex = colName.indexOf(key.substring(1).toLowerCase());
+		}
+		
+		if (valueIndex == -1) 
+			throw new T24Exception("Can't find parameter : " + key);
+		
+		String value=colValue.get(valueIndex);
+		return (value==null?"":value.trim());
 	}
 
     private void evaluateDecode(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
@@ -387,22 +397,26 @@ public class T24QueryFormatter {
 
     private void evaluateFromCent(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
 		String value = getValueForComandParam(0, commandParams, colName, colValue);
-        BigDecimal bdec = new BigDecimal(value);
-        bdec = bdec.multiply(new BigDecimal("0.01"));
-        value = bdec.toString();
-        result.put(fieldName, value);
+		if(value==null||value.length()==0) {
+			result.put(fieldName, null);
+		} else {
+			BigDecimal bdec = new BigDecimal(value);
+			bdec = bdec.multiply(new BigDecimal("0.01"));
+			value = bdec.toString();
+			result.put(fieldName, value);
+		}
     }
 
     private void evaluateSplit(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
-            String str = getValueForComandParam(0, commandParams, colName, colValue);
-            int counter = 1;
-            int length = Integer.parseInt(commandParams.get(1));
-            while (str.length() > 0) {
-                String value = substr(str, 0, length);
-                result.put(fieldName.replaceAll("\\*", Integer.toString(counter)), value);
-                str = substr(str, length, str.length());
-                counter++;
-            }
+        String str = getValueForComandParam(0, commandParams, colName, colValue);
+        int counter = 1;
+        int length = Integer.parseInt(commandParams.get(1));
+        while (str.length() > 0) {
+            String value = substr(str, 0, length);
+            result.put(fieldName.replaceAll("\\*", Integer.toString(counter)), value);
+            str = substr(str, length, str.length());
+            counter++;
+        }
     }
 
     private void evaluateSubstr(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
@@ -432,18 +446,17 @@ public class T24QueryFormatter {
         return res;
     }
 
-    private String prepareField(String fieldName, String value, String querytype) {
+    private String prepareField(String fieldName, String value, QueryType queryType) {
         String res;
         if (value == null || value.length() == 0) {
             res = "";
         } else {
             value = value.replace('\"', '\'');
-            if ("APP".equals(querytype)) {
+            if (queryType==QUERY_APP) {
                 value = value.replaceAll("_", "'_'");
                 value = "\"" + value + "\"";
             }
             res = "," + fieldName + "=" + value;
-            //!!!!!!TODO!!!!!!
         }
         return res;
     }
