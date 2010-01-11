@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * @author avityuk
  */
 public class T24QueryFormatter {
-	public enum QueryType { QUERY_APP, QUERY_ENQ }
+	public enum QueryType { APP, ENQ }
 
     //private static SimpleDateFormat sdfDateParse = new SimpleDateFormat("yyyy-MM-dd");
     //private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
@@ -37,7 +37,7 @@ public class T24QueryFormatter {
     }
     
     public List<String> getSentOfsQueries(){
-    	return sentOfsQueries.clone();
+    	return sentOfsQueries;
     }
     
 	public T24ResultSet execute(String query, List<String> queryParam) throws SQLException{
@@ -181,9 +181,9 @@ public class T24QueryFormatter {
 			QueryType queryType;
 
 			if (ofsHeader.matches("^ENQUIRY.SELECT.*$")){
-				queryType = QUERY_ENQ;
+				queryType = QueryType.ENQ;
 			}else {
-				queryType = QUERY_APP;
+				queryType = QueryType.APP;
 			}
 
 			String ofs = ofsHeader;
@@ -452,7 +452,7 @@ public class T24QueryFormatter {
             res = "";
         } else {
             value = value.replace('\"', '\'');
-            if (queryType==QUERY_APP) {
+            if (queryType==QueryType.APP) {
                 value = value.replaceAll("_", "'_'");
                 value = "\"" + value + "\"";
             }
