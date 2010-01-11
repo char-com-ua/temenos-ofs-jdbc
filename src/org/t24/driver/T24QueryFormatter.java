@@ -180,7 +180,6 @@ public class T24QueryFormatter {
 		}
 
 		if (!isOfsSend){
-			System.out.println("Skip OFS = " + ofsHeader + ofsParam);
 			rs = oldResult;
 		}else{
 			ofsHeader = ofsHeader.replaceAll("^(.*)[\\s+](.*)$", "$2");
@@ -202,7 +201,6 @@ public class T24QueryFormatter {
 			}
 
 			try{
-				System.out.println("Send OFS = " + ofs);
 				sentOfsQueries.add(ofs);
 
 				String ofsResp = con.t24Send(ofs);
