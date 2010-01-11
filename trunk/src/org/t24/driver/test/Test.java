@@ -17,8 +17,15 @@ public class Test {
 		//Connect to database
 		Connection conn = DriverManager.getConnection(url,uid,pwd);
 		
-		System.out.println(((T24Connection)conn).t24Send(""));
+		PreparedStatement st=conn.prepareStatement("SELECT SENDOFS {{setIfNull ?1 TRUE}} ENQUIRY.SELECT ...");
+		System.out.println("Statement = "+st.toString());
 		
+		
+		
+		
+		ResultSet rs=st.execute();
+		
+		System.out.println("ResultSetMetaData = "+rs.getMetaData());
 		
 		conn.close();
 	}
