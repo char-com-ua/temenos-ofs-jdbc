@@ -46,32 +46,32 @@ public class T24Connection implements Connection {
     protected String tcPass;
     private String tcCharset;
     private static final String TESTCHANNEL="TESTCHANNEL";
+    private boolean isTestMode=false;
 
     public String t24Send(String ofs) throws SQLException {
         //maybe in the future we have to set user/password here ?
         try {
         	String ofsResp;
-        	if(TESTCHANNEL.equals(tcChannel)){
+        	
+			System.out.println("OFS: " + ofs.replaceAll(tcPass, "*****"));
+        	if(isTestMode){
         		URL url=null;
 				if(ofs.matches("^ENQUIRY\\.SELECT.*") ){
 					url=T24Connection.class.getResource("/org/t24/driver/test/enquiry_resp.txt");
 				}else{
 					url=T24Connection.class.getResource("/org/t24/driver/test/ofs_resp.txt");
 				}
-        		
         		ofsResp = (new BufferedReader(new InputStreamReader( url.openStream() ))).readLine();
         	}else{
 				String charsetOFS = new String(ofs.getBytes(tcCharset));
 
 				TCRequest tcSendRequest = tcFactory.createOfsRequest(charsetOFS, false);
 				//hide password in logs
-				charsetOFS = charsetOFS.replaceAll(tcPass, "*****");
-				System.out.println("OFS: " + charsetOFS);
 
 				TCResponse tcResponse = tcSendRequest.send(tcConnection);
 				ofsResp = tcResponse.getOFSString();
-				System.out.println("OFSRESP: " + ofsResp);
         	}
+			System.out.println("OFSRESP: " + ofsResp);
             return ofsResp;
         } catch (Throwable e) {
             e.printStackTrace(System.out);
@@ -100,7 +100,9 @@ public class T24Connection implements Connection {
         try {
         	if(TESTCHANNEL.equals(tcChannel)) {
         		//don't connect ! it's just a test channel
+        		isTestMode=true;
         	}else{
+        		isTestMode=false;
 				if (tcFactory == null) {
 					tcFactory = TCCFactory.getInstance();
 					tcFactory.setDefaultCharSet(tcCharset);
