@@ -19,15 +19,21 @@ public class T24QueryFormatter {
     //private String query;         //original query
     //private List<String> param;   //input parameters
     
-    private final static int STATE_DEF=0;
-    private final static int STATE_OFS=1;
+    private final static int STATE_DEF = 0;
+    private final static int STATE_OFS = 1;
+    private final static String OFSCODEWORLD = "SENDOFS";
+    private String queryType="NONE";
+
     //private static int STATE_POST=3;
 
     public T24QueryFormatter(T24Connection con) {
         this.con = con;
     }
+    public T24QueryFormatter() {
+    }
     
 	public T24ResultSet execute(String query, List<String> queryParam) throws SQLException{
+System.out.println("-START-");
 		//cut off the optional SELECT keyword
 		if( query.matches("^SELECT\\s"))query=query.substring(7).trim();
 		
@@ -38,13 +44,19 @@ public class T24QueryFormatter {
 		int state=STATE_DEF; 
 		StringTokenizer st = new StringTokenizer(query, "\r\n");
 		while(st.hasMoreElements()){
+
+System.out.println("-state-  = " +state);
+
 			String line = st.nextToken().trim();
+System.out.println("-line-  = " +line);
+
 			//skip empty and commented lines
 			if (line.length() < 1 || line.startsWith("//")) {
 				continue;
 			}
 			
-			if(line.matches("^SENDOFS\\s")) {
+			if(line.matches("^SENDOFS\\s.*$")) {
+System.out.println("-sendOFS-");
 				switch(state){
 					case STATE_DEF: 
 						break;
@@ -53,14 +65,16 @@ public class T24QueryFormatter {
 					default:
 						throw new T24Exception("Wrong parser status: "+state); //should not happend
 				}
-				state=STATE_OFS;
-				ofsHeader=prepareHeader(line, queryParam);
+				state = STATE_OFS;
+				ofsHeader = prepareHeader(line, queryParam);
+System.out.println("-ofsHeader-  = " +ofsHeader);
+
 			}else if(line.equals("END")){
 				switch(state){
 					case STATE_DEF: 
 						throw new T24Exception("Parser error: met END without SENDOFS");
 					case STATE_OFS:
-						result=executeOfs(ofsHeader,ofsParam,result);
+						result = executeOfs(ofsHeader, ofsParam, result);
 						break;
 					default:
 						throw new T24Exception("Wrong parser status: "+state); //should not happend
@@ -121,19 +135,19 @@ public class T24QueryFormatter {
 	protected String prepareHeader(String ofsHeader,List<String> queryParam)throws SQLException{
 		//evaluate and replace all {{expression}}
 		//no special formatting here put result as is
-		int p1=0,p2=0;
-		Map<String,String> eval=new HashMap<String,String>(2); //initial count = 2
-		StringBuilder out=new StringBuilder();
+		int p1 = 0, p2 = 0;
+		Map<String,String> eval = new HashMap<String,String>(2); //initial count = 2
+		StringBuilder out = new StringBuilder();
 		
-		p1=ofsHeader.indexOf("{{");
+		p1 = ofsHeader.indexOf("{{");
 		while ( p1>=0 ) {
-			out.append( ofsHeader.substring(p2,p1) );
-			p2=ofsHeader.indexOf("}}",p1);
+			out.append( ofsHeader.substring(p2, p1) );
+			p2 = ofsHeader.indexOf("}}",p1);
 			
 			if(p2<0)throw new T24Exception("Can't find close tag for header expression: "+ofsHeader);
-			String expression=ofsHeader.substring(p1+2,p2);
+			String expression=ofsHeader.substring(p1+2, p2);
 			
-			evaluate("x="+expression,null,queryParam,eval);
+			evaluate("x="+expression, null, queryParam, eval);
 			out.append( eval.get("x") );
 			
 			p1=ofsHeader.indexOf("{{",p2);
@@ -145,11 +159,30 @@ public class T24QueryFormatter {
 
     
 	
-	protected T24ResultSet executeOfs(String ofsHeader,Map<String,String> ofsParam, T24ResultSet oldResult){
+	protected T24ResultSet executeOfs(String ofsHeader, Map<String,String> ofsParam, T24ResultSet oldResult){
+System.out.println("!!!! executeOFS \n" + ofsHeader + " === " + ofsParam);
 		//do final prepare of the ofs
-		
 		///ofsHeader:
 		///remove SENDOFS
+		ofsHeader = ofsHeader.substring(OFSCODEWORLD.length()).trim();
+		ofsHeader = ofsHeader.replaceAll("^(.*)[\\s](.*)$", "$2");
+
+		if (ofsHeader.matches("^ENQUIRY.SELECT.*$")){
+			queryType = "ENQ";
+		}else {
+			queryType = "APP";
+		}
+System.out.println("!! executeOFS2 \n" + ofsHeader + " === " + ofsParam);
+
+        String ofs = ofsHeader;
+		String ofsBody="";
+        for (String columnName : ofsParam.keySet()) {
+            String columnValue = ofsParam.get(columnName);
+            ofsBody = prepareField(columnName, columnValue, queryType);
+            ofs += ofsBody;
+        }
+System.out.println("!! executeOFS3 \n" + "OFS= " + ofs);
+
 		///if next keyword separated by spaces is FALSE then don't execute and just return oldResult
 		///if next keyword separated by spaces is TRUE just remove it
 		///so, [TRUE|FALSE] are optional keywords
@@ -158,13 +191,16 @@ public class T24QueryFormatter {
 		//add parameters into query
 		
 		//execute query
+        String ofsResp = con.t24Send(ofs);
+        //create resultset from responce
+        rs = new T24ResultSet(this, ofs, ofsResp);
 		//convert it into resultset
 		//clear ofs Parameters
 		ofsParam.clear();
 		
 		//return new resultset
 		//!!!!TODO!!!!
-		return null;
+		return rs;
 	}
     
     /** prepares one single OFS query */
@@ -407,18 +443,16 @@ public class T24QueryFormatter {
         return res;
     }
 
-    private String prepareField(String fieldName, String value, boolean quote) {
+    private String prepareField(String fieldName, String value, String querytype) {
         String res;
         if (value == null || value.length() == 0) {
             res = "";
         } else {
             value = value.replace('\"', '\'');
-            /*
-            if (statement.getQueryType() == T24Statement.QUERY_TYPE_FMT) {
+            if ("APP".equals(querytype)) {
                 value = value.replaceAll("_", "'_'");
                 value = "\"" + value + "\"";
             }
-            */
             res = "," + fieldName + "=" + value;
             //!!!!!!TODO!!!!!!
         }
