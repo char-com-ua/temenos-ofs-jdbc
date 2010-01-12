@@ -12,18 +12,6 @@ public class Test {
 		new Test().runTest();
 	}
 
-	int failCount=0;
-	Throwable trace=new Throwable();
-	public void assertTrue(boolean b,String message) {
-		if(!b){
-			failCount++;
-			System.out.println("assertTrue failed: "+message+": "+trace.fillInStackTrace().getStackTrace()[1]);
-		}
-	}
-
-
-
-
 	public void runTest() throws Exception{
 		
 		String driver="org.t24.driver.T24Driver";
@@ -66,6 +54,10 @@ public class Test {
 		//	System.out.println("OFS"+i+"="+q.getSentOfsQueries().get(i));
 
 		showResult(rs);
+		
+		//test example
+		assertTrue(false,"user name expected");
+		
 		rs.close();
 		con.close();
 	}
@@ -89,5 +81,13 @@ public class Test {
 		}
 	}
 
-
+	//just not to import junit for while
+	int failCount=0;
+	Throwable trace=new Throwable();
+	public void assertTrue(boolean b,String message) {
+		if(!b){
+			failCount++;
+			System.out.println("assertTrue failed: "+message+": "+trace.fillInStackTrace().getStackTrace()[1]);
+		}
+	}
 }
