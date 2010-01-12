@@ -78,6 +78,9 @@ public class T24Connection implements Connection {
             throw new T24Exception("T24 Send Exception", e);
         }
     }
+    public boolean isTestMode(){
+    	return this.isTestMode;
+    }
 
     /**
      * Stack trace where connection was allocated.
