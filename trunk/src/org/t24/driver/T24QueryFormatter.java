@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -43,68 +44,75 @@ public class T24QueryFormatter {
     }
     
 	public T24ResultSet execute(String query, List<String> queryParam) throws SQLException{
-		//cut off the optional SELECT keyword
-		sentOfsQueries.clear();
-		if( query.matches("^SELECT\\s"))query=query.substring(7).trim();
-		
-		String ofsHeader=null;
-		T24ResultSet result=null;
-		Map<String,String> ofsParam=new LinkedHashMap<String,String>();
-		
-		int state=STATE_DEF; 
-		StringTokenizer st = new StringTokenizer(query, "\r\n");
-		while(st.hasMoreElements()){
-
-
-			String line = st.nextToken().trim();
-
-			//skip empty and commented lines
-			if (line.length() < 1 || line.startsWith("//")) {
-				continue;
+		try {
+			//cut off the optional SELECT keyword
+			sentOfsQueries.clear();
+			if( Pattern.compile("^\\s*SELECT\\s.*$",Pattern.DOTALL).matcher(query).matches() )
+					query=query.substring(6).trim();
 			
-			}
-			currentLine=line;
-			if(line.matches("^SENDOFS\\s.*$")) {
-				switch(state){
-					case STATE_DEF: 
-						break;
-					case STATE_OFS: 
-						throw new T24Exception("Parser error: met SENDOFS when previous not END-ed");
-					default:
-						throw new T24Exception("Wrong parser status: "+state); //should not happend
-				}
-				state = STATE_OFS;
-				ofsHeader = prepareHeader(line, queryParam);
+			String ofsHeader=null;
+			T24ResultSet result=null;
+			Map<String,String> ofsParam=new LinkedHashMap<String,String>();
+			
+			int state=STATE_DEF; 
+			StringTokenizer st = new StringTokenizer(query, "\r\n");
+			while(st.hasMoreElements()){
 
-			}else if(line.equals("END")){
-				switch(state){
-					case STATE_DEF: 
-						throw new T24Exception("Parser error: met END without SENDOFS");
-					case STATE_OFS:
-						result = executeOfs(ofsHeader, ofsParam, result);
-						break;
-					default:
-						throw new T24Exception("Wrong parser status: "+state); //should not happend
+
+				String line = st.nextToken().trim();
+
+				//skip empty and commented lines
+				if (line.length() < 1 || line.startsWith("//")) {
+					continue;
+				
 				}
-				state=STATE_DEF;
-			}else{
-				//usual evaluate lines here
-				switch(state){
-					case STATE_DEF:
-						postEvaluate(line,result,queryParam);
-						break;
-					case STATE_OFS:
-						evaluate(line, null, queryParam, ofsParam);
-						break;
-					default:
-						throw new T24Exception("Wrong parser status: "+state);
+				currentLine=line;
+				if(line.matches("^SENDOFS\\s.*$")) {
+					switch(state){
+						case STATE_DEF: 
+							break;
+						case STATE_OFS: 
+							throw new T24ParseException("Met SENDOFS when previous not END-ed");
+						default:
+							throw new T24ParseException("Wrong parser status: "+state); //should not happend
+					}
+					state = STATE_OFS;
+					ofsHeader = prepareHeader(line, queryParam);
+
+				}else if(line.equals("END")){
+					switch(state){
+						case STATE_DEF: 
+							throw new T24ParseException("Met END without SENDOFS");
+						case STATE_OFS:
+							result = executeOfs(ofsHeader, ofsParam, result);
+							break;
+						default:
+							throw new T24ParseException("Wrong parser status: "+state); //should not happend
+					}
+					state=STATE_DEF;
+				}else{
+					//usual evaluate lines here
+					switch(state){
+						case STATE_DEF:
+							postEvaluate(line,result,queryParam);
+							break;
+						case STATE_OFS:
+							evaluate(line, null, queryParam, ofsParam);
+							break;
+						default:
+							throw new T24ParseException("Wrong parser status: "+state);
+					}
 				}
 			}
+			
+			if(state==STATE_OFS)throw new T24ParseException("Last SENDOFS not ended with END");
+			if(result==null)throw new T24Exception("None of the OFS messages has been executed.");
+			
+			//return result from last ofs
+			return result;
+		} catch (T24ParseException e) {
+			throw new T24Exception("T24 Parser Error at line "+currentLine+".\n"+e.getMessage(),e);
 		}
-		
-		if(state==STATE_OFS)throw new T24Exception("Parser error: last SENDOFS not ended with END");
-		//return result from last ofs
-		return result;
 	}
 	
 	/**
@@ -129,7 +137,7 @@ public class T24QueryFormatter {
 						int index=Integer.parseInt(key.substring(1))-1;
 						queryParam.set(index,entry.getValue());
 					} catch ( Exception e ) {
-						throw new T24Exception("Wrong post process index in expression: "+line,e);
+						throw new T24ParseException("Wrong post process index in expression: "+line,e);
 					}
 				} else {
 					//usual key, so add column for the resultset
@@ -152,7 +160,7 @@ public class T24QueryFormatter {
 			out.append( ofsHeader.substring(p2, p1) );
 			p2 = ofsHeader.indexOf("}}",p1);
 			
-			if(p2<0)throw new T24Exception("Can't find close tag for header expression: "+ofsHeader);
+			if(p2<0)throw new T24ParseException("Can't find close tag for header expression: "+ofsHeader);
 			String expression=ofsHeader.substring(p1+2, p2);
 			
 			evaluate("x="+expression, null, queryParam, eval);
@@ -167,7 +175,7 @@ public class T24QueryFormatter {
 
     
 	
-	protected T24ResultSet executeOfs(String ofsHeader, Map<String,String> ofsParam, T24ResultSet oldResult){
+	protected T24ResultSet executeOfs(String ofsHeader, Map<String,String> ofsParam, T24ResultSet oldResult) throws SQLException{
 		T24ResultSet rs = null;
 		boolean isOfsSend=true;
 		//do final prepare of the ofs
@@ -200,15 +208,11 @@ public class T24QueryFormatter {
 				ofs += ofsBody;
 			}
 
-			try{
-				sentOfsQueries.add(ofs);
+			sentOfsQueries.add(ofs);
 
-				String ofsResp = con.t24Send(ofs);
-				//create resultset from responce
-				rs = new T24ResultSet(ofs, ofsResp);
-			}catch (Exception e){
-				e.printStackTrace();
-			}
+			String ofsResp = con.t24Send(ofs);
+			//create resultset from responce
+			rs = new T24ResultSet(ofs, ofsResp);
 		}
 
 		ofsParam.clear();
@@ -233,7 +237,7 @@ public class T24QueryFormatter {
         int position;
         position = line.indexOf('=');
         if (position < 0) {
-            throw new T24Exception("Syntax error: '=' expected in line: " + line);
+            throw new T24ParseException("Syntax error: '=' expected in line: " + line);
         }
         String fieldName = line.substring(0, position).trim();
         String expression = line.substring(position + 1).trim();
@@ -263,7 +267,7 @@ public class T24QueryFormatter {
         } else if ("PASS".equals(command)) {
             evaluatePASS(fieldName, commandParams, colName, colValue, result);
         } else {
-            throw new T24Exception("Unknown command : " + command);
+            throw new T24ParseException("Unknown command : " + command);
         }
     }
 
@@ -278,26 +282,26 @@ public class T24QueryFormatter {
 
     private String getValueForComandParam(int paramNumber, List<String> commandParams, List<String> colName, List<String> colValue) throws T24Exception{
         if (commandParams == null || colValue == null) {
-            throw new T24Exception("Incorrect parameters or ResultSet: ");
+            throw new T24ParseException("Incorrect parameters or ResultSet");
         }
 		String key=commandParams.get(paramNumber);
 		int valueIndex;
 		
         if (!key.startsWith("?")) 
-        	throw new T24Exception("Incorrect parameter: " + key);
+        	throw new T24ParseException("Incorrect parameter: " + key);
         
 		try {
 			valueIndex=Integer.valueOf(key.substring(1))-1;
 		} catch(Exception e) {
-			if(colName==null)throw new T24Exception("Can't get value for named parameter "+key);
+			if(colName==null)throw new T24ParseException("Can't get value for named parameter "+key);
 			valueIndex = colName.indexOf(key.substring(1).toLowerCase());
 		}
 		
 		if (valueIndex == -1) 
-			throw new T24Exception("Can't find parameter: " + key +"\nline: "+currentLine);
+			throw new T24ParseException("Can't find parameter: " + key );
 		
 		if (valueIndex >= colValue.size()) 
-			throw new T24Exception("Can't get value for: " + key +". Values count: " + colValue.size() +"\nline: "+currentLine);
+			throw new T24ParseException("Can't get value for: " + key +". Values count: " + colValue.size() );
 		
 		String value=colValue.get(valueIndex);
 		return (value==null?"":value.trim());
