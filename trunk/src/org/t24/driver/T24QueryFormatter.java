@@ -67,6 +67,7 @@ public class T24QueryFormatter {
 				
 				}
 				currentLine=line;
+				
 				if(line.matches("^SENDOFS\\s.*$")) {
 					switch(state){
 						case STATE_DEF: 
@@ -275,7 +276,8 @@ public class T24QueryFormatter {
         List<String> commnadParams = new ArrayList();
         StringTokenizer st = new StringTokenizer(expression);
         while (st.hasMoreElements()) {
-            commnadParams.add(st.nextToken());
+        	String s=st.nextToken();
+            commnadParams.add("\"\"".equals(s)?"":s);
         }
         return commnadParams;
     }
