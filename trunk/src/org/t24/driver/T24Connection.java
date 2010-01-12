@@ -335,7 +335,7 @@ public class T24Connection implements Connection {
      */
     public java.sql.PreparedStatement prepareStatement(String sql)
             throws SQLException {
-        return new T24PreparedStatement2(this, sql);
+        return new T24PreparedStatement(this, sql);
     }
 
     /**

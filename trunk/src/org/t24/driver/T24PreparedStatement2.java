@@ -7,7 +7,7 @@ import java.util.*;
 import java.text.*;
 
 
-public class T24PreparedStatement2 implements PreparedStatement {
+public class T24PreparedStatement implements PreparedStatement {
 	
 	//original sql statement
 	private String sql=null;
@@ -20,7 +20,7 @@ public class T24PreparedStatement2 implements PreparedStatement {
     private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
     private static SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyyMMddHHmm");
 	       
-	protected T24PreparedStatement2(T24Connection con, String sql)throws SQLException{
+	protected T24PreparedStatement(T24Connection con, String sql)throws SQLException{
 		this.con=con;
 		this.sql=sql.trim();
 		
@@ -28,9 +28,14 @@ public class T24PreparedStatement2 implements PreparedStatement {
 	}
 
     public boolean execute() throws SQLException{
-    	//!!!!!!!TODO!!!!!!!
-    	this.result=null;
-    	return true;
+    	this.result = queryFormatter.execute(sql, param);
+    	
+    	if (result!=null){
+    		return true;
+    	}else{
+    		return false;
+    	}
+    	
     }
 
     public ResultSet executeQuery() throws SQLException{
@@ -120,7 +125,6 @@ public class T24PreparedStatement2 implements PreparedStatement {
     }
 
     public ResultSetMetaData getMetaData() throws SQLException{
-    	//TODO later
     	return null;
     }
 
