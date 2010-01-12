@@ -272,14 +272,8 @@ public class T24QueryFormatter {
         }
     }
 
-    private List<String> getCommandParams(String expression) {
-        List<String> commnadParams = new ArrayList();
-        StringTokenizer st = new StringTokenizer(expression);
-        while (st.hasMoreElements()) {
-        	String s=st.nextToken();
-            commnadParams.add("\"\"".equals(s)?"":s);
-        }
-        return commnadParams;
+    private List<String> getCommandParams(String expression) throws SQLException{
+    	return CommandParamParser.parse(expression);
     }
 
     private String getValueForComandParam(int paramNumber, List<String> commandParams, List<String> colName, List<String> colValue) throws T24Exception{
