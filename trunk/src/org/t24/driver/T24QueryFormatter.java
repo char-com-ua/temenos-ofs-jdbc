@@ -354,12 +354,13 @@ public class T24QueryFormatter {
 
     private void evaluateSetIfNull(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
 		String value = getValueForComandParam(0, commandParams, colName, colValue);
-
+		
         if (value == null || "".equals(value)) {
-            result.put(fieldName, commandParams.get(1));
+            value=commandParams.get(1);
         } else {
-            result.put(fieldName, value);
+			if( commandParams.size() >= 3 ) value=commandParams.get(2);
         }
+        result.put(fieldName, value);
     }
 
     private void evaluateFromCent(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
