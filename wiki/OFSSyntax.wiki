@@ -1,7 +1,14 @@
 #summary Temenos OFS message syntax
 
 == OFS Message Syntax ==
+OFS Message is one line message.
+
+It consists of the OFS header (must present), and DATA - additional parameters.
+
+Here are basic parts of the OFS message:
+
 {{{APPLICATION,VERSION/COMMAND/SUBCOMMAND,USER/PASSWORD,ID,DATA }}}
+
 
 *where*
 || *part* || *meaning* ||
