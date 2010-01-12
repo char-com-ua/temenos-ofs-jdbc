@@ -1,5 +1,0 @@
-#summary list of supported ofs-jdbc expressions
-
-= List of supported ofs-jdbc expressions =
-
-{{{TODO!!!}}}
