@@ -52,8 +52,9 @@ public class T24Connection implements Connection {
         //maybe in the future we have to set user/password here ?
         try {
         	String ofsResp;
+			T24QueryFormatter.logger.info("OFS: " + ofs.replaceAll(tcPass, "*****"));
         	
-			System.out.println("OFS: " + ofs.replaceAll(tcPass, "*****"));
+			//System.out.println("OFS: " + ofs.replaceAll(tcPass, "*****"));
         	if(isTestMode){
         		URL url=null;
 				if(ofs.matches("^ENQUIRY\\.SELECT.*") ){
@@ -71,7 +72,8 @@ public class T24Connection implements Connection {
 				TCResponse tcResponse = tcSendRequest.send(tcConnection);
 				ofsResp = tcResponse.getOFSString();
         	}
-			System.out.println("OFSRESP: " + ofsResp);
+			T24QueryFormatter.logger.info("OFSRESP: " + ofsResp.replaceAll(tcPass, "*****"));
+			//System.out.println("OFSRESP: " + ofsResp);
             return ofsResp;
         } catch (Throwable e) {
             e.printStackTrace(System.out);
