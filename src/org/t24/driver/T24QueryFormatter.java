@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -16,6 +17,10 @@ import java.util.regex.Pattern;
  */
 public class T24QueryFormatter {
 	public enum QueryType { APP, ENQ }
+
+	/**logger*/
+	public static Logger logger = Logger.getLogger("org.t24.driver");
+
 
     //private static SimpleDateFormat sdfDateParse = new SimpleDateFormat("yyyy-MM-dd");
     //private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
@@ -208,9 +213,9 @@ public class T24QueryFormatter {
 				ofsBody = prepareField(columnName, columnValue, queryType);
 				ofs += ofsBody;
 			}
-
+			
 			sentOfsQueries.add(ofs);
-
+			
 			String ofsResp = con.t24Send(ofs);
 			//create resultset from responce
 			rs = new T24ResultSet(ofs, ofsResp);
