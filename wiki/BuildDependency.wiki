@@ -7,3 +7,4 @@
  * [http://subversion.tigris.org/ svn command line] 1.4 and upper
  * temenos connector client (tcclient) installed
  * set environment variable TC.HOME
+ * [http://logging.apache.org/ log4j] (included in T24 TCClinet libraries)
