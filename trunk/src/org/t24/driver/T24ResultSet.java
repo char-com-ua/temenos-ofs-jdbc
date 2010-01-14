@@ -145,7 +145,8 @@ public class T24ResultSet implements ResultSet {
         try {
             properties.loadFromXML(new FileInputStream("./conf/t24jdbc.xml"));
         } catch (IOException e) {
-            System.out.println("Load ./conf/t24jdbc.xml Exception: " + e);
+            //System.out.println("Load ./conf/t24jdbc.xml Exception: " + e);
+            T24QueryFormatter.logger.warn("Load ./conf/t24jdbc.xml Exception: ", e);
         }
     }
 
