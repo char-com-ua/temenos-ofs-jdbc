@@ -1,15 +1,16 @@
 #summary Wso2 Data Service configuration example
 #labels Featured
 
-This is a simple DataService configuration to expose web service named WSTest
-
-with two operations:
+== Wso2 Data Service configuration example ==
+This is a simple [http://wso2.org/downloads/data-services-server DataService] configuration to expose web service named WSTest with two operations:
  * getCustomerById
  * getUserList
 
 
+It is based on temenos-ofs-jdbc driver.
+
 {{{
-<?xml version="1.0" encoding="windows-1251"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <data name="WSTest" baseURI="http://my.namespace">
 <description>Test service</description>
 
