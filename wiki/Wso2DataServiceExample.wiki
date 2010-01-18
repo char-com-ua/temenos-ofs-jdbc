@@ -12,16 +12,16 @@ It is based on temenos-ofs-jdbc driver.
 
 {{{
 
-<?xml version="1.0" encoding="windows-1251"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <data name="WSTest" baseURI="http://my.namespace">
 <description>Test service</description>
 
 <config id="t24">
 	<property name="org.wso2.ws.dataservice.driver">org.t24.driver.T24Driver</property>
 	<!-- in your channel.xml there should be channel named CHANNEL_NAME -->
-	<property name="org.wso2.ws.dataservice.protocol">jdbc:org:t24:globus-8007</property>
-	<property name="org.wso2.ws.dataservice.user">MWARE_TEST</property>
-	<property name="org.wso2.ws.dataservice.password">MiddleWare31</property>
+	<property name="org.wso2.ws.dataservice.protocol">jdbc:org:t24:CHANNEL_NAME</property>
+	<property name="org.wso2.ws.dataservice.user">T24_USER</property>
+	<property name="org.wso2.ws.dataservice.password">T24_PASS</property>
 	<property name="org.wso2.ws.dataservice.minpoolsize">0</property>
 	<property name="org.wso2.ws.dataservice.maxpoolsize">3</property>
 </config>
