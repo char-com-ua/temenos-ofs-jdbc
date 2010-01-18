@@ -75,7 +75,7 @@ It is based on temenos-ofs-jdbc driver.
 
 <!--================================= modifyCustomer ======================================-->
 <operation name="modifyCustomer">
-    <description>modify customer Last Name. You must specify CUSTOMET ID and new LAST-NAME</description>
+    <description>modify customer Last Name. You must specify CUSTOMER ID and new LAST-NAME</description>
     <call-query href="modifyCustomer" />
 </operation>
 
