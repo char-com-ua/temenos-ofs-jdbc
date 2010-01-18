@@ -207,7 +207,8 @@ public class T24ResultSet implements ResultSet {
         }
     }
 
-    protected void t24ParseEnquiry(String s) throws SQLException {
+    protected void t24ParseEnquiry(String s) throws SQLException {  	
+    	
         int i = 0;
         int maxColCount = 0;
         int possition = s.indexOf(",\"");
@@ -216,6 +217,8 @@ public class T24ResultSet implements ResultSet {
             String s1 = s.substring(0, possition);
 
             s = s.replace((new StringBuilder(String.valueOf(s1))).append(",").toString(), "");
+            
+			s = s.replaceAll("\n", "123");            
             s = s.replaceAll("\",\"", "\"\n\"");
             s = (new StringBuilder(String.valueOf(s1))).append("\n").append(s).toString();
 
@@ -388,6 +391,8 @@ public class T24ResultSet implements ResultSet {
             String value = (String) ((ArrayList) data.get(currentRow - 1)).get(columnIndex - 1);
             value = value.trim();
             wasNull = false;
+    	System.out.println("!!!val = " + value); 
+            
             return value;
         } catch (Exception e) {
             throw new T24Exception("can't get value for column " + columnIndex + " row " + (currentRow) + ": " + e);
@@ -713,8 +718,11 @@ public class T24ResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public String getString(String columnName) throws SQLException {
+    	System.out.println("!!! = " + columnName); 
         try {
             int i = md.getColumnIndex(columnName);
+    	System.out.println("!!!this = " + this.getString(i)); 
+            
             return this.getString(i);
         } catch (Exception e) {
             throw new T24Exception("Can't get value for column \"" + columnName + "\" : " + e.getMessage());
