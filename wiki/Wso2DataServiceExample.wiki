@@ -2,24 +2,26 @@
 #labels Featured
 
 == Wso2 Data Service configuration example ==
-This is a simple [http://wso2.org/downloads/data-services-server DataService] configuration to expose web service named WSTest with two operations:
+This is a simple [http://wso2.org/downloads/data-services-server DataService] configuration to expose web service named WSTest with three operations:
  * getCustomerById
  * getUserList
+ * modifyCustomer
 
 
 It is based on temenos-ofs-jdbc driver.
 
 {{{
-<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml version="1.0" encoding="windows-1251"?>
 <data name="WSTest" baseURI="http://my.namespace">
 <description>Test service</description>
 
 <config id="t24">
 	<property name="org.wso2.ws.dataservice.driver">org.t24.driver.T24Driver</property>
 	<!-- in your channel.xml there should be channel named CHANNEL_NAME -->
-	<property name="org.wso2.ws.dataservice.protocol">jdbc:org:t24:CHANNEL_NAME</property>
-	<property name="org.wso2.ws.dataservice.user">T24_USER</property>
-	<property name="org.wso2.ws.dataservice.password">T24_PASS</property>
+	<property name="org.wso2.ws.dataservice.protocol">jdbc:org:t24:globus-8007</property>
+	<property name="org.wso2.ws.dataservice.user">MWARE_TEST</property>
+	<property name="org.wso2.ws.dataservice.password">MiddleWare31</property>
 	<property name="org.wso2.ws.dataservice.minpoolsize">0</property>
 	<property name="org.wso2.ws.dataservice.maxpoolsize">3</property>
 </config>
@@ -40,7 +42,7 @@ It is based on temenos-ofs-jdbc driver.
 	<result element="getCustomerByIdResponse" rowName="customer" >
 		<element name="id"              column="@ID" />
 		<element name="mnemonic"        column="MNEMONIC"/>
-		<element name="short-name"      column="SHORT.NAME"/>
+		<element name="shortName"       column="SHORT.NAME"/>
 		<element name="nationality"     column="NATIONALITY"/>
 	</result>
 
@@ -63,10 +65,34 @@ It is based on temenos-ofs-jdbc driver.
 	<result element="getUserListResponse" rowName="user" >
 		<element name="id"               column="@ID" />
 		<element name="login"            column="SIGN.ON.NAME"/>
-		<element name="first-name"       column="USER.NAME"/>
-		<element name="last-name"        column="LAST.NAME"/>
-		<element name="language"        column="LANGUAGE"/>
+		<element name="firstName"        column="USER.NAME"/>
+		<element name="lastName"         column="LAST.NAME"/>
+		<element name="language"         column="LANGUAGE"/>
 	</result>
+</query>
+
+
+
+<!--================================= modifyCustomer ======================================-->
+<operation name="modifyCustomer">
+    <description>modify customer Last Name. You must specify CUSTOMET ID and new LAST-NAME</description>
+    <call-query href="modifyCustomer" />
+</operation>
+
+<query id="modifyCustomer" useConfig="t24">
+    <!--  Normally you will have a specific version name in the next line -->
+    <!--  example: ... CUSTOMER,MY.VERSION.NAME/I/PROCESS, ...            -->
+	<sql>SELECT SENDOFS CUSTOMER,/I/PROCESS,{{USER}}/{{PASS}}/,{{set ?1}}
+			LAST.NAME:1:        = set ?2
+		 END
+	</sql>
+	<!-- application always returns @id -->
+	<result element="modifyCustomerResponse" rowName="return" >
+		<element name="id"               column="@ID" />
+	</result>
+	
+	<param name="id"        sqlType="STRING" type="IN"  ordinal="1" />
+	<param name="lastName"  sqlType="STRING" type="IN"  ordinal="2" />
 </query>
 
 </data>
