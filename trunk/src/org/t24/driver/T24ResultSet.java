@@ -218,7 +218,7 @@ public class T24ResultSet implements ResultSet {
 
             s = s.replace((new StringBuilder(String.valueOf(s1))).append(",").toString(), "");
             
-			s = s.replaceAll("\n", "123");            
+			s = s.replaceAll("\n", " ");            
             s = s.replaceAll("\",\"", "\"\n\"");
             s = (new StringBuilder(String.valueOf(s1))).append("\n").append(s).toString();
 
