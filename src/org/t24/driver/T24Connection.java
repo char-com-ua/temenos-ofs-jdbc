@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.io.*;
+import java.lang.*;
 
 
 /**
@@ -62,7 +63,15 @@ public class T24Connection implements Connection {
 				}else{
 					url=T24Connection.class.getResource("/org/t24/driver/test/ofs_resp.txt");
 				}
-        		ofsResp = (new BufferedReader(new InputStreamReader( url.openStream() ))).readLine();
+				
+				BufferedReader br = new BufferedReader(new InputStreamReader( url.openStream() ));
+				StringBuilder sb = new StringBuilder();
+				String line = br.readLine();
+			    while (line != null) {
+					sb.append(line + "\n");
+					line = br.readLine();
+				}				
+        		ofsResp = sb.toString();
         	}else{
 				String charsetOFS = new String(ofs.getBytes(tcCharset));
 
