@@ -27,7 +27,7 @@ Here is a simple channel.xml example:
 </CHANNELS>
 }}}
 
-After this you could reffer MyChannel in your java code and use it in jdbc url:
+After this you could reffer `MyChannel` in your java code and use it in jdbc url:
 {{{
 String url="jdbc:org:t24:MyChannel";
 }}}
@@ -52,4 +52,3 @@ If file "tcommon.jar" located in xxx/tcommon.jar directory (no /lib/ in front of
 *Under Linux*
 
 channels.xml must be located here: /com/temenos/tocf/common/conf/channels.xml
-
