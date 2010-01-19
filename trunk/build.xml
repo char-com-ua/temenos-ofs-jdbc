@@ -54,7 +54,7 @@
 	</target>
 
 	<target name="test" depends="init" >
-		<java classname="org.t24.driver.test.Test" dir="." fork="true" output="out.txt">
+		<java classname="org.t24.driver.test.Test" dir="." fork="true" output="out.txt" failonerror="true">
 			<classpath refid="build.classpath" />
 			<jvmarg value="-Dfile.encoding=utf-8"/>
 			<sysproperty key="tc.home" value="${tcclient.home}"/>
