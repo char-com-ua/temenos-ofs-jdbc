@@ -207,6 +207,80 @@ public class T24ResultSet implements ResultSet {
         }
     }
 
+    public static void t24ParseEnq(String s) throws SQLException {  	
+		System.out.println("\n!s = " + s);
+        int possition = s.indexOf(",\"");
+        
+    	String headerString  = s.substring(0, possition);
+    	headerString  = headerString.substring(headerString.lastIndexOf(",") + 1, headerString.length());
+    	
+		String dataString  = s.substring(possition + 1, s.length());    		
+		System.out.println("\n!headerString = " + headerString);
+		System.out.println("\n!dataString = " + dataString);
+		
+        if (possition != -1) {
+//HEADER
+			if (headerString != null) {
+				ArrayList header = new ArrayList();
+				String token;
+				StringTokenizer st = new StringTokenizer(headerString, "/");        	
+				
+				while (st.hasMoreTokens()) {
+					token = st.nextToken();
+					if (token.indexOf("::") != -1) {
+						token = token.substring(0, token.indexOf("::"));
+					}
+					header.add(token);
+				}
+				System.out.println("\n!headerList = " + header);
+			}
+//DATA 	
+ 			boolean startData = false;
+ 			StringBuilder token = null;
+ 			ArrayList row = new ArrayList();
+    		ArrayList<ArrayList> dat = new ArrayList<ArrayList>();
+			
+			for(int i=0; i <= dataString.length(); i++){
+				char c;
+				if(i == dataString.length()){
+					c = Character.MIN_VALUE;
+				}else{
+					c = dataString.charAt(i);
+				}
+				switch(c){
+					case '"':
+				    	startData = !startData;
+						if(!startData) {
+							row.add(token.toString());
+						}
+				   		token = new StringBuilder();
+					break;
+					case ',':
+						if(!startData){
+							dat.add(row);
+							row = null;
+						}else{
+							token.append(c);
+						}
+					break;
+					case Character.MIN_VALUE:
+						dat.add(row);
+						row = null;
+					break;
+					default:
+						if(startData){
+							token.append(c);
+						}
+					break;
+				}
+			}
+			System.out.println("\n!data = " + dat.get(0));
+        } else {
+            throw new T24Exception("T24 OFS Error:  response = " + s);
+        }		
+		
+    }
+    
     protected void t24ParseEnquiry(String s) throws SQLException {  	
     	
         int i = 0;
@@ -391,7 +465,6 @@ public class T24ResultSet implements ResultSet {
             String value = (String) ((ArrayList) data.get(currentRow - 1)).get(columnIndex - 1);
             value = value.trim();
             wasNull = false;
-    	System.out.println("!!!val = " + value); 
             
             return value;
         } catch (Exception e) {
@@ -718,10 +791,8 @@ public class T24ResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public String getString(String columnName) throws SQLException {
-    	System.out.println("!!! = " + columnName); 
         try {
             int i = md.getColumnIndex(columnName);
-    	System.out.println("!!!this = " + this.getString(i)); 
             
             return this.getString(i);
         } catch (Exception e) {
