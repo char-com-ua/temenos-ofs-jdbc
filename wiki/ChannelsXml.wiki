@@ -33,7 +33,7 @@ String url="jdbc:org:t24:MyChannel";
 }}}
 
 == channels.xml file location ==
-If you set "TC.HOME" java system property, then channel.xml will be loaded from this location:
+If you set "tc.home" java system property, then channel.xml will be loaded from this location:
 
 {{{
 String channelsLocation = System.getProperty("tc.home") + "conf/channel.xml" ;
