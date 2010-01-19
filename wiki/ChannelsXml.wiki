@@ -40,7 +40,7 @@ String channelsLocation = System.getProperty("tc.home") + "conf/channel.xml" ;
 }}}
 
 
-Otherwise then channel.xml will be loaded from conf directory relared to "tcommon.jar" location:
+Otherwise channel.xml will be loaded from conf directory related to "tcommon.jar" location:
 
 *Under Windows:*
 
