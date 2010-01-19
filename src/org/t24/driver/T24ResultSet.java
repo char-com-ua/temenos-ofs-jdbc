@@ -161,7 +161,7 @@ public class T24ResultSet implements ResultSet {
     protected T24ResultSet(String ofs, String ofsResp) throws SQLException {
         //let's use ofs to detect type
         if (ofs.matches("^ENQUIRY[.]SELECT,.*")) {
-            t24ParseEnquiry(ofsResp);
+            t24ParseEnq(ofsResp);
         } else {
             //regexp:  get all character before ','
             ofsResp = parseLocalRef(ofsResp, ofs.replaceAll("^([^,]*),.*$", "$1"));
@@ -207,80 +207,77 @@ public class T24ResultSet implements ResultSet {
         }
     }
 
-    public static void t24ParseEnq(String s) throws SQLException {  	
+    protected void t24ParseEnq(String s) throws SQLException {  	
 		System.out.println("\n!s = " + s);
         int possition = s.indexOf(",\"");
         
+        if (possition == -1) throw new T24Exception("T24 OFS Error:  response = " + s);
+        
     	String headerString  = s.substring(0, possition);
-    	headerString  = headerString.substring(headerString.lastIndexOf(",") + 1, headerString.length());
+    	headerString  = headerString.substring(headerString.lastIndexOf(",") + 1);
     	
 		String dataString  = s.substring(possition + 1, s.length());    		
 		System.out.println("\n!headerString = " + headerString);
 		System.out.println("\n!dataString = " + dataString);
 		
-        if (possition != -1) {
-//HEADER
-			if (headerString != null) {
-				ArrayList header = new ArrayList();
-				String token;
-				StringTokenizer st = new StringTokenizer(headerString, "/");        	
-				
-				while (st.hasMoreTokens()) {
-					token = st.nextToken();
-					if (token.indexOf("::") != -1) {
-						token = token.substring(0, token.indexOf("::"));
-					}
-					header.add(token);
-				}
-				System.out.println("\n!headerList = " + header);
-			}
-//DATA 	
- 			boolean startData = false;
- 			StringBuilder token = null;
- 			ArrayList row = new ArrayList();
-    		ArrayList<ArrayList> dat = new ArrayList<ArrayList>();
+		//HEADER
+		if (headerString != null) {
+			ArrayList header = new ArrayList();
+			String token;
+			StringTokenizer st = new StringTokenizer(headerString, "/");        	
 			
-			for(int i=0; i <= dataString.length(); i++){
-				char c;
-				if(i == dataString.length()){
-					c = Character.MIN_VALUE;
-				}else{
-					c = dataString.charAt(i);
+			while (st.hasMoreTokens()) {
+				token = st.nextToken();
+				if (token.indexOf("::") != -1) {
+					token = token.substring(0, token.indexOf("::"));
 				}
-				switch(c){
-					case '"':
-				    	startData = !startData;
-						if(!startData) {
-							row.add(token.toString());
-						}
-				   		token = new StringBuilder();
-					break;
-					case ',':
-						if(!startData){
-							dat.add(row);
-							row = null;
-						}else{
-							token.append(c);
-						}
-					break;
-					case Character.MIN_VALUE:
-						dat.add(row);
-						row = null;
-					break;
-					default:
-						if(startData){
-							token.append(c);
-						}
-					break;
-				}
+				header.add(token);
 			}
-			System.out.println("\n!data = " + dat.get(0));
-        } else {
-            throw new T24Exception("T24 OFS Error:  response = " + s);
-        }		
+			System.out.println("\n!headerList = " + header);
+		}
+		//DATA 	
+		boolean startData = false;
+		StringBuilder token = null;
+		ArrayList row = new ArrayList();
 		
+		for(int i=0; i <= dataString.length(); i++){
+			char c;
+			if(i == dataString.length()){
+				c = Character.MIN_VALUE;
+			}else{
+				c = dataString.charAt(i);
+			}
+			switch(c){
+				case '"':
+			    	startData = !startData;
+					if(!startData) {
+						row.add(token.toString());
+					}
+			   		token = new StringBuilder();
+				break;
+				case ',':
+					if(!startData){
+						data.add(row);
+						row = null;
+					}else{
+						token.append(c);
+					}
+				break;
+				case Character.MIN_VALUE:
+					data.add(row);
+					row = null;
+				break;
+				default:
+					if(startData){
+						token.append(c);
+					}
+				break;
+			}
+		}
+		//System.out.println("\n!data = " + dat.get(0));
     }
     
+/*
     protected void t24ParseEnquiry(String s) throws SQLException {  	
     	
         int i = 0;
@@ -356,7 +353,7 @@ public class T24ResultSet implements ResultSet {
         }
 
     }
-
+*/
     private String parseLocalRef(String ofsResp, String app) throws SQLException {
         try {
             StringBuffer str = new StringBuffer();
