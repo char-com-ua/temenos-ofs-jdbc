@@ -70,6 +70,7 @@
         <zip zipfile="${dest.dir}/${artefact.name}-${svn.version}.zip">
 			<zipfileset dir="${dest.dir}" includes="readme.txt"/>
 			<zipfileset dir="${dest.dir}" includes="*.jar"/>
+			<zipfileset dir="." includes="conf/**.*"/>
         </zip>
 	</target>
 
