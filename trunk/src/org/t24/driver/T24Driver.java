@@ -37,7 +37,7 @@ public class T24Driver implements Driver{
 
 	private static T24Driver m_defaultDrvr=null;
 	static{
-		try{
+		try {
 			if(m_defaultDrvr==null){
 				m_defaultDrvr=new T24Driver();
 				DriverManager.registerDriver(m_defaultDrvr);
@@ -45,6 +45,13 @@ public class T24Driver implements Driver{
 		}catch(Exception e){
 			System.err.println("org.t24.driver.T24Driver Exception:");
 			e.printStackTrace(System.err);
+		}
+		try {
+			if(System.getProperty("tc.home",null)==null){
+				System.setProperty( "tc.home",(new File(".")).getCanonicalPath() );
+			}
+		}catch(Exception e){
+			System.err.println("Can't set tc.home java sustem property: "+e);
 		}
 	}
 
