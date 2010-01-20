@@ -1,12 +1,3 @@
-/*
- * Author: TMS Team
- * Creation Date        : 02-15-2001
- * Modification Date    : 02-15-2001
- * List of Modifications:
- * Date       Version Author               Description/Purpose
- * ---------- ------- -------------------- ------------------------------------
- * 02-15-2001    1.00 TMS Team             class created
- */
 package org.t24.driver;
 
 import java.sql.Connection;
@@ -55,7 +46,6 @@ public class T24Connection implements Connection {
         	String ofsResp;
 			T24QueryFormatter.logger.info("OFS: " + ofs.replaceAll(tcPass, "*****"));
         	
-			//System.out.println("OFS: " + ofs.replaceAll(tcPass, "*****"));
         	if(isTestMode){
         		URL url=null;
 				if(ofs.matches("^ENQUIRY\\.SELECT.*") ){
@@ -82,10 +72,8 @@ public class T24Connection implements Connection {
 				ofsResp = tcResponse.getOFSString();
         	}
 			T24QueryFormatter.logger.info("OFSRESP: " + ofsResp.replaceAll(tcPass, "*****"));
-			//System.out.println("OFSRESP: " + ofsResp);
             return ofsResp;
         } catch (Throwable e) {
-            e.printStackTrace(System.out);
             throw new T24Exception("T24 Send Exception", e);
         }
     }

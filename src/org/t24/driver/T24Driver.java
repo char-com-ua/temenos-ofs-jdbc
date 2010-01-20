@@ -98,7 +98,6 @@ public class T24Driver implements Driver{
 			getUrlProperties(url.substring(i+1),info);
 		}
 		info.setProperty(T24Connection.CHANNEL,tcserver);
-		//info.list(System.out);
 		Connection con=new T24Connection(info);
 		return con;
 	}
