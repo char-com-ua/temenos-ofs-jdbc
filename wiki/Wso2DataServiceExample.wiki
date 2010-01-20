@@ -2,18 +2,16 @@
 #labels Featured
 
 == Wso2 Data Service configuration example ==
-This is a simple [http://wso2.org/downloads/data-services-server DataService] configuration to expose web service named WSTest with three operations:
+This is a simple [http://wso2.org/downloads/data-services-server DataService] configuration to expose web service named T24Test with three operations:
  * getCustomerById
  * getUserList
  * modifyCustomer
 
 
-It is based on temenos-ofs-jdbc driver.
-
+*T24test.dbs* file:
 {{{
-
 <?xml version="1.0" encoding="UTF-8"?>
-<data name="WSTest" baseURI="http://my.namespace">
+<data name="T24Test" baseURI="http://my.namespace">
 <description>Test service</description>
 
 <config id="t24">
