@@ -5,7 +5,7 @@ The purpose of this guide is to get you started on creating and invoking a web s
 
 == Prerequisites ==
  * java 1.5 or 1.6
- * [http://code.google.com/p/temenos-ofs-jdbc/downloads/list temenos-ofs-jdbc library] (t24jdbc-trunk.r93.zip used for this manual)
+ * [http://code.google.com/p/temenos-ofs-jdbc/downloads/list temenos-ofs-jdbc library] (`t24jdbc-trunk.r93.zip` used for this manual)
  * [http://wso2.org/projects/data-services-server/java wso2 data services server] (wso2dataservices-2.2.0.zip in my case)
  * [TCClientLibraryList TCClient libraries]
 
@@ -81,13 +81,13 @@ For example in /wso2 directory.
 
 Specify in this file Login and Password to the file T24 system.
 
-*Upload T24Test.dbs*
+*Upload `T24Test.dbs`*
 
 Upload T24Test.dbs file through WSO2 DS Server admin console
 
 Wait 10 seconds, then click on Service\List menu in admin console.
 
-If your Temenos Connector Server (TCServer) is available at this moment, then you will see new web service in the list: T24Test.
+If your Temenos Connector Server (TCServer) is available at this moment, then you will see new web service in the list: `T24Test`.
 
 If ofs-jdbc driver can't establish connection to TCServer, then you will see `Faulty Service Group` link on the top of the service list.  
 
