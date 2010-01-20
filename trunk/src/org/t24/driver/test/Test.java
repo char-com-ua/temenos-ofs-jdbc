@@ -31,7 +31,7 @@ public class Test {
 				"F2:EQ  = const 2  \n" +
 				"F3:EQ  = set   ?3 \n" +
 			"END\n" +
-			
+/*			
 			"?3 = set      ?FIELD.TEXT\n"       +
 			"?2 = toCent   ?FIELD.NUM\n"        +
 			"?1 = decode   ?FIELD.INT  5 XXX\n" +
@@ -41,6 +41,7 @@ public class Test {
 				"F2::  = set    ?1 \n" +
 				"F3:*: = split  ?3 5 \n" +
 			"END\n" +
+*/			
 			"";
 
 		List param = new ArrayList();
