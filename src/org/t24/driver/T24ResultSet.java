@@ -158,7 +158,7 @@ public class T24ResultSet implements ResultSet {
         return data.get(i - 1);
     }
 
-    protected T24ResultSet(String ofs, String ofsResp) throws SQLException {
+    public T24ResultSet(String ofs, String ofsResp) throws SQLException {
         //let's use ofs to detect type
         if (ofs.matches("^ENQUIRY[.]SELECT,.*")) {
             t24ParseEnq(ofsResp);
@@ -207,9 +207,10 @@ public class T24ResultSet implements ResultSet {
         }
     }
 
-    protected void t24ParseEnq(String s) throws SQLException {  	
+    public void t24ParseEnq(String s) throws SQLException {  	
 		System.out.println("\n!s = " + s);
         int possition = s.indexOf(",\"");
+        int maxColCount = 0;
         
         if (possition == -1) throw new T24Exception("T24 OFS Error:  response = " + s);
         
@@ -217,8 +218,6 @@ public class T24ResultSet implements ResultSet {
     	headerString  = headerString.substring(headerString.lastIndexOf(",") + 1);
     	
 		String dataString  = s.substring(possition + 1, s.length());    		
-		System.out.println("\n!headerString = " + headerString);
-		System.out.println("\n!dataString = " + dataString);
 		
 		//HEADER
 		if (headerString != null) {
@@ -233,39 +232,53 @@ public class T24ResultSet implements ResultSet {
 				}
 				header.add(token);
 			}
-			System.out.println("\n!headerList = " + header);
+			md = new T24ResultSetMetaData(header);			
 		}
 		//DATA 	
 		boolean startData = false;
-		StringBuilder token = null;
+		StringBuilder token = new StringBuilder();
 		ArrayList row = new ArrayList();
-		
-		for(int i=0; i <= dataString.length(); i++){
-			char c;
+	    char c = Character.MIN_VALUE;
+	    char prev = Character.MIN_VALUE;
+	    
+		for(int i=0; i < dataString.length() + 1; i++){			
+			prev = c;
 			if(i == dataString.length()){
 				c = Character.MIN_VALUE;
 			}else{
 				c = dataString.charAt(i);
 			}
+
 			switch(c){
-				case '"':
-			    	startData = !startData;
-					if(!startData) {
-						row.add(token.toString());
-					}
+				case '\t':
+					row.add(token.toString().trim());
 			   		token = new StringBuilder();
+					startData = false;
+				break;
+				case '"':
+			    	if (!startData){
+						startData = true;
+			    	}else {
+			    		token.append(c);
+			    	} 
 				break;
 				case ',':
+				    if (prev == '"'){
+				    	startData = false;	
+				    }
 					if(!startData){
+						row.add(token.toString().trim());
 						data.add(row);
-						row = null;
+						row = new ArrayList();
+				   		token = new StringBuilder();
 					}else{
 						token.append(c);
 					}
 				break;
 				case Character.MIN_VALUE:
 					data.add(row);
-					row = null;
+					maxColCount = row.size();
+					row = new ArrayList();
 				break;
 				default:
 					if(startData){
@@ -274,7 +287,29 @@ public class T24ResultSet implements ResultSet {
 				break;
 			}
 		}
-		//System.out.println("\n!data = " + dat.get(0));
+		
+        if (data.size() >= 1 && ((List) data.get(0)).size() == 1) {
+            if (data.get(0).get(0) != null) {
+                if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(data.get(0).get(0).toString()))) {
+                    data.clear();
+                    return;
+                }
+            }
+        }
+
+        if (md == null) {
+            ArrayList header = new ArrayList();
+            for (int i = 0; i < maxColCount; i++) {
+                header.add("#" + (i + 1));
+            }
+            md = new T24ResultSetMetaData(header);
+        }
+
+        
+        System.out.println("\n!MD = " + md);
+		System.out.println("\n!DATA = " + data);
+		
+		
     }
     
 /*
