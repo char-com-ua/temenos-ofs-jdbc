@@ -1,0 +1,24 @@
+#summary Quick Start Guide to Create Web Service using WSO2 Data Services
+
+== Introduction ==
+The purpose of this guide is to get you started on creating and invoking a web service using WSO2 Data Service solution based on standard T24 OFS messages. 
+
+== Prerequisites ==
+ * java 1.5 or 1.6
+ * [http://code.google.com/p/temenos-ofs-jdbc/downloads/list ofs-jdbc library]
+ * [http://wso2.org/projects/data-services-server/java wso2 data services server] (wso2dataservices-2.2.0.zip in my case)
+ * [TCClientLibraryList TCClient libraries]
+
+== Installation ==
+
+Extract WSO2 Data Services Server to
+{{{
+/wso2/wso2dataservices-2.2
+}}}
+
+Put the following [TCClientLibraryList TCClient libraries] into 
+{{{
+/wso2/wso2dataservices-2.2/repository/components/lib
+}}}
+
+UNDER-CONSTRUCTION...
