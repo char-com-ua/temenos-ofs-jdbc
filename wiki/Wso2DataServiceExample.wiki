@@ -18,8 +18,8 @@ It is based on temenos-ofs-jdbc driver.
 
 <config id="t24">
 	<property name="org.wso2.ws.dataservice.driver">org.t24.driver.T24Driver</property>
-	<!-- in your channel.xml there should be channel named CHANNEL_NAME -->
-	<property name="org.wso2.ws.dataservice.protocol">jdbc:org:t24:CHANNEL_NAME</property>
+	<!-- in your channel.xml there should be channel named MYCHANNEL -->
+	<property name="org.wso2.ws.dataservice.protocol">jdbc:org:t24:MYCHANNEL</property>
 	<property name="org.wso2.ws.dataservice.user">T24_USER</property>
 	<property name="org.wso2.ws.dataservice.password">T24_PASS</property>
 	<property name="org.wso2.ws.dataservice.minpoolsize">0</property>
