@@ -13,6 +13,8 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Scanner;
+
 
 /**
  * A table of data representing a database result set, which
@@ -158,7 +160,7 @@ public class T24ResultSet implements ResultSet {
         return data.get(i - 1);
     }
 
-    protected T24ResultSet(String ofs, String ofsResp) throws SQLException {
+    public T24ResultSet(String ofs, String ofsResp) throws SQLException {
         //let's use ofs to detect type
         if (ofs.matches("^ENQUIRY[.]SELECT,.*")) {
             t24ParseEnq(ofsResp);
@@ -207,18 +209,18 @@ public class T24ResultSet implements ResultSet {
         }
     }
 
-    protected void t24ParseEnq(String s) throws SQLException {  	
-		System.out.println("\n!s = " + s);
+    protected void t24ParseEnq(String s) throws SQLException {  	   	   	
         int possition = s.indexOf(",\"");
         int maxColCount = 0;
+        boolean equalRowsCount = true;
         
         if (possition == -1) throw new T24Exception("T24 OFS Error:  response = " + s);
         
     	String headerString  = s.substring(0, possition);
     	headerString  = headerString.substring(headerString.lastIndexOf(",") + 1);
     	
-		String dataString  = s.substring(possition + 1, s.length());    		
-		
+		String dataString  = s.substring(possition + 1, s.length()).trim();
+
 		//HEADER
 		if (headerString != null) {
 			ArrayList header = new ArrayList();
@@ -232,69 +234,41 @@ public class T24ResultSet implements ResultSet {
 				}
 				header.add(token);
 			}
+			maxColCount = header.size();
 			md = new T24ResultSetMetaData(header);			
 		}
+							
 		//DATA 	
-		boolean startData = false;
-		StringBuilder token = new StringBuilder();
 		ArrayList row = new ArrayList();
-	    char c = Character.MIN_VALUE;
-	    char prev = Character.MIN_VALUE;
-	    
-		for(int i=0; i < dataString.length() + 1; i++){			
-			prev = c;
-			if(i == dataString.length()){
-				c = Character.MIN_VALUE;
-			}else{
-				c = dataString.charAt(i);
-			}
-
-			switch(c){
-				case '\t':
-					row.add(token.toString().trim());
-			   		token = new StringBuilder();
-					startData = false;
-				break;
-				case '"':
-			    	if (!startData){
-						startData = true;
-			    	}else {
-			    		token.append(c);
-			    	} 
-				break;
-				case ',':
-				    if (prev == '"'){
-				    	startData = false;	
-				    }
-					if(!startData){
-						row.add(token.toString().trim());
-						data.add(row);
-						row = new ArrayList();
-				   		token = new StringBuilder();
-					}else{
-						token.append(c);
-					}
-				break;
-				case Character.MIN_VALUE:
-					data.add(row);
-					maxColCount = row.size();
-					row = new ArrayList();
-				break;
-				default:
-					if(startData){
-						token.append(c);
-					}
-				break;
-			}
-		}
+		//delete first and last "
+		dataString = dataString.substring(1, dataString.length() - 1);
+		
+		Scanner scanRow = new Scanner(dataString).useDelimiter("\",\"");
+	    while (scanRow.hasNext()) {
+	    	String rowString = scanRow.next().trim();
+			Scanner scanValue = new Scanner(rowString).useDelimiter("\"\t\"");
+		    while (scanValue.hasNext()) {
+    	        row.add(scanValue.next());
+	        }
+	        if(row.size() != maxColCount){
+	        	equalRowsCount = false;
+	        }
+	        data.add(row);
+	        row = new ArrayList();
+        }
 		
         if (data.size() >= 1 && ((List) data.get(0)).size() == 1) {
             if (data.get(0).get(0) != null) {
                 if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(data.get(0).get(0).toString()))) {
+                	equalRowsCount = true;
                     data.clear();
                     return;
                 }
             }
+        }
+
+        if(!equalRowsCount){
+        	throw new T24Exception("T24 response parser error. Header count missmatch data column count");
         }
 
         if (md == null) {
@@ -304,12 +278,6 @@ public class T24ResultSet implements ResultSet {
             }
             md = new T24ResultSetMetaData(header);
         }
-
-        
-        System.out.println("\n!MD = " + md);
-		System.out.println("\n!DATA = " + data);
-		
-		
     }
     
 /*
