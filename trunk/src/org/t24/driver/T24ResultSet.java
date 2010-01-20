@@ -158,7 +158,7 @@ public class T24ResultSet implements ResultSet {
         return data.get(i - 1);
     }
 
-    public T24ResultSet(String ofs, String ofsResp) throws SQLException {
+    protected T24ResultSet(String ofs, String ofsResp) throws SQLException {
         //let's use ofs to detect type
         if (ofs.matches("^ENQUIRY[.]SELECT,.*")) {
             t24ParseEnq(ofsResp);
@@ -207,7 +207,7 @@ public class T24ResultSet implements ResultSet {
         }
     }
 
-    public void t24ParseEnq(String s) throws SQLException {  	
+    protected void t24ParseEnq(String s) throws SQLException {  	
 		System.out.println("\n!s = " + s);
         int possition = s.indexOf(",\"");
         int maxColCount = 0;
