@@ -12,7 +12,7 @@ Here is a simple channel.xml example:
 <?xml version="1.0" ?>
 <CHANNELS>
 	<CHANNEL>
-		<NAME>MyChannel</NAME>
+		<NAME>MYCHANNEL</NAME>
 		<TIMEOUT>60</TIMEOUT>
 		<ADAPTER>
 			<TYPE>tcp</TYPE>
@@ -39,16 +39,5 @@ If you set "tc.home" java system property, then channel.xml will be loaded from 
 String channelsLocation = System.getProperty("tc.home") + "conf/channel.xml" ;
 }}}
 
-
-Otherwise channel.xml will be loaded from conf directory related to "tcommon.jar" location:
-
-*Under Windows:*
-
-If file "tcommon.jar" located in xxx/lib/tcommon.jar directory, then channels.xml must be located in xxx/conf/channels.xml
-
-If file "tcommon.jar" located in xxx/tcommon.jar directory (no /lib/ in front of tcommon.jar), then channels.xml must be located in xxx/conf/channels.xml
-
-
-*Under Linux*
-
-channels.xml must be located here: /com/temenos/tocf/common/conf/channels.xml
+If you connecting T24 through temenos-ofs-jdbc (t24jdbc.jar) and "tc.home" was not set,
+then "tc.home" will be set to current directory.
