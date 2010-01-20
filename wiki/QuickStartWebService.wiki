@@ -1,4 +1,5 @@
 #summary Quick Start Guide to Create Web Service using WSO2 Data Services
+#labels Featured
 
 == Introduction ==
 The purpose of this guide is to get you started on creating and invoking a web service using WSO2 Data Service solution based on standard T24 OFS messages. 
@@ -33,7 +34,7 @@ The purpose of this guide is to get you started on creating and invoking a web s
 
 Specify correct values for host and port where your Temenos Connector Server is located.
 
-Activate TCP listener on your server.
+Activate TCP listener on your TCServer.
 
 *Create file tcclientlog.properties in*
 {{{
