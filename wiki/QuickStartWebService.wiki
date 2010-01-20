@@ -21,7 +21,7 @@ The purpose of this guide is to get you started on creating and invoking a web s
 /wso2/wso2dataservices-2.2/repository/components/lib
 }}}
 
-*Put temenos-ofs-jdbc library: t24jdbc.jar (from t24jdbc-trunk.r93.zip) into*
+*Put temenos-ofs-jdbc library: t24jdbc.jar into*
 {{{
 /wso2/wso2dataservices-2.2/repository/components/lib
 }}}
