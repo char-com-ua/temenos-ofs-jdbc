@@ -232,7 +232,7 @@ public class T24ResultSet implements ResultSet {
 				if (token.indexOf("::") != -1) {
 					token = token.substring(0, token.indexOf("::"));
 				}
-				header.add(token);
+				header.add(token.toLowerCase());
 			}
 			maxColCount = header.size();
 			md = new T24ResultSetMetaData(header);			
