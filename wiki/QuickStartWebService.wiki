@@ -6,7 +6,7 @@ The purpose of this guide is to get you started on creating and invoking a web s
 
 == Prerequisites ==
  * java 1.5 or 1.6
- * [http://code.google.com/p/temenos-ofs-jdbc/downloads/list temenos-ofs-jdbc library] (`t24jdbc-trunk.r93.zip` used for this manual)
+ * [http://code.google.com/p/temenos-ofs-jdbc/downloads/list temenos-ofs-jdbc library] (`t24jdbc-trunk.r100.zip` used for this manual)
  * [http://wso2.org/projects/data-services-server/java wso2 data services server] (wso2dataservices-2.2.0.zip in my case)
  * [TCClientLibraryList TCClient libraries]
 
