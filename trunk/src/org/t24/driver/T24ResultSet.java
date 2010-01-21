@@ -211,7 +211,7 @@ public class T24ResultSet implements ResultSet {
     protected void t24ParseEnq(String s) throws SQLException {  	   	   	
         int possition = s.indexOf(",\"");
         int maxColCount = 0;
-        boolean equalRowsCount = true;
+        int columnCount = 0;
         
         if (possition == -1) throw new T24Exception("T24 OFS Error:  response = " + s);
         
@@ -234,7 +234,7 @@ public class T24ResultSet implements ResultSet {
 				header.add(token.toLowerCase());
 			}
 			maxColCount = header.size();
-			System.out.println("header.size() = " + header.size());
+			columnCount = maxColCount;
 			md = new T24ResultSetMetaData(header);			
 		}
 							
@@ -250,11 +250,9 @@ public class T24ResultSet implements ResultSet {
 		    while (scanValue.hasNext()) {
     	        row.add(scanValue.next().trim());
 	        }
-			System.out.println("row.size = " + row.size());
-			System.out.println("maxColCount2 = " + maxColCount);
 	        
 	        if(row.size() != maxColCount){
-	        	equalRowsCount = false;
+	        	columnCount = row.size();
 	        }
 	        data.add(row);
 	        row = new ArrayList();
@@ -263,15 +261,14 @@ public class T24ResultSet implements ResultSet {
         if (data.size() >= 1 && ((List) data.get(0)).size() == 1) {
             if (data.get(0).get(0) != null) {
                 if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(data.get(0).get(0).toString()))) {
-                	equalRowsCount = true;
                     data.clear();
                     return;
                 }
             }
         }
 
-        if(!equalRowsCount){
-        	throw new T24Exception("T24 response parser error. Header count missmatch data column count");
+        if(columnCount != maxColCount){
+        	throw new T24Exception("T24 response parser error. Header count missmatch data column count, headerCount(" + maxColCount + "), columnCount(" + columnCount + ")");
         }
 
         if (md == null) {
