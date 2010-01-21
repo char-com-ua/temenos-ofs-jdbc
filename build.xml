@@ -71,6 +71,7 @@
 			<zipfileset dir="${dest.dir}" includes="readme.txt"/>
 			<zipfileset dir="${dest.dir}" includes="*.jar"/>
 			<zipfileset dir="." includes="conf/**.*"/>
+			<zipfileset dir="." includes="example/**/**.*"/>
         </zip>
 	</target>
 
