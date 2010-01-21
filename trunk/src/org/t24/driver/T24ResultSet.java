@@ -234,6 +234,7 @@ public class T24ResultSet implements ResultSet {
 				header.add(token.toLowerCase());
 			}
 			maxColCount = header.size();
+			System.out.println("header.size() = " + header.size());
 			md = new T24ResultSetMetaData(header);			
 		}
 							
@@ -244,11 +245,14 @@ public class T24ResultSet implements ResultSet {
 		
 		Scanner scanRow = new Scanner(dataString).useDelimiter("\",\"");
 	    while (scanRow.hasNext()) {
-	    	String rowString = scanRow.next().trim();
+	    	String rowString = scanRow.next();
 			Scanner scanValue = new Scanner(rowString).useDelimiter("\"\t\"");
 		    while (scanValue.hasNext()) {
-    	        row.add(scanValue.next());
+    	        row.add(scanValue.next().trim());
 	        }
+			System.out.println("row.size = " + row.size());
+			System.out.println("maxColCount2 = " + maxColCount);
+	        
 	        if(row.size() != maxColCount){
 	        	equalRowsCount = false;
 	        }
