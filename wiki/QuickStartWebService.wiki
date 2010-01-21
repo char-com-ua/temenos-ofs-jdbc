@@ -100,6 +100,12 @@ Check `/wso2/wso2dataservices-2.2/logs/tcclient.log` file for more debug informa
 
 If your service successfully published, you will see a link `Try this service` near it.
 
-Click on it, and you will see a simple web interface to call T24 functionality through OFS.
+Click on it, and you will see a simple web interface to call T24 functionality through web service.
+
+*External tools to test web services*
+
+[http://www.soapui.org/ SoapUI] (even free version) it's a powerful tool to call/test web services.
+
+
 
 ----
