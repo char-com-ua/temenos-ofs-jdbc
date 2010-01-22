@@ -88,7 +88,7 @@ Specify in this file Login and Password to the file T24 system.
 
 *Upload `T24Test.dbs`*
 
-Upload T24Test.dbs file through WSO2 DS Server admin console
+Upload `T24Test.dbs` file through WSO2 DS Server admin console
 
 Wait 10 seconds, then click on Service\List menu in admin console.
 
