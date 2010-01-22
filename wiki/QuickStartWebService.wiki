@@ -61,6 +61,8 @@ log4j.appender.tccfile.MaxFileSize=1024KB
 log4j.appender.tccfile.MaxBackupIndex=10
 }}}
 
+== Start WSO2 DS ==
+
 *Start WSO2 DS Server*
 
 start wso2server.bat (on windows) wso2server.sh (on linux) from
@@ -74,7 +76,9 @@ Open in your browser address https://localhost:9443/carbon
 
 Use admin/admin as default login/password to access admin console.
 
-*Create T24 Web Service*
+
+== Create T24 Web Service ==
+*Create T24 Web Service configuration*
 
 Create file [Wso2DataServiceExample T24Test.dbs] somewhere on your local drive
 
@@ -102,7 +106,7 @@ If your service successfully published, you will see a link `Try this service` n
 
 Click on it, and you will see a simple web interface to call T24 functionality through web service.
 
-*External tools to test web services*
+== External tools to test web services ==
 
 [http://www.soapui.org/ SoapUI] (even free version) it's a powerful tool to call/test web services.
 
