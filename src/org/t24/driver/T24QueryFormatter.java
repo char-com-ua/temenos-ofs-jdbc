@@ -320,7 +320,7 @@ public class T24QueryFormatter {
 		} else {
 			BigDecimal bdvalue = new BigDecimal(value);
 			bdvalue = bdvalue.multiply(new BigDecimal("100")).setScale(0);
-			result.put(fieldName, bdvalue.toString());
+			result.put(fieldName, bdvalue.toPlainString());
 		}
     }
 
@@ -396,7 +396,7 @@ public class T24QueryFormatter {
 		} else {
 			BigDecimal bdec = new BigDecimal(value);
 			bdec = bdec.multiply(new BigDecimal("0.01"));
-			value = bdec.toString();
+			value = bdec.toPlainString();
 			result.put(fieldName, value);
 		}
     }
