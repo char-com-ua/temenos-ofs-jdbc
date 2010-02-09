@@ -10,6 +10,8 @@ import java.util.*;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
+import java.util.Scanner;
+
 
 /**
  *
@@ -268,6 +270,8 @@ public class T24QueryFormatter {
             evaluateSubstr(fieldName, commandParams, colName, colValue, result);
         } else if ("setIfNull".equals(command)) {
             evaluateSetIfNull(fieldName, commandParams, colName, colValue, result);
+        } else if ("getToken".equals(command)) {
+            evaluateGetToken(fieldName, commandParams, colName, colValue, result);
         } else if ("USER".equals(command)) {
             evaluateUSER(fieldName, commandParams, colName, colValue, result);
         } else if ("PASS".equals(command)) {
@@ -352,6 +356,27 @@ public class T24QueryFormatter {
         String value = getValueForComandParam(0, commandParams, colName, colValue);
         result.put(fieldName, value);
     }
+    
+    private void evaluateGetToken(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
+		String value = getValueForComandParam(0, commandParams, colName, colValue);
+		String regExp = commandParams.get(1).trim();
+		int tokenNum = Integer.parseInt(commandParams.get(2).trim());
+		List <String> tokens = new ArrayList <String>();
+		Scanner scanRow = new Scanner(value).useDelimiter(regExp);
+	    while (scanRow.hasNext()) {
+	    	tokens.add(scanRow.next());
+        }
+        if (tokens.size() > 0){
+			if (tokenNum == -1 ){
+				value = tokens.get(tokens.size() - 1);
+			}else{
+				value = tokens.get(tokenNum);
+			}		
+        }else {
+			value = "";
+       	}
+        result.put(fieldName, value);
+    }
 
     private void evaluateSetIfNull(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
 		String value = getValueForComandParam(0, commandParams, colName, colValue);
@@ -359,7 +384,7 @@ public class T24QueryFormatter {
         if (value == null || "".equals(value)) {
             value=commandParams.get(1);
         } else {
-			if( commandParams.size() >= 3 ) value=commandParams.get(2);
+			if( commandParams.size() >= 3 ) value = commandParams.get(2);
         }
         result.put(fieldName, value);
     }
@@ -420,7 +445,7 @@ public class T24QueryFormatter {
         if (value == null || value.length() == 0) {
             res = "";
         } else {
-            value = value.replace('\"', '\'');
+            value = value.replace('\"', '|');
             if (queryType==QueryType.APP) {
                 value = value.replaceAll("_", "'_'");
                 value = "\"" + value + "\"";
