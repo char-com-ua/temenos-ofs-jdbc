@@ -1,4 +1,4 @@
-#summary Quick Start Guide to Create Web Service using WSO2 Data Services
+#summary Quick Start Guide to Create Web Service based on T24 OFS messages using WSO2 Data Services
 #labels Featured
 
 == Introduction ==
