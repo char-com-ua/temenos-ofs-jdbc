@@ -187,7 +187,7 @@ public class T24ResultSet implements ResultSet {
     }
 
     protected void t24ParseApp(String s) throws SQLException {
-        if (s.contains("/-1/NO")) {
+        if (s.contains("/-1/NO") || s.contains("SECURITY VIOLATION")) {
             //delete posible t24 ID from error message
             String errMsg = s.replaceAll("^[^,]*,(.*)$", "$1");
             throw new T24Exception("T24 OFS Error: " + errMsg);
