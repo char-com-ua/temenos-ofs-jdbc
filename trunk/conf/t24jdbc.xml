@@ -79,4 +79,6 @@
 <entry key="CUSTOMER.LOCAL.REF:60:1">BNK.SEP.ID</entry>
 <entry key="CUSTOMER.LOCAL.REF:70:1">AC.OPEN.DENIED</entry>
 <entry key="Не знайдено жодного запису, що відповідає критерію відбору">NoRecordsFound</entry>
+<entry key="ResponseRecordNotChanged">/-1/NO,COMPANY.BOOK:1:1=</entry>
+<entry key="ResponseSecurityViolation">SECURITY VIOLATION</entry>
 </properties>
