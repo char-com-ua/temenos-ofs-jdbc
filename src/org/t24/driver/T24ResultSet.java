@@ -133,6 +133,8 @@ import java.util.Scanner;
 public class T24ResultSet implements ResultSet {
 
     private static final String ERROR_NO_RECORDS_FOUND = "NoRecordsFound";
+    private static final String ERROR_RECORDS_NOT_CHANGED = "ResponseRecordNotChanged";
+    private static final String ERROR_SECURITY_VIOLATION = "ResponseSecurityViolation";
     private static Properties properties = new Properties();
     private T24ResultSetMetaData md = null;
     private ArrayList<ArrayList> data = new ArrayList<ArrayList>();
@@ -185,27 +187,29 @@ public class T24ResultSet implements ResultSet {
         }
         rowData.set(icol - 1, value);
     }
-
     protected void t24ParseApp(String s) throws SQLException {
-        if (s.contains("/-1/NO") || s.contains("SECURITY VIOLATION")) {
-            //delete posible t24 ID from error message
-            String errMsg = s.replaceAll("^[^,]*,(.*)$", "$1");
-            throw new T24Exception("T24 OFS Error: " + errMsg);
-        } else {
-            ArrayList header = new ArrayList();
-            ArrayList row = new ArrayList();
+    	String securityViolation = properties.getProperty(ERROR_SECURITY_VIOLATION);
+    	String recordNotChanged = properties.getProperty(ERROR_RECORDS_NOT_CHANGED);
+        if (s.contains("/-1/NO") || s.contains(securityViolation) ) {
+        	if(!s.contains(recordNotChanged)){
+				//delete posible t24 ID from error message
+				String errMsg = s.replaceAll("^[^,]*,(.*)$", "$1");
+				throw new T24Exception("T24 OFS Error: " + errMsg);
+        	}
+        } 
+        ArrayList header = new ArrayList();
+        ArrayList row = new ArrayList();
 
-            header.add("@id");
+        header.add("@id");
 
-            s = s.replaceAll("^([^/]*).*$", "$1");
-            if (s == null || s.length() == 0 || s.indexOf('/') >= 0 || s.startsWith("-")) {
-                throw new T24Exception("OFS Responce does not contain id: " + s);
-            }
-            row.add(s);
-            data.add(row);
-
-            md = new T24ResultSetMetaData(header);
+        s = s.replaceAll("^([^/]*).*$", "$1");
+        if (s == null || s.length() == 0 || s.indexOf('/') >= 0 || s.startsWith("-")) {
+            throw new T24Exception("OFS Responce does not contain id: " + s);
         }
+        row.add(s);
+        data.add(row);
+
+        md = new T24ResultSetMetaData(header);
     }
 
     protected void t24ParseEnq(String s) throws SQLException {  	   	   	
