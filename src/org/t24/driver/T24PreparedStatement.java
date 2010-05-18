@@ -101,7 +101,7 @@ public class T24PreparedStatement implements PreparedStatement {
     }
 
     public void setLong(int parameterIndex, long x) throws SQLException{
-    	param.set(parameterIndex-1,Float.toString(x));
+    	param.set(parameterIndex-1, Long.toString(x));
     }
     
     public void setFloat(int parameterIndex, float x) throws SQLException{
