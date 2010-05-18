@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 
 /**
@@ -163,7 +164,7 @@ public class T24ResultSet implements ResultSet {
 
     public T24ResultSet(String ofs, String ofsResp) throws SQLException {
         //let's use ofs to detect type
-        if (ofs.matches("^ENQUIRY[.]SELECT,.*")) {
+        if ( Pattern.compile("^ENQUIRY[.]SELECT,.*",Pattern.DOTALL).matcher(ofs).matches() ) {
             t24ParseEnq(ofsResp);
         } else {
             //regexp:  get all character before ','
@@ -263,8 +264,9 @@ public class T24ResultSet implements ResultSet {
         }
 		
         if (data.size() >= 1 && ((List) data.get(0)).size() == 1) {
-            if (data.get(0).get(0) != null) {
-                if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(data.get(0).get(0).toString()))) {
+        	Object o=data.get(0).get(0); //get first column from the first row
+            if (o != null) {
+                if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(o.toString()))) {
                     data.clear();
                     return;
                 }
