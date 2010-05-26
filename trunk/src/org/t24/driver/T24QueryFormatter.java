@@ -429,9 +429,13 @@ public class T24QueryFormatter {
         if (str == null || str.length() == 0) {
             res = "";
         } else {
-            indexBegin = Math.min(start, str.length());
+        	if (start < 0) {
+        		indexBegin = str.length() + start;	
+        	}else{
+            	indexBegin = Math.min(start, str.length());
+        	}
             if (length < 0) {
-                indexEnd = str.length();
+                indexEnd = str.length() + length;
             } else {
                 indexEnd = Math.min(start + length, str.length());
             }
