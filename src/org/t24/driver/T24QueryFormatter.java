@@ -115,7 +115,10 @@ public class T24QueryFormatter {
 			
 			if(state==STATE_OFS)throw new T24ParseException("Last SENDOFS not ended with END");
 			if(result==null)throw new T24Exception("None of the OFS messages has been executed.");
-			
+
+			for(int i=0; i<result.getRowCount(); i++){
+				result.setValue(i+1,"rownum",""+(i+1));
+			}
 			//return result from last ofs
 			return result;
 		} catch (T24ParseException e) {
