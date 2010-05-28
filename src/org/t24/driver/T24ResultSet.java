@@ -251,6 +251,7 @@ public class T24ResultSet implements ResultSet {
 		Scanner scanRow = new Scanner(dataString).useDelimiter("\",\"");
 	    while (scanRow.hasNext()) {
 	    	String rowString = scanRow.next();
+	    	rowString = " " + rowString + " ";
 			Scanner scanValue = new Scanner(rowString).useDelimiter("\"\t\"");
 		    while (scanValue.hasNext()) {
     	        row.add(scanValue.next().trim());
