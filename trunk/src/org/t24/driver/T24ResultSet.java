@@ -270,6 +270,8 @@ public class T24ResultSet implements ResultSet {
                 if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(o.toString()))) {
                     data.clear();
                     return;
+                }else{
+                	throw new T24Exception("T24 OFS Error: " + o.toString());
                 }
             }
         }
