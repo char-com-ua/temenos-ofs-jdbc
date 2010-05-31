@@ -267,10 +267,11 @@ public class T24ResultSet implements ResultSet {
         if (data.size() >= 1 && ((List) data.get(0)).size() == 1) {
         	Object o=data.get(0).get(0); //get first column from the first row
             if (o != null) {
-                if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(o.toString()))) {
+            	String firstRow = properties.getProperty(o.toString());
+                if (ERROR_NO_RECORDS_FOUND.equals(firstRow)) {
                     data.clear();
                     return;
-                }else{
+                }else if (firstRow.contains("ENQUIRY.ERROR: ")){
                 	throw new T24Exception("T24 OFS Error: " + o.toString());
                 }
             }
