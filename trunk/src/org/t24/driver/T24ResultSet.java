@@ -271,7 +271,7 @@ public class T24ResultSet implements ResultSet {
                 if (ERROR_NO_RECORDS_FOUND.equals(firstRow)) {
                     data.clear();
                     return;
-                }else if (firstRow.contains("ENQUIRY.ERROR: ")){
+                }else if (o.toString().contains("ENQUIRY.ERROR: ")){
                 	throw new T24Exception("T24 OFS Error: " + o.toString());
                 }
             }
