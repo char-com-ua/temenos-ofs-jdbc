@@ -264,11 +264,11 @@ public class T24ResultSet implements ResultSet {
 	        row = new ArrayList();
         }
 		
-        if (data.size() >= 1 && ((List) data.get(0)).size() == 1) {
+//        if (data.size() >= 1 && ((List) data.get(0)).size() == 1) {
+        if (data.size() >= 1) {
         	Object o=data.get(0).get(0); //get first column from the first row
             if (o != null) {
-            	String firstRow = properties.getProperty(o.toString());
-                if (ERROR_NO_RECORDS_FOUND.equals(firstRow)) {
+                if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(o.toString()))) {
                     data.clear();
                     return;
                 }else if (o.toString().contains("ENQUIRY.ERROR: ")){
