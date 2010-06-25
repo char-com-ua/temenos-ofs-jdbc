@@ -67,8 +67,10 @@ public class T24Connection implements Connection {
 
 				TCRequest tcSendRequest = tcFactory.createOfsRequest(charsetOFS, false);
 				//hide password in logs
-
+				long startT = System.currentTimeMillis(); 
 				TCResponse tcResponse = tcSendRequest.send(tcConnection);
+				T24QueryFormatter.logger.info("OFS_DURATION_TIME: " + (System.currentTimeMillis()-startT) +"ms");
+				
 				ofsResp = tcResponse.getOFSString();
         	}
 			T24QueryFormatter.logger.info("OFSRESP: " + ofsResp.replaceAll(tcPass, "*****"));
