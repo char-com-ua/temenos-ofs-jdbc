@@ -1557,7 +1557,7 @@ public class T24ResultSet implements ResultSet {
      * @see #getFetchSize
      */
     public void setFetchSize(int rows) throws SQLException {
-        throw new T24FeatureNotSupportedException();
+        //throw new T24FeatureNotSupportedException();
     }
 
     /**
@@ -1570,7 +1570,8 @@ public class T24ResultSet implements ResultSet {
      * @see #setFetchSize
      */
     public int getFetchSize() throws SQLException {
-        throw new T24FeatureNotSupportedException();
+        //throw new T24FeatureNotSupportedException();
+        return 1;
     }
 
     /**
