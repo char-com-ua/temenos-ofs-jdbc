@@ -6,8 +6,8 @@
         <property name="org.wso2.ws.dataservice.driver">org.t24.driver.T24Driver</property>
         <!-- in your channel.xml there should be channel named MYCHANNEL -->
         <property name="org.wso2.ws.dataservice.protocol">jdbc:org:t24:MYCHANNEL</property>
-        <property name="org.wso2.ws.dataservice.user">T24_USER</property>
-        <property name="org.wso2.ws.dataservice.password">T24_PASS</property>
+        <property name="org.wso2.ws.dataservice.user">MWARE_B2</property>
+        <property name="org.wso2.ws.dataservice.password">MiddleWare</property>
         <property name="org.wso2.ws.dataservice.minpoolsize">0</property>
         <property name="org.wso2.ws.dataservice.maxpoolsize">3</property>
 </config>
@@ -16,7 +16,9 @@
 <!--================================= getCustomerById ======================================-->
 <operation name="getCustomerById">
     <description>The operation that gets information from a standard</description>
-    <call-query href="getCustomerById" />
+	<call-query href="getCustomerById">
+		<with-param name="id" query-param="id" />
+	</call-query>
 </operation>
 
 <query id="getCustomerById" useConfig="t24">
@@ -62,7 +64,10 @@
 <!--================================= modifyCustomer ======================================-->
 <operation name="modifyCustomer">
     <description>modify customer Last Name. You must specify CUSTOMER ID and new LAST-NAME</description>
-    <call-query href="modifyCustomer" />
+    <call-query href="modifyCustomer" >
+		<with-param name="id" query-param="id" />
+		<with-param name="lastName" query-param="lastName" />
+	</call-query>
 </operation>
 
 <query id="modifyCustomer" useConfig="t24">

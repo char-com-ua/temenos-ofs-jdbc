@@ -262,11 +262,11 @@ public class T24PreparedStatement implements PreparedStatement {
     }
 
     public void setFetchSize(int rows) throws SQLException {
-        throw new T24FeatureNotSupportedException();
+        //throw new T24FeatureNotSupportedException();
     }
 
     public int getFetchSize() throws SQLException {
-        return 0;
+        return 1;
     }
 
     public int getResultSetConcurrency() throws SQLException {
