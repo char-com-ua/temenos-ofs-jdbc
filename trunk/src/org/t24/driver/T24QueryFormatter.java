@@ -454,6 +454,7 @@ public class T24QueryFormatter {
         } else {
             value = value.replace('\"', '|');
             if (queryType==QueryType.APP) {
+            	if("-".equals(value.trim()))value=".";
                 value = value.replaceAll("_", "'_'");
                 value = "\"" + value + "\"";
             }
