@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="T24Test25" baseURI="http://my.namespace" enableBatchRequests="false" enableBoxcarring="false" serviceStatus="active">
+   <description>Temenos Test for DataServices 2.5.1</description>
+   
+   <config id="t24">
+      <property name="org.wso2.ws.dataservice.driver">org.t24.driver.T24Driver</property>
+      <!-- in your channel.xml there should be channel named MYCHANNEL -->
+      <property name="org.wso2.ws.dataservice.protocol">jdbc:org:t24:MYCHANNEL</property>
+      <property name="org.wso2.ws.dataservice.user">T24USER</property>
+      <property name="org.wso2.ws.dataservice.password">T24PASS</property>
+      <property name="org.wso2.ws.dataservice.minpoolsize">0</property>
+      <property name="org.wso2.ws.dataservice.maxpoolsize">10</property>
+      <property name="org.wso2.ws.dataservice.validation_query"></property>
+   </config>
+   
+   <operation name="modifyCustomer">
+      <description>modify customer Last Name. You must specify CUSTOMER ID and new LAST-NAME.</description>
+      <call-query href="modifyCustomer">
+         <with-param name="customerId" query-param="customerId" />
+         <with-param name="lastName" query-param="lastName" />
+      </call-query>
+   </operation>
+   
+   <query id="modifyCustomer" useConfig="t24">
+      <sql>SELECT SENDOFS CUSTOMER,/I/PROCESS,{{USER}}/{{PASS}}/,{{set ?1}}
+                LAST.NAME:1:        = set ?2
+           END
+      </sql>
+      
+      <result element="modifyCustomerResponse" rowName="return" defaultNamespace="http://my.namespace">
+         <element name="id" column="@ID" xsdType="xs:string" />
+      </result>
+      
+      <param name="customerId" paramType="SCALAR" sqlType="STRING" type="IN" ordinal="1" />
+      <param name="lastName"   paramType="SCALAR" sqlType="STRING" type="IN" ordinal="2" />
+   </query>
+</data>
