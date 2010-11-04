@@ -189,8 +189,8 @@ public class T24ResultSet implements ResultSet {
         rowData.set(icol - 1, value);
     }
     protected void t24ParseApp(String s) throws SQLException {
-    	String securityViolation = properties.getProperty(ERROR_SECURITY_VIOLATION);
-    	String recordNotChanged = properties.getProperty(ERROR_RECORDS_NOT_CHANGED);
+    	String securityViolation = properties.getProperty(ERROR_SECURITY_VIOLATION,"SECURITY VIOLATION");
+    	String recordNotChanged = properties.getProperty(ERROR_RECORDS_NOT_CHANGED,"/-1/NO,COMPANY.BOOK:1:1=");
         if (s.contains("/-1/NO") || s.contains(securityViolation) ) {
         	if(!s.contains(recordNotChanged)){
 				//delete posible t24 ID from error message
@@ -268,7 +268,7 @@ public class T24ResultSet implements ResultSet {
         if (data.size() >= 1) {
         	Object o=data.get(0).get(0); //get first column from the first row
             if (o != null) {
-                if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(o.toString()))) {
+                if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(o.toString(),"No records were found that matched the selection criteria"))) {
                     data.clear();
                     return;
                 }else if (o.toString().contains("ENQUIRY.ERROR: ")){
@@ -290,83 +290,6 @@ public class T24ResultSet implements ResultSet {
         }
     }
     
-/*
-    protected void t24ParseEnquiry(String s) throws SQLException {  	
-    	
-        int i = 0;
-        int maxColCount = 0;
-        int possition = s.indexOf(",\"");
-
-        if (possition != -1) {
-            String s1 = s.substring(0, possition);
-
-            s = s.replace((new StringBuilder(String.valueOf(s1))).append(",").toString(), "");
-            
-			s = s.replaceAll("\n", " ");            
-            s = s.replaceAll("\",\"", "\"\n\"");
-            s = (new StringBuilder(String.valueOf(s1))).append("\n").append(s).toString();
-
-            for (StringTokenizer stringtokenizer = new StringTokenizer(s, "\n"); stringtokenizer.hasMoreElements();) {
-
-                String s2 = stringtokenizer.nextToken().trim();
-                if (++i != 1) {
-                    //data
-                    ArrayList row = new ArrayList();
-                    for (StringTokenizer stringtokenizer1 = new StringTokenizer(s2, "\t");
-                            stringtokenizer1.hasMoreElements();
-                            row.add(stringtokenizer1.nextToken().replaceAll("\"", "")));
-                    if (row.size() > maxColCount) {
-                        maxColCount = row.size();
-                    }
-                    data.add(row);
-                } else {
-                    //HEADER
-                    ArrayList header = new ArrayList();
-                    String s3 = null;
-                    StringTokenizer stringtokenizer2 = new StringTokenizer(s2, ",");
-                    if (stringtokenizer2.countTokens() == 2) {
-                        stringtokenizer2.nextToken();
-                        s3 = stringtokenizer2.nextToken();
-                    } else if (stringtokenizer2.countTokens() > 0) {
-                        s3 = stringtokenizer2.nextToken();
-                    }
-                    if (s3 != null) {
-                        String s4;
-                        for (StringTokenizer stringtokenizer3 = new StringTokenizer(s3, "/"); stringtokenizer3.hasMoreTokens(); header.add(s4.toLowerCase())) {
-                            s4 = stringtokenizer3.nextToken();
-                            if (s4.indexOf("::") != -1) {
-                                s4 = s4.substring(0, s4.indexOf("::"));
-                            }
-                        }
-                        md = new T24ResultSetMetaData(header);
-                    }
-
-                }
-            }
-        } else {
-            throw new T24Exception("T24 OFS Error:  response = " + s);
-        }
-
-        if (data.size() >= 1 && ((List) data.get(0)).size() == 1) {
-            if (data.get(0).get(0) != null) {
-                if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(data.get(0).get(0).toString()))) {
-                    data.clear();
-                    return;
-                }
-            }
-        }
-
-        if (md == null) {
-            //create it
-            ArrayList header = new ArrayList();
-            for (i = 0; i < maxColCount; i++) {
-                header.add("#" + (i + 1));
-            }
-            md = new T24ResultSetMetaData(header);
-        }
-
-    }
-*/
     private String parseLocalRef(String ofsResp, String app) throws SQLException {
         try {
             StringBuffer str = new StringBuffer();
