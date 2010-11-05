@@ -8,9 +8,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import java.util.Scanner;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -289,19 +291,50 @@ public class T24QueryFormatter {
     }
 
     private String getValueForComandParam(int paramNumber, List<String> commandParams, List<String> colName, List<String> colValue) throws T24Exception{
-        if (commandParams == null || colValue == null) {
-            throw new T24ParseException("Incorrect parameters or ResultSet");
-        }
-		String key=commandParams.get(paramNumber);
-		int valueIndex;
+		String res="";		
+    	
+		if (commandParams == null || colValue == null) {
+			throw new T24ParseException("Incorrect parameters or ResultSet");
+		}
+		String paramString = commandParams.get(paramNumber);
 		
-        if (!key.startsWith("?")) 
-        	throw new T24ParseException("Incorrect parameter: " + key);
-        
+	    Pattern p = Pattern.compile("\\?\\{[^\\}]*\\}");
+    	Matcher matcher = p.matcher(paramString);
+
+    	if(Pattern.compile(".*\\?\\{[^\\}]*\\}.*",Pattern.DOTALL).matcher(paramString).matches()){
+			int current = 0;
+			int valueIndex;
+			
+			while (true) { 
+				if(matcher.find()){
+					String key = matcher.group();
+					key = key.replaceAll("\\{", "");
+					key = key.replaceAll("\\}", "");
+					
+					res += paramString.substring(current, matcher.start()) + getParamValue(key);
+
+					current = matcher.end();
+				}else{
+					res += paramString.substring(current);
+					break;
+				}
+			}
+    	}else{
+			int valueIndex;
+			if (!paramString.startsWith("?")) 
+				throw new T24ParseException("Incorrect parameter: " + paramString);
+			
+			res = getParamValue(paramString);
+    	}
+
+		return (res==null?"":res.trim());
+    }    	
+    
+    private String getParamValue(String key) throws T24Exception{
 		try {
-			valueIndex=Integer.valueOf(key.substring(1))-1;
+			valueIndex = Integer.valueOf(key.substring(1)) - 1;
 		} catch(Exception e) {
-			if(colName==null)throw new T24ParseException("Can't get value for named parameter "+key);
+			if(colName==null)throw new T24ParseException("Can't get value for named parameter " + key);
 			valueIndex = colName.indexOf(key.substring(1).toLowerCase());
 		}
 		
@@ -309,11 +342,11 @@ public class T24QueryFormatter {
 			throw new T24ParseException("Can't find parameter: " + key );
 		
 		if (valueIndex >= colValue.size()) 
-			throw new T24ParseException("Can't get value for: " + key +". Values count: " + colValue.size() );
-		
-		String value=colValue.get(valueIndex);
+			throw new T24ParseException("Can't get value for: " + paramString +". Values count: " + colValue.size() );
+			
+		String value = colValue.get(valueIndex);
 		return (value==null?"":value.trim());
-	}
+    }
 
     private void evaluateToCent(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
         String value = getValueForComandParam(0, commandParams, colName, colValue);
