@@ -303,15 +303,13 @@ public class T24QueryFormatter {
 
     	if(Pattern.compile(".*\\?\\{[^\\}]*\\}.*",Pattern.DOTALL).matcher(paramString).matches()){
 			int current = 0;
-			int valueIndex;
-			
 			while (true) { 
 				if(matcher.find()){
 					String key = matcher.group();
 					key = key.replaceAll("\\{", "");
 					key = key.replaceAll("\\}", "");
 					
-					res += paramString.substring(current, matcher.start()) + getParamValue(key);
+					res += paramString.substring(current, matcher.start()) + getParamValue(key, colName, colValue);
 
 					current = matcher.end();
 				}else{
@@ -320,17 +318,17 @@ public class T24QueryFormatter {
 				}
 			}
     	}else{
-			int valueIndex;
 			if (!paramString.startsWith("?")) 
 				throw new T24ParseException("Incorrect parameter: " + paramString);
 			
-			res = getParamValue(paramString);
+			res = getParamValue(paramString, colName, colValue);
     	}
 
 		return (res==null?"":res.trim());
     }    	
     
-    private String getParamValue(String key) throws T24Exception{
+    private String getParamValue(String key, List<String> colName, List<String> colValue) throws T24Exception{
+		int valueIndex;
 		try {
 			valueIndex = Integer.valueOf(key.substring(1)) - 1;
 		} catch(Exception e) {
@@ -342,7 +340,7 @@ public class T24QueryFormatter {
 			throw new T24ParseException("Can't find parameter: " + key );
 		
 		if (valueIndex >= colValue.size()) 
-			throw new T24ParseException("Can't get value for: " + paramString +". Values count: " + colValue.size() );
+			throw new T24ParseException("Can't get value for: " + key +". Values count: " + colValue.size() );
 			
 		String value = colValue.get(valueIndex);
 		return (value==null?"":value.trim());
