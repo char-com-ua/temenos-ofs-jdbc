@@ -1,6 +1,6 @@
 package org.t24.driver;
 
-import java.math.MathContext;
+import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.*;
@@ -35,8 +35,6 @@ public class T24QueryFormatter {
     
     private final static int STATE_DEF = 0;
     private final static int STATE_OFS = 1;
-    
-    private final static MathContext MC0 = new MathContext(0);
     
     //debugging / testing data
     private List<String> sentOfsQueries=new ArrayList<String>();
@@ -356,7 +354,7 @@ public class T24QueryFormatter {
 			result.put(fieldName, "");
 		} else {
 			BigDecimal bdvalue = new BigDecimal(value);
-			bdvalue = bdvalue.multiply(new BigDecimal("100")).round(MC0).setScale(0);
+			bdvalue = bdvalue.multiply(new BigDecimal("100")).setScale(0,RoundingMode.HALF_UP);
 			result.put(fieldName, bdvalue.toPlainString());
 		}
     }
