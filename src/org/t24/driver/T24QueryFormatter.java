@@ -485,7 +485,10 @@ public class T24QueryFormatter {
             res = "";
         } else {
             value = value.replace('\"', '|');
-            if (queryType==QueryType.APP) {
+            if (queryType==QueryType.APP || fieldName.endsWith("$")) {
+            	if(fieldName.endsWith("$")){
+					fieldName = fieldName.substring(0, fieldName.length()-1);
+            	}
             	if("-".equals(value.trim()))value="_";
                 value = value.replaceAll("_", "'_'");
                 value = "\"" + value + "\"";

@@ -27,7 +27,7 @@ public class Test {
 		
 		String query = 
 			"SENDOFS {{decode ?1 NULL TRUE FALSE}} ENQUIRY.SELECT,,{{USER}}/{{PASS}}/,ENQ.LWEXISTS\n" +
-				"F1:EQ  = set   ?2 \n" +
+				"F1:EQ  = getToken ?2 , -1\n" +
 				"F2:EQ  = const 2  \n" +
 				"F3:EQ  = set   ?3 \n" +
 			"END\n" +
@@ -46,7 +46,7 @@ public class Test {
 
 		List param = new ArrayList();
 		param.add("NULL");
-		param.add("20100102");
+		param.add("111,222,333,4444");
 		param.add("");
 		
 

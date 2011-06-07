@@ -34,6 +34,8 @@ import java.util.StringTokenizer;
 public class T24Driver implements Driver{
 
 	private static final String myUrl="jdbc:org:t24:";
+	public Properties conInfo;
+	
 
 	private static T24Driver m_defaultDrvr=null;
 	static{
@@ -105,7 +107,24 @@ public class T24Driver implements Driver{
 			getUrlProperties(url.substring(i+1),info);
 		}
 		info.setProperty(T24Connection.CHANNEL,tcserver);
-		Connection con=new T24Connection(info);
+		conInfo = info; 
+		
+		InnerCon r = new InnerCon();
+		Thread th = new Thread(r);
+		try{
+			th.start();
+			synchronized(r){
+				r.wait(30000);
+			}
+			th.stop();
+		}catch (InterruptedException e){
+			e.getMessage();
+		}
+		        
+		Connection con = r.getCon();
+		if(con == null){
+			throw new SQLException("-=T24ERROR=-: Couldn't not establish connection to T24 for 30 sec");
+		}
 		return con;
 	}
 
@@ -125,6 +144,11 @@ public class T24Driver implements Driver{
 		return 0;
 	}
 
+	public Properties getConnInfo(){
+		return conInfo;
+	}
+	
+	
 	/**
 	 * Gets information about the possible properties for this driver
 	 * @param url database connection url.
@@ -142,6 +166,27 @@ public class T24Driver implements Driver{
 	public boolean jdbcCompliant(){
 		return true;
 	}
+	
+	private class InnerCon implements Runnable{
+		private Connection con;
+		
+		public Connection getCon(){
+			return con;
+		}	
+		
+		public void run(){
+			try{
+				con = new T24Connection(conInfo);
+			}catch (SQLException e){
+				e.getMessage();
+			}
+			synchronized(this){
+				this.notify();
+			}
+		}		
+	}
+	
+	
 
 }
 
