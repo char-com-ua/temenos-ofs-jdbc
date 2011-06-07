@@ -44,7 +44,7 @@ public class T24Connection implements Connection {
         //maybe in the future we have to set user/password here ?
         try {
         	String ofsResp;
-			T24QueryFormatter.logger.info("OFS: " + ofs.replaceAll(tcPass, "*****"));
+			T24QueryFormatter.logger.info("OFS: " + ofs.replaceAll(tcPass, "\\$PASSWORD"));
         	
         	if(isTestMode){
         		URL url=null;
@@ -73,10 +73,10 @@ public class T24Connection implements Connection {
 				
 				ofsResp = tcResponse.getOFSString();
         	}
-			T24QueryFormatter.logger.info("OFSRESP: " + ofsResp.replaceAll(tcPass, "*****"));
+			T24QueryFormatter.logger.info("OFSRESP: " + ofsResp.replaceAll(tcPass, "\\$PASSWORD"));
             return ofsResp;
         } catch (Throwable e) {
-            throw new T24Exception("T24 Send Exception", e);
+            throw new T24Exception("T24 Send Exception: " + e.getMessage(), e);
         }
     }
     public boolean isTestMode(){
