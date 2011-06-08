@@ -202,9 +202,10 @@ public class T24ResultSet implements ResultSet {
         ArrayList row = new ArrayList();
 
         header.add("@id");
-
-        s = s.replaceAll("^([^/]*).*$", "$1");
-        if (s == null || s.length() == 0 || s.indexOf('/') >= 0 || s.startsWith("-")) {
+		
+        if(s.indexOf('/')==-1)throw new T24Exception("T24 Application Error: " + s);
+        s = s.replaceAll("^([^/]*)/.*$", "$1");
+        if (s.length() == 0 || s.indexOf('/') >= 0 || s.startsWith("-")) {
             throw new T24Exception("OFS Responce does not contain id: " + s);
         }
         row.add(s);
