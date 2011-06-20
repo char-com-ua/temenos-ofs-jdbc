@@ -122,8 +122,13 @@ public class T24Driver implements Driver{
 		}
 		        
 		Connection con = r.getCon();
+		Exception ex = r.getException()
 		if(con == null){
-			throw new SQLException("-=T24ERROR=-: Couldn't not establish connection to T24 for 30 sec");
+			if(ex == null){
+				throw new SQLException("Couldn't not establish connection to T24 in 30 sec");
+			}else{
+				throw new SQLException("Couldn't not establish connection to T24: " + ex.getMessage(), ex);
+			}
 		}
 		return con;
 	}
@@ -169,16 +174,20 @@ public class T24Driver implements Driver{
 	
 	private class InnerCon implements Runnable{
 		private Connection con;
+		private Exception ex = null;
 		
 		public Connection getCon(){
 			return con;
+		}	
+		public Exception getException(){
+			return ex;
 		}	
 		
 		public void run(){
 			try{
 				con = new T24Connection(conInfo);
 			}catch (SQLException e){
-				e.getMessage();
+				ex = e;
 			}
 			synchronized(this){
 				this.notify();
