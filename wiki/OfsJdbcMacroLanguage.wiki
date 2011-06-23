@@ -82,6 +82,8 @@ When expression located outside SENDOFS+END operation:
 || split || REF LENGTH || splits the string into tokens by LENGTH. This function replaces a special character '*' in the KEY (on the left of =) with token index. ||
 || substr || REF START LENGTH || returns LENGTH symbols of the REF-erenced parameter beginning ftom START character. if LENGTH = -1 then means end of the string. ||
 || setIfNull || REF NEWVALUE || returns NEWVALUE if REF parameter is null or empty. ||
+|| USER ||  || returns user name defined as jdbc connection parameter ||
+|| PASS ||  || returns password defined as jdbc connection parameter ||
 
 *examples*
 
