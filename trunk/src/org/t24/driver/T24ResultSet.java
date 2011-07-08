@@ -218,7 +218,7 @@ public class T24ResultSet implements ResultSet {
         int possition = s.indexOf(",\"");
         int maxColCount = 0;
         int columnCount = 0;
-        
+		if (",,".equals(s)) throw new T24Exception("T24 OFS Error, requested enquiry not found:  response = " + s);
         if (possition == -1) throw new T24Exception("T24 OFS Error:  response = " + s);
         
     	String headerString  = s.substring(0, possition);
