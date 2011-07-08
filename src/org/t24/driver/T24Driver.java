@@ -125,9 +125,9 @@ public class T24Driver implements Driver{
 		Exception ex = r.getException();
 		if(con == null){
 			if(ex == null){
-				throw new SQLException("Couldn't not establish connection to T24 in 30 sec");
+				throw new T24Exception("Couldn't not establish connection to T24 in 30 sec");
 			}else{
-				throw new SQLException("Couldn't not establish connection to T24: " + ex.getMessage(), ex);
+				throw new T24Exception("Couldn't not establish connection to T24: " + ex.getMessage(), ex);
 			}
 		}
 		return con;
