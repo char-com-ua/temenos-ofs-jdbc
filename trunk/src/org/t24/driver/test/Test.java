@@ -26,28 +26,26 @@ public class Test {
 		T24QueryFormatter q = new T24QueryFormatter(con);
 		
 		String query = 
-			"SENDOFS {{decode ?1 NULL TRUE FALSE}} ENQUIRY.SELECT,,{{USER}}/{{PASS}}/,ENQ.LWEXISTS\n" +
+			"SENDOFS ENQUIRY.SELECT,,{{USER}}/{{PASS}}/,ENQ.LWEXISTS\n" +
 				"F1:EQ  = getToken ?2 , -1\n" +
-				"F2:EQ  = const 2  \n" +
-				"F3:EQ  = set   ?3 \n" +
 			"END\n" +
-/*			
 			"?3 = set      ?FIELD.TEXT\n"       +
 			"?2 = toCent   ?FIELD.NUM\n"        +
-			"?1 = decode   ?FIELD.INT  5 XXX\n" +
+			"FILTER	 MATCHES   \"?{FIELD.INT}\"  \"?{1}\" \n" +
+			"";
 			
+/*			
 			"SENDOFS CUSTOMER,,{{USER}}/{{PASS}}/,ENQ.LWEXISTS\n" +
 				"F1::  = set    ?2 \n" +
 				"F2::  = set    ?1 \n" +
 				"F3:*: = split  ?3 5 \n" +
 			"END\n" +
-*/			
 			"";
+*/			
 
 		List param = new ArrayList();
-		param.add("NULL");
+		param.add("(1|3)");
 		param.add("111,222,333,4444");
-		param.add("");
 		
 
 		T24ResultSet rs = q.execute(query,param);
@@ -57,7 +55,7 @@ public class Test {
 		showResult(rs);
 		
 		//test example
-		assertTrue(false,"user name expected");
+		//assertTrue(false,"user name expected");
 		
 		rs.close();
 		con.close();

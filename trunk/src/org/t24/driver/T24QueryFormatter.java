@@ -140,8 +140,8 @@ public class T24QueryFormatter {
 		Map<String,String> postParam=new HashMap<String,String>(2); //initial count = 2
 		
 		
-		if(line.matches("^FILTER\\s+MATCHES\\s+")){
-			String expression=line.replaceAll("^FILTER\\s+\\w+\\s+(.*)$","$2");
+		if(line.matches("^FILTER\\s+MATCHES\\s+.*")){
+			String expression=line.replaceAll("^FILTER\\s+\\w+\\s+(.*)$","$1");
 	        List<String> commandParams = getCommandParams(expression);
 			//matcher from input parameters
 			String matcher = getValueForComandParam(1, commandParams, null, queryParam);
@@ -162,7 +162,8 @@ public class T24QueryFormatter {
 						//key started with ? so set the value for query parameter
 						try {
 							int index=Integer.parseInt(key.substring(1))-1;
-							queryParam.set(index,entry.getValue());
+							if(index==queryParam.size())queryParam.add(entry.getValue());
+							else queryParam.set(index,entry.getValue());
 						} catch ( Exception e ) {
 							throw new T24ParseException("Wrong post process index in expression: "+line,e);
 						}
