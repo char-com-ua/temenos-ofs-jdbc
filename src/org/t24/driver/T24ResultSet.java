@@ -162,6 +162,10 @@ public class T24ResultSet implements ResultSet {
         return data.get(i - 1);
     }
 
+    protected void removeRow(int i) {
+        data.remove(i - 1);
+    }
+
     public T24ResultSet(String ofs, String ofsResp) throws SQLException {
         //let's use ofs to detect type
         if ( Pattern.compile("^ENQUIRY[.]SELECT,.*",Pattern.DOTALL).matcher(ofs).matches() ) {
