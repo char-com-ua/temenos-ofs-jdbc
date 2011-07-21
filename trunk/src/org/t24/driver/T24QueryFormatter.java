@@ -140,28 +140,42 @@ public class T24QueryFormatter {
 		Map<String,String> postParam=new HashMap<String,String>(2); //initial count = 2
 		
 		
-		for(int i=1; i <= result.getRowCount(); i++ ) {
-			evaluate(line, ((T24ResultSetMetaData)result.getMetaData()).getColumnNames(), result.getDataRow(i), postParam);
-			//now go through all key/values
-			for( Map.Entry<String,String> entry : postParam.entrySet() ) {
-				String key=entry.getKey();
-				if(key.startsWith("?")) {
-					//key started with ? so set the value for query parameter
-					try {
-						int index=Integer.parseInt(key.substring(1))-1;
-						queryParam.set(index,entry.getValue());
-					} catch ( Exception e ) {
-						throw new T24ParseException("Wrong post process index in expression: "+line,e);
-					}
-				} else {
-					//usual key, so add column for the resultset
-					result.setValue(i,key,entry.getValue());
+		if(line.matches("^FILTER\\s+MATCHES\\s+")){
+			String expression=line.replaceAll("^FILTER\\s+\\w+\\s+(.*)$","$2");
+	        List<String> commandParams = getCommandParams(expression);
+			//matcher from input parameters
+			String matcher = getValueForComandParam(1, commandParams, null, queryParam);
+			for(int i=result.getRowCount(); i>0; i-- ){
+				//test value from resultset
+				String value = getValueForComandParam(0, commandParams, ((T24ResultSetMetaData)result.getMetaData()).getColumnNames(), result.getDataRow(i));
+				if(!value.matches(matcher)){
+					result.removeRow(i);
 				}
 			}
-			
+		}else{
+			for(int i=1; i <= result.getRowCount(); i++ ) {
+				evaluate(line, ((T24ResultSetMetaData)result.getMetaData()).getColumnNames(), result.getDataRow(i), postParam);
+				//now go through all key/values
+				for( Map.Entry<String,String> entry : postParam.entrySet() ) {
+					String key=entry.getKey();
+					if(key.startsWith("?")) {
+						//key started with ? so set the value for query parameter
+						try {
+							int index=Integer.parseInt(key.substring(1))-1;
+							queryParam.set(index,entry.getValue());
+						} catch ( Exception e ) {
+							throw new T24ParseException("Wrong post process index in expression: "+line,e);
+						}
+					} else {
+						//usual key, so add column for the resultset
+						result.setValue(i,key,entry.getValue());
+					}
+				}
+				
+			}
 		}
 	}
-	
+    	
 	protected String prepareHeader(String ofsHeader,List<String> queryParam)throws SQLException{
 		//evaluate and replace all {{expression}}
 		//no special formatting here put result as is
