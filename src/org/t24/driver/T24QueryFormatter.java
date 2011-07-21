@@ -145,11 +145,14 @@ public class T24QueryFormatter {
 	        List<String> commandParams = getCommandParams(expression);
 			//matcher from input parameters
 			String matcher = getValueForComandParam(1, commandParams, null, queryParam);
-			for(int i=result.getRowCount(); i>0; i-- ){
-				//test value from resultset
-				String value = getValueForComandParam(0, commandParams, ((T24ResultSetMetaData)result.getMetaData()).getColumnNames(), result.getDataRow(i));
-				if(!value.matches(matcher)){
-					result.removeRow(i);
+			//perform filter if matcher was defined
+			if(matcher.length() > 0) {
+				for(int i=result.getRowCount(); i>0; i-- ){
+					//test value from resultset
+					String value = getValueForComandParam(0, commandParams, ((T24ResultSetMetaData)result.getMetaData()).getColumnNames(), result.getDataRow(i));
+					if(!value.matches(matcher)){
+						result.removeRow(i);
+					}
 				}
 			}
 		}else{
