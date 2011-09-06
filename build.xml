@@ -83,7 +83,7 @@
 
 		<input message ="select deploy type [ test, prod ]" addproperty="deploy.type"/>  
 		<fail unless="deploy.type" message="Error usage:  ant -Ddeploy.type=type"/>
-		<property name="scp.host" value="flink-${deploy.type}" />
+		<property name="scp.host" value="${deploy.type}" />
 		<property name="scp.login" value="flink" />
 		<input message ="password for ${scp.login}@${scp.host}" addproperty="scp.pass"/>  
 		
