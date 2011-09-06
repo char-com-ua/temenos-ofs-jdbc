@@ -23,7 +23,7 @@ public class Test {
 		Class.forName(driver);
 		//Connect to database
 		Connection con = DriverManager.getConnection(url,uid,pwd);
-		T24QueryFormatter q = new T24QueryFormatter(con);
+		T24QueryFormatter q = new T24QueryFormatter(con, 120);
 		
 		String query = 
 			"SENDOFS ENQUIRY.SELECT,,{{USER}}/{{PASS}}/,ENQ.LWEXISTS\n" +

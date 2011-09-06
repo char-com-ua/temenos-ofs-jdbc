@@ -30,6 +30,7 @@ public class T24QueryFormatter {
     //private static SimpleDateFormat sdfDateParse = new SimpleDateFormat("yyyy-MM-dd");
     //private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
     private T24Connection con;    //connection
+    private int queryTimeout;         //timeout 
     //private String query;         //original query
     //private List<String> param;   //input parameters
     
@@ -43,8 +44,9 @@ public class T24QueryFormatter {
 
     //private static int STATE_POST=3;
 
-    public T24QueryFormatter(Connection con) {
+    public T24QueryFormatter(Connection con, int seconds) {
         this.con = (T24Connection)con;
+        this.queryTimeout = seconds;
     }
     public T24QueryFormatter() {
     }
@@ -242,7 +244,7 @@ public class T24QueryFormatter {
 			
 			sentOfsQueries.add(ofs);
 			
-			String ofsResp = con.t24Send(ofs);
+			String ofsResp = con.t24Send(ofs, queryTimeout);
 			//create resultset from responce
 			rs = new T24ResultSet(ofs, ofsResp);
 		}
