@@ -15,6 +15,7 @@ public class T24PreparedStatement implements PreparedStatement {
 	private ParamList param = new ParamList();
     private T24ResultSet result = null;
     private T24QueryFormatter queryFormatter;
+    private int queryTimeout = 120;
 
 	
     private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
@@ -22,12 +23,12 @@ public class T24PreparedStatement implements PreparedStatement {
 	       
 	protected T24PreparedStatement(T24Connection con, String sql)throws SQLException{
 		this.con=con;
-		this.sql=sql.trim();
-		
-	    queryFormatter = new T24QueryFormatter(con);
+		this.sql=sql.trim();	
 	}
 
     public boolean execute() throws SQLException{
+	    queryFormatter = new T24QueryFormatter(con, queryTimeout);
+    	
     	this.result = queryFormatter.execute(sql, param);
     	
     	if (result!=null){
@@ -145,7 +146,7 @@ public class T24PreparedStatement implements PreparedStatement {
     }
     
     public int getQueryTimeout() throws SQLException {
-        return 0;
+        return queryTimeout;
     }
     
     public int getMaxFieldSize() throws SQLException {
@@ -169,7 +170,7 @@ public class T24PreparedStatement implements PreparedStatement {
         throw new T24FeatureNotSupportedException();
     }
     public void setQueryTimeout(int seconds) throws SQLException {
-        throw new T24FeatureNotSupportedException();
+        this.queryTimeout = seconds;
     }
     public void cancel() throws SQLException {
         throw new T24FeatureNotSupportedException();

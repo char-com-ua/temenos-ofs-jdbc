@@ -40,7 +40,7 @@ public class T24Connection implements Connection {
     private static final String TESTCHANNEL="TESTCHANNEL";
     private boolean isTestMode=false;
 
-    public String t24Send(String ofs) throws SQLException {
+    public String t24Send(String ofs, int queryTimeout) throws SQLException {
         //maybe in the future we have to set user/password here ?
         try {
         	String ofsResp;
@@ -68,7 +68,34 @@ public class T24Connection implements Connection {
 				TCRequest tcSendRequest = tcFactory.createOfsRequest(charsetOFS, false);
 				//hide password in logs
 				long startT = System.currentTimeMillis(); 
-				TCResponse tcResponse = tcSendRequest.send(tcConnection);
+				
+			T24QueryFormatter.logger.debug("!!!debug info: " + queryTimeout);
+				
+				InnerSend innerSend = new InnerSend(tcSendRequest, tcConnection);
+				Thread th = new Thread(innerSend);
+				try{
+					th.start();
+					synchronized(innerSend){
+						innerSend.wait(queryTimeout*1000);
+					}
+					th.stop();
+				}catch (InterruptedException e){
+					e.getMessage();
+				}
+				
+				TCResponse tcResponse = innerSend.getResponse();
+				Exception ex = innerSend.getException();
+			T24QueryFormatter.logger.debug("!!!debug info:tcResponse " + tcResponse);
+				
+				if(tcResponse == null){
+					if(ex == null){
+						throw new T24Exception("Couldn't not send request to T24 in" + queryTimeout + "sec");
+					}else{
+						throw new T24Exception("Couldn't not send request to T24: " + ex.getMessage(), ex);
+					}
+				}
+				
+				
 				T24QueryFormatter.logger.info("OFS_DURATION_TIME: " + (System.currentTimeMillis()-startT) +"ms");
 				
 				ofsResp = tcResponse.getOFSString();
@@ -611,6 +638,41 @@ public class T24Connection implements Connection {
     //finalization
     protected void finalize() {
     }
+
+
+        
+	private class InnerSend implements Runnable{
+		TCConnection tcConnection = null;
+		TCRequest tcSendRequest = null;
+		TCResponse tcResponse = null;
+		private Exception ex = null;
+		
+		public TCResponse getResponse(){
+			return tcResponse;
+		}	
+		public Exception getException(){
+			return ex;
+		}	
+		
+		InnerSend(TCRequest tcSendReq, TCConnection tcConn){
+			this.tcConnection = tcConn;
+			this.tcSendRequest = tcSendReq;
+		}
+		
+		public void run(){
+			try{
+				tcResponse = tcSendRequest.send(tcConnection);
+			}catch (Exception e){
+				ex = e;
+			}
+			synchronized(this){
+				this.notify();
+			}
+		}		
+	}
+    
+    
+    
     /*
     //JAVA 6 VERSION
     
