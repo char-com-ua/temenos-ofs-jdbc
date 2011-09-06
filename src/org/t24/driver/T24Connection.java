@@ -69,8 +69,6 @@ public class T24Connection implements Connection {
 				//hide password in logs
 				long startT = System.currentTimeMillis(); 
 				
-			T24QueryFormatter.logger.debug("!!!debug info: " + queryTimeout);
-				
 				InnerSend innerSend = new InnerSend(tcSendRequest, tcConnection);
 				Thread th = new Thread(innerSend);
 				try{
@@ -80,16 +78,27 @@ public class T24Connection implements Connection {
 					}
 					th.stop();
 				}catch (InterruptedException e){
-					e.getMessage();
+					T24QueryFormatter.logger.warn("T24 request interrupted: "+e.getMessage());
 				}
 				
 				TCResponse tcResponse = innerSend.getResponse();
 				Exception ex = innerSend.getException();
-			T24QueryFormatter.logger.debug("!!!debug info:tcResponse " + tcResponse);
 				
 				if(tcResponse == null){
 					if(ex == null){
-						throw new T24Exception("Couldn't not send request to T24 in" + queryTimeout + "sec");
+						//reset & close connection
+						try{
+							tcConnection.abort();
+						}catch(Exception e){
+							T24QueryFormatter.logger.warn("Can't abort T24 request: "+e);
+						}
+						try{
+							tcConnection.close();
+						}catch(Exception e){
+							T24QueryFormatter.logger.warn("Can't close T24 connection: "+e);
+						}
+						tcConnection=null;
+						throw new T24Exception("Couldn't not send request to T24 in " + queryTimeout + " sec");
 					}else{
 						throw new T24Exception("Couldn't not send request to T24: " + ex.getMessage(), ex);
 					}
