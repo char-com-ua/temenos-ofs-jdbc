@@ -88,11 +88,6 @@ public class T24Connection implements Connection {
 					if(ex == null){
 						//reset & close connection
 						try{
-							tcConnection.abort();
-						}catch(Exception e){
-							T24QueryFormatter.logger.warn("Can't abort T24 request: "+e);
-						}
-						try{
 							tcConnection.close();
 						}catch(Exception e){
 							T24QueryFormatter.logger.warn("Can't close T24 connection: "+e);
