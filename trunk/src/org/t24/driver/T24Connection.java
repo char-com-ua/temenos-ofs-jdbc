@@ -44,7 +44,10 @@ public class T24Connection implements Connection {
         //maybe in the future we have to set user/password here ?
         try {
         	String ofsResp;
-			T24QueryFormatter.logger.info("OFS: " + ofs.replaceAll(tcPass, "\\$PASSWORD"));
+        	//generate pseudo unique id for logging
+        	String ofsId=Long.toHexString(java.util.UUID.randomUUID().getMostSignificantBits());
+			long startT = System.currentTimeMillis(); 
+			T24QueryFormatter.logger.info("OFS_REQ("+ofsId+"): " + ofs.replaceAll(tcPass, "\\$PASSWORD"));
         	
         	if(isTestMode){
         		URL url=null;
@@ -66,15 +69,16 @@ public class T24Connection implements Connection {
 				String charsetOFS = new String(ofs.getBytes(tcCharset));
 
 				TCRequest tcSendRequest = tcFactory.createOfsRequest(charsetOFS, false);
-				//hide password in logs
-				long startT = System.currentTimeMillis(); 
 				
 				InnerSend innerSend = new InnerSend(tcSendRequest, tcConnection);
 				Thread th = new Thread(innerSend);
 				try{
 					th.start();
 					synchronized(innerSend){
-						innerSend.wait(queryTimeout*1000);
+						if(queryTimeout<=0)queryTimeout=120;
+						tcConnection.setMaximumRetryCount(2);
+			            tcConnection.setRetryInterval(queryTimeout/2); //because we have 2 retries. ??? maybe we should have just one?
+						innerSend.wait((queryTimeout+1)*1000); //+1 to give chance to t24 to finish request itself.
 					}
 					th.stop();
 				}catch (InterruptedException e){
@@ -99,12 +103,9 @@ public class T24Connection implements Connection {
 					}
 				}
 				
-				
-				T24QueryFormatter.logger.info("OFS_DURATION_TIME: " + (System.currentTimeMillis()-startT) +"ms");
-				
 				ofsResp = tcResponse.getOFSString();
         	}
-			T24QueryFormatter.logger.info("OFSRESP: " + ofsResp.replaceAll(tcPass, "\\$PASSWORD"));
+			T24QueryFormatter.logger.info("OFS_RES("+ofsId+","+(System.currentTimeMillis()-startT)+"ms): " + ofsResp.replaceAll(tcPass, "\\$PASSWORD"));
             return ofsResp;
         } catch (Throwable e) {
             throw new T24Exception("T24 Send Exception: " + e.getMessage(), e);
@@ -143,8 +144,6 @@ public class T24Connection implements Connection {
 					tcFactory.setDefaultCharSet(tcCharset);
 				}
 				tcConnection = tcFactory.createTCConnection(tcChannel);
-				tcConnection.setMaximumRetryCount(2);
-	            tcConnection.setRetryInterval(30);
         	}
         } catch (Exception e) {
             throw new T24Exception("T24 Connection Error: " + e.getMessage());
