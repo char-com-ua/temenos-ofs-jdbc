@@ -101,6 +101,7 @@ public class T24Connection implements Connection {
 								errorMessage=errorMessage.toLowerCase();
 								if( errorMessage.indexOf("the channel is not opened") >= 0 ){
 									if(reconnectCount<1){
+										T24QueryFormatter.logger.warn("Try to reconnect because of error from T24: "+ex);
 										this.reconnect();
 										continue; //reconnect/resend request cycle
 									}else{
