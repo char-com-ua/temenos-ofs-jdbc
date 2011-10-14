@@ -66,44 +66,55 @@ public class T24Connection implements Connection {
 				}				
         		ofsResp = sb.toString();
         	}else{
-				String charsetOFS = new String(ofs.getBytes(tcCharset));
+        		for(int reconnectCount=0;;reconnectCount++){
+					String charsetOFS = new String(ofs.getBytes(tcCharset));
 
-				TCRequest tcSendRequest = tcFactory.createOfsRequest(charsetOFS, false);
-				
-				InnerSend innerSend = new InnerSend(tcSendRequest, tcConnection);
-				Thread th = new Thread(innerSend);
-				try{
-					th.start();
-					synchronized(innerSend){
-						if(queryTimeout<=0)queryTimeout=120;
-						tcConnection.setMaximumRetryCount(2);
-			            tcConnection.setRetryInterval(queryTimeout/2); //because we have 2 retries. ??? maybe we should have just one?
-						innerSend.wait((queryTimeout+1)*1000); //+1 to give chance to t24 to finish request itself.
-					}
-					th.stop();
-				}catch (InterruptedException e){
-					T24QueryFormatter.logger.warn("T24 request interrupted: "+e.getMessage());
-				}
-				
-				TCResponse tcResponse = innerSend.getResponse();
-				Exception ex = innerSend.getException();
-				
-				if(tcResponse == null){
-					if(ex == null){
-						//reset & close connection
-						try{
-							tcConnection.close();
-						}catch(Exception e){
-							T24QueryFormatter.logger.warn("Can't close T24 connection: "+e);
+					TCRequest tcSendRequest = tcFactory.createOfsRequest(charsetOFS, false);
+					
+					InnerSend innerSend = new InnerSend(tcSendRequest, tcConnection);
+					Thread th = new Thread(innerSend);
+					try{
+						th.start();
+						synchronized(innerSend){
+							if(queryTimeout<=0)queryTimeout=120;
+							tcConnection.setMaximumRetryCount(2);
+							tcConnection.setRetryInterval(queryTimeout/2); //because we have 2 retries. ??? maybe we should have just one?
+							innerSend.wait((queryTimeout+1)*1000); //+1 to give chance to t24 to finish request itself.
 						}
-						tcConnection=null;
-						throw new T24Exception("Couldn't not send request to T24 in " + queryTimeout + " sec");
-					}else{
-						throw new T24Exception("Couldn't not send request to T24: " + ex.getMessage(), ex);
+						th.stop();
+					}catch (InterruptedException e){
+						T24QueryFormatter.logger.warn("T24 request interrupted: "+e.getMessage());
 					}
+					
+					TCResponse tcResponse = innerSend.getResponse();
+					Exception ex = innerSend.getException();
+					
+					if(tcResponse == null){
+						if(ex == null){
+							//reset & close connection
+							this.close();
+							throw new T24Exception("Couldn't not send request to T24 in " + queryTimeout + " sec");
+						}else{
+							String errorMessage=ex.getMessage();
+							
+							if(errorMessage!=null){
+								errorMessage=errorMessage.toLowerCase();
+								if( errorMessage.indexOf("the channel is not opened") >= 0 ){
+									if(reconnectCount<1){
+										this.reconnect();
+										continue; //reconnect/resend request cycle
+									}else{
+										this.reconnect();
+									}
+								}
+							}
+							throw new T24Exception("Couldn't not send request to T24: " + ex.getMessage(), ex);
+						}
+					}
+					ofsResp = tcResponse.getOFSString();
+					//we got response so let's stop cycle
+					break;
 				}
-				
-				ofsResp = tcResponse.getOFSString();
         	}
 			T24QueryFormatter.logger.info("OFS_RES("+ofsId+","+(System.currentTimeMillis()-startT)+"ms): " + ofsResp.replaceAll(tcPass, "\\$PASSWORD"));
             return ofsResp;
@@ -133,6 +144,12 @@ public class T24Connection implements Connection {
         if (tcCharset == null || tcCharset.length() == 0) {
             tcCharset = java.nio.charset.Charset.defaultCharset().name();
         }
+        this.reconnect();
+    }
+    
+    
+    protected void reconnect() throws SQLException {
+       	this.close();
         try {
         	if(TESTCHANNEL.equals(tcChannel)) {
         		//don't connect ! it's just a test channel
@@ -149,6 +166,7 @@ public class T24Connection implements Connection {
             throw new T24Exception("T24 Connection Error: " + e.getMessage());
         }
     }
+    
 
 
     //Connection interface methods
@@ -172,6 +190,7 @@ public class T24Connection implements Connection {
             try {
                 tcConnection.close();
             } catch (Exception e) {
+				T24QueryFormatter.logger.warn("Can't close T24 connection: "+e);
             }
             tcConnection = null;
         }
