@@ -322,7 +322,9 @@ public class T24QueryFormatter {
 	    Pattern p = Pattern.compile("\\?\\{[^\\}]*\\}");
     	Matcher matcher = p.matcher(paramString);
 
-    	if(Pattern.compile(".*\\?\\{[^\\}]*\\}.*",Pattern.DOTALL).matcher(paramString).matches()){
+		if ( paramString.startsWith("?") && paramString.charAt(1) != '{') {
+			res = getParamValue(paramString, colName, colValue);
+		}else {
 			int current = 0;
 			while (true) { 
 				if(matcher.find()){
@@ -338,11 +340,6 @@ public class T24QueryFormatter {
 					break;
 				}
 			}
-    	}else{
-			if (!paramString.startsWith("?")) 
-				throw new T24ParseException("Incorrect parameter: " + paramString);
-			
-			res = getParamValue(paramString, colName, colValue);
     	}
 
 		return (res==null?"":res.trim());
@@ -390,7 +387,8 @@ public class T24QueryFormatter {
             }
         }
         if (!changed && commandParams.size() % 2 == 0) {
-            value = commandParams.get(commandParams.size() - 1);
+//            value = commandParams.get(commandParams.size() - 1);
+			value = getValueForComandParam(commandParams.size() - 1, commandParams, colName, colValue);
         }
         result.put(fieldName, value);
     }
