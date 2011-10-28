@@ -193,6 +193,11 @@ public class T24Connection implements Connection {
             } catch (Exception e) {
 				T24QueryFormatter.logger.warn("Can't close T24 connection: "+e);
             }
+            try {
+            	TCConnectionPool.releaseConnection(tcChannel,(TCConnectionImpl)tcConnection);
+            }catch(Exception e){
+				T24QueryFormatter.logger.warn("Can't release T24 connection: "+e);
+            }
             tcConnection = null;
         }
     }
