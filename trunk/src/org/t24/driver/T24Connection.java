@@ -33,7 +33,13 @@ public class T24Connection implements Connection {
     public static final String CHARSET = "charset";
     private static TCCFactory tcFactory = null;
     private TCConnection tcConnection = null;
-    private String tcChannel;
+    
+    private int currentChannel=0;
+    private String tcChannels[];
+    private long channelTimeout=10*60*1000;
+    //last time in millis when connection has been established
+    private long lastConnectTime=0;
+    
     protected String tcUser;
     protected String tcPass;
     private String tcCharset;
@@ -67,6 +73,7 @@ public class T24Connection implements Connection {
         		ofsResp = sb.toString();
         	}else{
         		for(int reconnectCount=0;;reconnectCount++){
+        			this.checkConnection();
 					String charsetOFS = new String(ofs.getBytes(tcCharset));
 
 					TCRequest tcSendRequest = tcFactory.createOfsRequest(charsetOFS, false);
@@ -102,10 +109,10 @@ public class T24Connection implements Connection {
 								if( errorMessage.indexOf("the channel is not opened") >= 0 ){
 									if(reconnectCount<1){
 										T24QueryFormatter.logger.warn("Try to reconnect because of error from T24: "+ex);
-										this.reconnect();
+										this.close();
 										continue; //reconnect/resend request cycle
 									}else{
-										this.reconnect();
+										this.close();
 									}
 								}
 							}
@@ -138,21 +145,32 @@ public class T24Connection implements Connection {
      */
     protected T24Connection(Properties info) throws SQLException {
         super();
-        tcChannel = info.getProperty(CHANNEL);
+        tcChannels = info.getProperty(CHANNEL,"").split(",");
+        if(tcChannels.length==0)throw new T24Exception("T24 channel not defined in connection url.");
         tcUser = info.getProperty(USER);
         tcPass = info.getProperty(PASS);
         tcCharset = info.getProperty(CHARSET);
         if (tcCharset == null || tcCharset.length() == 0) {
             tcCharset = java.nio.charset.Charset.defaultCharset().name();
         }
-        this.reconnect();
+        this.checkConnection();
     }
     
     
-    protected void reconnect() throws SQLException {
+/*    
+    protected void reconnect(boolean switchChannel) throws SQLException {
        	this.close();
+       	
+       	//manage channels if we have more then one
+       	if( switchChannel && tcChannels.length>1 ){
+       		currentChannel++;
+       		if(currentChannel>=tcChannels.length){
+       			currentChannel=0;
+       		}
+       	}
+       	
         try {
-        	if(TESTCHANNEL.equals(tcChannel)) {
+        	if(TESTCHANNEL.equals(tcChannels[currentChannel])) {
         		//don't connect ! it's just a test channel
         		isTestMode=true;
         	}else{
@@ -161,12 +179,79 @@ public class T24Connection implements Connection {
 					tcFactory = TCCFactory.getInstance();
 					tcFactory.setDefaultCharSet(tcCharset);
 				}
-				tcConnection = tcFactory.createTCConnection(tcChannel);
+				
+				tcConnection = tcFactory.createTCConnection(tcChannels[currentChannel]);
         	}
         } catch (Exception e) {
             throw new T24Exception("T24 Connection Error: " + e.getMessage());
         }
     }
+*/    
+    protected void checkConnection()throws SQLException{
+    	Exception conEx=null;
+    	
+		isTestMode=false;
+    	if(TESTCHANNEL.equals(tcChannels[currentChannel])) {
+    		//don't connect ! it's just a test channel
+    		isTestMode=true;
+    		return;
+    	}
+    	
+    	if( lastConnectTime+channelTimeout<System.currentTimeMillis() && currentChannel>0 ){
+			T24QueryFormatter.logger.warn("Disconnect from secondary channel because of timeout.");
+    		currentChannel=0;
+    		this.close();
+    	}
+    	
+		if (tcFactory == null) {
+			tcFactory = TCCFactory.getInstance();
+			tcFactory.setDefaultCharSet(tcCharset);
+		}
+    	
+    	if( tcConnection==null ){
+			for(int i=0;i<tcChannels.length;i++){
+				try {
+					conEx=null;
+					currentChannel=i;
+					tcConnection = tcFactory.createTCConnection(tcChannels[currentChannel]);
+					ping();
+					lastConnectTime=System.currentTimeMillis();
+					if(currentChannel==0)T24QueryFormatter.logger.warn("Connected to primary channel: "+tcChannels[currentChannel]);
+					if(currentChannel>0)T24QueryFormatter.logger.warn("Connected to secondary channel: "+tcChannels[currentChannel]);
+				} catch (Exception e) {
+					T24QueryFormatter.logger.warn("Failed to connect channel: "+tcChannels[currentChannel]);
+					conEx=e;
+					this.close();
+				}
+			}
+    	}
+    	
+    	
+    	if(tcConnection==null){
+    		throw new T24Exception("T24 Connection Error: " + conEx.getMessage(),conEx);
+    	}
+    	
+    	
+    }
+    
+    private void ping()throws SQLException{
+		InnerPing r = new InnerPing();
+		r.tcConnection=this.tcConnection;
+		
+		Thread th = new Thread(r);
+		try{
+			th.start();
+			synchronized(r){
+				r.wait(600);
+			}
+			th.stop();
+		}catch (InterruptedException e){
+			throw new T24Exception("T24 Ping timeout in 600 ms.",e);
+		}
+		if(r.ex!=null)throw new T24Exception("T24 Ping failed.",r.ex);
+    }
+    
+    
     
 
 
@@ -194,7 +279,7 @@ public class T24Connection implements Connection {
 				T24QueryFormatter.logger.warn("Can't close T24 connection: "+e);
             }
             try {
-            	TCConnectionPool.releaseConnection(tcChannel,(TCConnectionImpl)tcConnection);
+            	TCConnectionPool.releaseConnection(tcChannels[currentChannel],(TCConnectionImpl)tcConnection);
             }catch(Exception e){
 				T24QueryFormatter.logger.warn("Can't release T24 connection: "+e);
             }
@@ -665,6 +750,9 @@ public class T24Connection implements Connection {
 
     //finalization
     protected void finalize() {
+    	try{
+	    	this.close();
+    	}catch(Exception e){}
     }
 
 
@@ -699,6 +787,21 @@ public class T24Connection implements Connection {
 		}		
 	}
     
+	private class InnerPing implements Runnable{
+		TCConnection tcConnection = null;
+		Exception ex = null;
+		
+		public void run(){
+			try{
+				if( !this.tcConnection.ping() )throw new Exception("T24 ping failed.");
+			}catch (Exception e){
+				ex = e;
+			}
+			synchronized(this){
+				this.notify();
+			}
+		}		
+	}
     
     
     /*
