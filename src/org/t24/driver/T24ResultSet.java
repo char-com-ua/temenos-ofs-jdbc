@@ -141,8 +141,6 @@ public class T24ResultSet implements ResultSet {
     private ArrayList<ArrayList> data = new ArrayList<ArrayList>();
     private int currentRow = 0;
     private boolean wasNull;
-    private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
-    private static SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyyMMddHHmm");
     protected Statement statement = null;
     
 
@@ -154,6 +152,14 @@ public class T24ResultSet implements ResultSet {
         }
     }
 
+    private static SimpleDateFormat sdfDate(){
+    	return new SimpleDateFormat("yyyyMMdd");
+    }
+    
+    private static SimpleDateFormat sdfDateTime(){
+    	return new SimpleDateFormat("yyyyMMddHHmm");
+    }
+    
     protected int getRowCount() {
         return data.size();
     }
@@ -584,9 +590,9 @@ public class T24ResultSet implements ResultSet {
         try {
             java.util.Date d;
             if (value.length() > 8) {
-                d = sdfDateTime.parse(value);
+                d = sdfDateTime().parse(value);
             } else {
-                d = sdfDate.parse(value);
+                d = sdfDate().parse(value);
             }
             return new java.sql.Date(d.getTime());
         } catch (Exception e) {
