@@ -18,8 +18,14 @@ public class T24PreparedStatement implements PreparedStatement {
     private int queryTimeout = 120;
 
 	
-    private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
-    private static SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyyMMddHHmm");
+    private static SimpleDateFormat sdfDate(){
+    	return new SimpleDateFormat("yyyyMMdd");
+    }
+    
+    private static SimpleDateFormat sdfDateTime(){
+    	return new SimpleDateFormat("yyyyMMddHHmm");
+    }
+    
 	       
 	protected T24PreparedStatement(T24Connection con, String sql)throws SQLException{
 		this.con=con;
@@ -118,7 +124,7 @@ public class T24PreparedStatement implements PreparedStatement {
     }
 
     public void setDate(int parameterIndex, java.sql.Date x) throws SQLException{
-		param.set( parameterIndex-1, x==null?null:sdfDate.format(x) );
+		param.set( parameterIndex-1, x==null?null:sdfDate().format(x) );
     }
 
     public void clearParameters() throws SQLException{
