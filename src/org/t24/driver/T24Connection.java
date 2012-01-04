@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Savepoint;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.UUID;
 import com.temenos.tocf.tcc.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,13 +46,45 @@ public class T24Connection implements Connection {
     private String tcCharset;
     private static final String TESTCHANNEL="TESTCHANNEL";
     private boolean isTestMode=false;
+    
+    
+	public static byte[] toByteArray(UUID uuid) {
+		long msb = uuid.getMostSignificantBits();
+		long lsb = uuid.getLeastSignificantBits();
+		byte[] buffer = new byte[16];
+		for (int i = 0; i < 8; i++) {
+				buffer[i] = (byte) (msb >>> 8 * (7 - i));
+		}
+		for (int i = 8; i < 16; i++) {
+				buffer[i] = (byte) (lsb >>> 8 * (7 - i));
+		}
+		return buffer;
+	}
+	/*
+	public static byte[] toString(UUID uuid) {
+		return Long.toHexString(uuid.getMostSignificantBits())+Long.toHexString(uuid.getLeastSignificantBits());
+	}
+	*/
+	public static String toString(byte [] b){
+		String s="0123456789abcdef";
+		StringBuffer out=new StringBuffer(b.length*2);
+		for(int i=0;i<b.length; i++){
+			out.append( s.charAt( (0xF0&b[i])>>4 ) );
+			out.append( s.charAt( 0x0F&b[i] ) );
+		}
+		return out.toString();
+	}
+	
+    
 
     public String t24Send(String ofs, int queryTimeout) throws SQLException {
         //maybe in the future we have to set user/password here ?
         try {
         	String ofsResp;
         	//generate pseudo unique id for logging
-        	String ofsId=Long.toHexString(java.util.UUID.randomUUID().getMostSignificantBits());
+        	java.util.UUID uuid=java.util.UUID.randomUUID();
+        	byte [] buuid=toByteArray(uuid);
+        	String ofsId=Long.toHexString(uuid.getMostSignificantBits());
 			long startT = System.currentTimeMillis(); 
 			T24QueryFormatter.logger.info("OFS_REQ("+ofsId+"): " + ofs.replaceAll(tcPass, "\\$PASSWORD"));
         	
@@ -75,17 +108,21 @@ public class T24Connection implements Connection {
         		for(int reconnectCount=0;;reconnectCount++){
         			this.checkConnection();
 					String charsetOFS = new String(ofs.getBytes(tcCharset));
-
+					
 					TCRequest tcSendRequest = tcFactory.createOfsRequest(charsetOFS, false);
+					//set IDs for the request
+					((TCRequestImpl)tcSendRequest).setCorrelationId( buuid );
+					((TCRequestImpl)tcSendRequest).setRequestId( new com.temenos.tocf.ofsml.RequestID( toString(buuid).getBytes() ) );
 					
 					InnerSend innerSend = new InnerSend(tcSendRequest, tcConnection);
 					Thread th = new Thread(innerSend);
 					try{
+						if(queryTimeout<=0)queryTimeout=120;
+						tcConnection.setMaximumRetryCount(2);
+						tcConnection.setRetryInterval(queryTimeout/2); //because we have 2 retries. ??? maybe we should have just one?
+						
 						th.start();
 						synchronized(innerSend){
-							if(queryTimeout<=0)queryTimeout=120;
-							tcConnection.setMaximumRetryCount(2);
-							tcConnection.setRetryInterval(queryTimeout/2); //because we have 2 retries. ??? maybe we should have just one?
 							innerSend.wait((queryTimeout+1)*1000); //+1 to give chance to t24 to finish request itself.
 						}
 						th.stop();
@@ -119,6 +156,20 @@ public class T24Connection implements Connection {
 							throw new T24Exception("Couldn't not send request to T24: " + ex.getMessage(), ex);
 						}
 					}
+					//check IDs of the response
+					try {
+						if( !((TCResponseImpl)tcResponse).getResponseId().equals( toString(buuid) ) ){
+							throw new T24Exception("The IDs of the OFS request and response are not equal: "+
+									((TCResponseImpl)tcResponse).getResponseId()+" != "+toString(buuid));
+						}
+						if( !java.util.Arrays.equals( tcResponse.getCorrelationId(), buuid )  ){
+							throw new T24Exception("The correlation IDs of the OFS request and response are not equal: "+
+									toString(tcResponse.getCorrelationId())+" != "+toString(buuid));
+						}
+					}catch(Exception idce){
+						throw new T24Exception("Failed to compare OFS IDs :"+idce);
+					}
+					//done
 					ofsResp = tcResponse.getOFSString();
 					//we got response so let's stop cycle
 					break;
@@ -127,6 +178,7 @@ public class T24Connection implements Connection {
 			T24QueryFormatter.logger.info("OFS_RES("+ofsId+","+(System.currentTimeMillis()-startT)+"ms): " + ofsResp.replaceAll(tcPass, "\\$PASSWORD"));
             return ofsResp;
         } catch (Throwable e) {
+        	if(e instanceof T24Exception)throw (T24Exception)e;
             throw new T24Exception("T24 Send Exception: " + e.getMessage(), e);
         }
     }
