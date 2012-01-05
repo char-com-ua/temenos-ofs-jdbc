@@ -139,8 +139,6 @@ public class T24QueryFormatter {
 	*/
 	protected void postEvaluate(String line, T24ResultSet result, List<String> queryParam) throws SQLException{
 		if (result == null) {return;}
-		Map<String,String> postParam=new HashMap<String,String>(2); //initial count = 2
-		
 		
 		if(line.matches("^FILTER\\s+MATCHES\\s+.*")){
 			String expression=line.replaceAll("^FILTER\\s+\\w+\\s+(.*)$","$1");
@@ -157,7 +155,22 @@ public class T24QueryFormatter {
 					}
 				}
 			}
-		}else{
+		} else if( line.matches("^ASSERT\\s+EQUALS\\s+.*") ) {
+			String expression=line.replaceAll("^ASSERT\\s+EQUALS\\s+(.*)$","$1");
+	        List<String> commandParams = getCommandParams(expression);
+	        if(commandParams.size()!=2)throw new T24Exception("ASSERT EQUALS command must be followed by two parameters: "+line);
+	        //go through all resultset lines and do assert check for them
+			for(int i=1; i <= result.getRowCount(); i++ ) {
+				//get first and second values
+				String v1 = getValueForComandParamEx(0, commandParams, queryParam, 
+							((T24ResultSetMetaData)result.getMetaData()).getColumnNames(), result.getDataRow(i) );
+				String v2 = getValueForComandParamEx(1, commandParams, queryParam, 
+							((T24ResultSetMetaData)result.getMetaData()).getColumnNames(), result.getDataRow(i) );
+				//compare values
+				if( v1.length()>0 && !v1.equals(v2) )throw new T24Exception(line+" Failed: \""+v1+"\" != \""+v2+"\"");
+			}
+		} else {
+			Map<String,String> postParam=new HashMap<String,String>(2); //initial count = 2
 			for(int i=1; i <= result.getRowCount(); i++ ) {
 				evaluate(line, ((T24ResultSetMetaData)result.getMetaData()).getColumnNames(), result.getDataRow(i), postParam);
 				//now go through all key/values
@@ -309,6 +322,23 @@ public class T24QueryFormatter {
 
     private List<String> getCommandParams(String expression) throws SQLException{
     	return CommandParamParser.parse(expression);
+    }
+    
+    private String getValueForComandParamEx(int paramNumber, 
+    				List<String> commandParams, List<String> unnamedValue, List<String> namedName, List<String> namedValue) throws T24Exception
+    {
+		if (commandParams == null) {
+			throw new T24ParseException("Incorrect parameters: null");
+		}
+		String paramString = commandParams.get(paramNumber);
+		if( paramString.matches("\\?\\d+") || paramString.matches(".*\\?\\{\\d+\\}.*") ){
+			//this case for unnamed parameters
+			return getValueForComandParam(paramNumber, commandParams, null, unnamedValue);
+		}else{
+			//this case for named parameters
+			return getValueForComandParam(paramNumber, commandParams, namedName, namedValue);
+		}
+    	
     }
 
     private String getValueForComandParam(int paramNumber, List<String> commandParams, List<String> colName, List<String> colValue) throws T24Exception{
