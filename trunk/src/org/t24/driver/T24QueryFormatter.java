@@ -169,6 +169,19 @@ public class T24QueryFormatter {
 				//compare values
 				if( v1.length()>0 && !v1.equals(v2) )throw new T24Exception(line+" Failed: \""+v1+"\" != \""+v2+"\"");
 			}
+		} else if( line.matches("^ASSERT\\s+MATCHES\\s+.*") ) {
+			String expression=line.replaceAll("^ASSERT\\s+MATCHES\\s+(.*)$","$1");
+	        List<String> commandParams = getCommandParams(expression);
+	        if(commandParams.size()!=2)throw new T24Exception("ASSERT MATCHES command must be followed by two parameters: "+line);
+	        //go through all resultset lines and do assert check for them
+			for(int i=1; i <= result.getRowCount(); i++ ) {
+				//get first and second values
+				String v1 = getValueForComandParamEx(0, commandParams, queryParam, 
+							((T24ResultSetMetaData)result.getMetaData()).getColumnNames(), result.getDataRow(i) );
+				String v2 = commandParams.get(1);
+				//match value
+				if( !v1.matches(v2) )throw new T24Exception(line+" Failed: \""+v1+"\".matches( \""+v2+"\" )");
+			}
 		} else {
 			Map<String,String> postParam=new HashMap<String,String>(2); //initial count = 2
 			for(int i=1; i <= result.getRowCount(); i++ ) {
