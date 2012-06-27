@@ -43,7 +43,6 @@ FILTER MATCHES "?{customer.status}" "1"
 //the next ofs will be sent to server when first input parameter is empty
 SENDOFS {{setIfNull ?1 TRUE FALSE}} ENQUIRY.SELECT,,{{USER}}/{{PASS}},ENQ.MW.CUST.LWEXISTS
 	TAX.ID:EQ=			set ?2
-	SECTOR:EQ=			const 2
 END
 
 //substitute first parameter with value CUST.ID from the resultset
