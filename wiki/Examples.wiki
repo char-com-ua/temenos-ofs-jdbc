@@ -36,7 +36,7 @@ FILTER MATCHES "?{customer.status}" "1"
 *parameters*
 ||1||customerId|| ||
 ||2||taxId|| Customer tax number. Used if customerId is not provided. ||
-||3||New target for the customer||
+||3||newTarget||New target for the customer||
 
 {{{
 //search for the customer ID if it's not provided by first parameter
