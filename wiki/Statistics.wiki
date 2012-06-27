@@ -1,3 +1,7 @@
 #summary ofsjdbc usage statistics through wso2 dataservices in the bank
 
+*hourly statistics*
 http://temenos-ofs-jdbc.googlecode.com/files/chartWsUsage.png
+
+*dayly statistics*
+http://temenos-ofs-jdbc.googlecode.com/files/chartWsUsageDay.png
