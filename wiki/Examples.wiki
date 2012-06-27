@@ -1,4 +1,5 @@
 #summary ofs request examples
+#labels Featured
 
 ===ASSERT EQUALS===
 {{{
