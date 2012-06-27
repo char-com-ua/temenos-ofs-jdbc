@@ -1,3 +1,3 @@
-#ofsjdbc usage statistics therough wso2 dataservices in the bank
+#summary ofsjdbc usage statistics therough wso2 dataservices in the bank
 
 http://temenos-ofs-jdbc.googlecode.com/files/chartWsUsage.png
