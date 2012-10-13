@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 import java.text.*;
+import java.io.Reader;
+import java.io.InputStream;
 
 
 public class T24PreparedStatement implements PreparedStatement {
@@ -349,7 +351,7 @@ public class T24PreparedStatement implements PreparedStatement {
     }
 
     //!!!!!  Wrapper    !!!!!!
-    <T> T unwrap(java.lang.Class<T> iface) throws java.sql.SQLException {
+    public <T> T unwrap(java.lang.Class<T> iface) throws java.sql.SQLException {
         throw new T24FeatureNotSupportedException();
     }
 
@@ -359,12 +361,11 @@ public class T24PreparedStatement implements PreparedStatement {
     
     
     
-    
+	/* java 6 */    
     
     
     
 
-/*
     public void setRowId(int parameterIndex, RowId x) throws SQLException{
     	throw new T24FeatureNotSupportedException();
     }
@@ -456,6 +457,5 @@ public class T24PreparedStatement implements PreparedStatement {
        throws SQLException{
     	throw new T24FeatureNotSupportedException();
     }
-*/
        
 }

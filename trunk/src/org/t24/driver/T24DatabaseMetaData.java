@@ -1,5 +1,7 @@
 package org.t24.driver;
 
+import java.sql.*;
+
 public class T24DatabaseMetaData implements DatabaseMetaData {
 	T24Connection conn;
 	
@@ -17,7 +19,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean allProceduresAreCallable() throws SQLException{return false;}
+    public boolean allProceduresAreCallable() throws SQLException{return false;}
 
     /**
      * Retrieves whether the current user can use all the tables returned 
@@ -27,7 +29,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean allTablesAreSelectable() throws SQLException{return false;}
+    public boolean allTablesAreSelectable() throws SQLException{return false;}
 
     /**
      * Retrieves the URL for this DBMS.
@@ -36,7 +38,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *          generated
      * @exception SQLException if a database access error occurs
      */
-    String getURL() throws SQLException{return null;}
+    public String getURL() throws SQLException{return null;}
 
     /**
      * Retrieves the user name as known to this database.
@@ -44,7 +46,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return the database user name
      * @exception SQLException if a database access error occurs
      */
-    String getUserName() throws SQLException{return conn.tcUser;}
+    public String getUserName() throws SQLException{return conn.tcUser;}
 
     /**
      * Retrieves whether this database is in read-only mode.
@@ -52,7 +54,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean isReadOnly() throws SQLException{return false;}
+    public boolean isReadOnly() throws SQLException{return false;}
 
     /**
      * Retrieves whether <code>NULL</code> values are sorted high.
@@ -66,7 +68,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean nullsAreSortedHigh() throws SQLException{return true;}
+    public boolean nullsAreSortedHigh() throws SQLException{return true;}
 
     /**
      * Retrieves whether <code>NULL</code> values are sorted low.
@@ -80,7 +82,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean nullsAreSortedLow() throws SQLException{return false;}
+    public boolean nullsAreSortedLow() throws SQLException{return false;}
 
     /**
      * Retrieves whether <code>NULL</code> values are sorted at the start regardless 
@@ -89,7 +91,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean nullsAreSortedAtStart() throws SQLException{return true;}
+    public boolean nullsAreSortedAtStart() throws SQLException{return true;}
 
     /**
      * Retrieves whether <code>NULL</code> values are sorted at the end regardless of 
@@ -98,7 +100,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean nullsAreSortedAtEnd() throws SQLException{return false;}
+    public boolean nullsAreSortedAtEnd() throws SQLException{return false;}
 
     /**
      * Retrieves the name of this database product.
@@ -106,7 +108,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return database product name
      * @exception SQLException if a database access error occurs
      */
-    String getDatabaseProductName() throws SQLException{return "Temenos T24";}
+    public String getDatabaseProductName() throws SQLException{return "Temenos T24";}
 
     /**
      * Retrieves the version number of this database product.
@@ -114,7 +116,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return database version number
      * @exception SQLException if a database access error occurs
      */
-    String getDatabaseProductVersion() throws SQLException{return "X.X";}
+    public String getDatabaseProductVersion() throws SQLException{return "X.X";}
 
     /**
      * Retrieves the name of this JDBC driver.
@@ -122,7 +124,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return JDBC driver name
      * @exception SQLException if a database access error occurs
      */
-    String getDriverName() throws SQLException{return "org.t24.driver";}
+    public String getDriverName() throws SQLException{return "org.t24.driver";}
 
     /**
      * Retrieves the version number of this JDBC driver as a <code>String</code>.
@@ -130,21 +132,21 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return JDBC driver version
      * @exception SQLException if a database access error occurs
      */
-    String getDriverVersion() throws SQLException{return "0.0";}
+    public String getDriverVersion() throws SQLException{return "0.0";}
 
     /**
      * Retrieves this JDBC driver's major version number.
      *
      * @return JDBC driver major version
      */
-    int getDriverMajorVersion(){return 0;}
+    public int getDriverMajorVersion(){return 0;}
 
     /**
      * Retrieves this JDBC driver's minor version number.
      *
      * @return JDBC driver minor version number
      */
-    int getDriverMinorVersion(){return 0;}
+    public int getDriverMinorVersion(){return 0;}
 
     /**
      * Retrieves whether this database stores tables in a local file.
@@ -152,7 +154,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean usesLocalFiles() throws SQLException{return false;}
+    public boolean usesLocalFiles() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database uses a file for each table.
@@ -161,7 +163,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *         <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean usesLocalFilePerTable() throws SQLException{return false;}
+    public boolean usesLocalFilePerTable() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database treats mixed case unquoted SQL identifiers as
@@ -170,7 +172,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsMixedCaseIdentifiers() throws SQLException{return true;}
+    public boolean supportsMixedCaseIdentifiers() throws SQLException{return true;}
 
     /**
      * Retrieves whether this database treats mixed case unquoted SQL identifiers as
@@ -179,7 +181,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean storesUpperCaseIdentifiers() throws SQLException{return false;}
+    public boolean storesUpperCaseIdentifiers() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database treats mixed case unquoted SQL identifiers as
@@ -188,7 +190,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean storesLowerCaseIdentifiers() throws SQLException{return false;}
+    public boolean storesLowerCaseIdentifiers() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database treats mixed case unquoted SQL identifiers as
@@ -197,7 +199,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean storesMixedCaseIdentifiers() throws SQLException{return true;}
+    public boolean storesMixedCaseIdentifiers() throws SQLException{return true;}
 
     /**
      * Retrieves whether this database treats mixed case quoted SQL identifiers as
@@ -206,7 +208,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsMixedCaseQuotedIdentifiers() throws SQLException{return true;}
+    public boolean supportsMixedCaseQuotedIdentifiers() throws SQLException{return true;}
 
     /**
      * Retrieves whether this database treats mixed case quoted SQL identifiers as
@@ -215,7 +217,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean storesUpperCaseQuotedIdentifiers() throws SQLException{return false;}
+    public boolean storesUpperCaseQuotedIdentifiers() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database treats mixed case quoted SQL identifiers as
@@ -224,7 +226,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean storesLowerCaseQuotedIdentifiers() throws SQLException{return false;}
+    public boolean storesLowerCaseQuotedIdentifiers() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database treats mixed case quoted SQL identifiers as
@@ -233,7 +235,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean storesMixedCaseQuotedIdentifiers() throws SQLException{return false;}
+    public boolean storesMixedCaseQuotedIdentifiers() throws SQLException{return false;}
 
     /**
      * Retrieves the string used to quote SQL identifiers.
@@ -242,7 +244,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return the quoting string or a space if quoting is not supported
      * @exception SQLException if a database access error occurs
      */
-    String getIdentifierQuoteString() throws SQLException{return " ";}
+    public String getIdentifierQuoteString() throws SQLException{return " ";}
 
     /**
      * Retrieves a comma-separated list of all of this database's SQL keywords
@@ -252,7 +254,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *         SQL:2003 keywords
      * @exception SQLException if a database access error occurs
      */
-    String getSQLKeywords() throws SQLException{return "";}
+    public String getSQLKeywords() throws SQLException{return "";}
 
     /**
      * Retrieves a comma-separated list of math functions available with
@@ -262,7 +264,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return the list of math functions supported by this database
      * @exception SQLException if a database access error occurs
      */
-    String getNumericFunctions() throws SQLException{return "";}
+    public String getNumericFunctions() throws SQLException{return "";}
 
     /**
      * Retrieves a comma-separated list of string functions available with
@@ -272,7 +274,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return the list of string functions supported by this database 
      * @exception SQLException if a database access error occurs
      */
-    String getStringFunctions() throws SQLException{return "";}
+    public String getStringFunctions() throws SQLException{return "";}
 
     /**
      * Retrieves a comma-separated list of system functions available with
@@ -282,7 +284,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return a list of system functions supported by this database
      * @exception SQLException if a database access error occurs
      */
-    String getSystemFunctions() throws SQLException{return "";}
+    public String getSystemFunctions() throws SQLException{return "";}
 
     /**
      * Retrieves a comma-separated list of the time and date functions available 
@@ -291,7 +293,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return the list of time and date functions supported by this database
      * @exception SQLException if a database access error occurs
      */
-    String getTimeDateFunctions() throws SQLException{return "";}
+    public String getTimeDateFunctions() throws SQLException{return "";}
 
     /**
      * Retrieves the string that can be used to escape wildcard characters.
@@ -306,7 +308,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return the string used to escape wildcard characters
      * @exception SQLException if a database access error occurs
      */
-    String getSearchStringEscape() throws SQLException{return "";}
+    public String getSearchStringEscape() throws SQLException{return "";}
 
     /**
      * Retrieves all the "extra" characters that can be used in unquoted
@@ -315,7 +317,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return the string containing the extra characters 
      * @exception SQLException if a database access error occurs
      */
-    String getExtraNameCharacters() throws SQLException{return ".";}
+    public String getExtraNameCharacters() throws SQLException{return ".";}
 
     //--------------------------------------------------------------------
     // Functions describing which features are supported.
@@ -327,7 +329,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsAlterTableWithAddColumn() throws SQLException{return false;}
+    public boolean supportsAlterTableWithAddColumn() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports <code>ALTER TABLE</code>
@@ -336,7 +338,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsAlterTableWithDropColumn() throws SQLException{return false;}
+    public boolean supportsAlterTableWithDropColumn() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports column aliasing.
@@ -348,7 +350,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsColumnAliasing() throws SQLException{return false;}
+    public boolean supportsColumnAliasing() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports concatenations between 
@@ -358,7 +360,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean nullPlusNonNullIsNull() throws SQLException{return false;}
+    public boolean nullPlusNonNullIsNull() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports the JDBC scalar function 
@@ -369,7 +371,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsConvert() throws SQLException{return false;}
+    public boolean supportsConvert() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports the JDBC scalar function 
@@ -385,7 +387,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see Types
      */
-    boolean supportsConvert(int fromType, int toType) throws SQLException{return false;}
+    public boolean supportsConvert(int fromType, int toType) throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports table correlation names.
@@ -393,7 +395,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsTableCorrelationNames() throws SQLException{return false;}
+    public boolean supportsTableCorrelationNames() throws SQLException{return false;}
 
     /**
      * Retrieves whether, when table correlation names are supported, they 
@@ -402,7 +404,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsDifferentTableCorrelationNames() throws SQLException{return false;}
+    public boolean supportsDifferentTableCorrelationNames() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports expressions in 
@@ -411,7 +413,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsExpressionsInOrderBy() throws SQLException{return false;}
+    public boolean supportsExpressionsInOrderBy() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports using a column that is
@@ -421,7 +423,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsOrderByUnrelated() throws SQLException{return false;}
+    public boolean supportsOrderByUnrelated() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports some form of 
@@ -430,7 +432,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsGroupBy() throws SQLException{return false;}
+    public boolean supportsGroupBy() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports using a column that is
@@ -440,7 +442,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsGroupByUnrelated() throws SQLException{return false;}
+    public boolean supportsGroupByUnrelated() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports using columns not included in
@@ -451,7 +453,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsGroupByBeyondSelect() throws SQLException{return false;}
+    public boolean supportsGroupByBeyondSelect() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports specifying a
@@ -460,7 +462,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsLikeEscapeClause() throws SQLException{return false;}
+    public boolean supportsLikeEscapeClause() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports getting multiple 
@@ -470,7 +472,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsMultipleResultSets() throws SQLException{return false;}
+    public boolean supportsMultipleResultSets() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database allows having multiple 
@@ -479,7 +481,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsMultipleTransactions() throws SQLException{return false;}
+    public boolean supportsMultipleTransactions() throws SQLException{return false;}
 
     /**
      * Retrieves whether columns in this database may be defined as non-nullable.
@@ -487,7 +489,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsNonNullableColumns() throws SQLException{return true;}
+    public boolean supportsNonNullableColumns() throws SQLException{return true;}
 
     /**
      * Retrieves whether this database supports the ODBC Minimum SQL grammar.
@@ -495,7 +497,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsMinimumSQLGrammar() throws SQLException{return false;}
+    public boolean supportsMinimumSQLGrammar() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports the ODBC Core SQL grammar.
@@ -503,7 +505,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsCoreSQLGrammar() throws SQLException{return false;}
+    public boolean supportsCoreSQLGrammar() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports the ODBC Extended SQL grammar.
@@ -511,7 +513,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsExtendedSQLGrammar() throws SQLException{return false;}
+    public boolean supportsExtendedSQLGrammar() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports the ANSI92 entry level SQL 
@@ -520,7 +522,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsANSI92EntryLevelSQL() throws SQLException{return false;}
+    public boolean supportsANSI92EntryLevelSQL() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports the ANSI92 intermediate SQL grammar supported.
@@ -528,7 +530,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsANSI92IntermediateSQL() throws SQLException{return false;}
+    public boolean supportsANSI92IntermediateSQL() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports the ANSI92 full SQL grammar supported.
@@ -536,7 +538,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsANSI92FullSQL() throws SQLException{return false;}
+    public boolean supportsANSI92FullSQL() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports the SQL Integrity 
@@ -545,7 +547,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsIntegrityEnhancementFacility() throws SQLException{return false;}
+    public boolean supportsIntegrityEnhancementFacility() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports some form of outer join.
@@ -553,7 +555,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsOuterJoins() throws SQLException{return false;}
+    public boolean supportsOuterJoins() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports full nested outer joins.
@@ -561,7 +563,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsFullOuterJoins() throws SQLException{return false;}
+    public boolean supportsFullOuterJoins() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database provides limited support for outer 
@@ -571,7 +573,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsLimitedOuterJoins() throws SQLException{return false;}
+    public boolean supportsLimitedOuterJoins() throws SQLException{return false;}
 
     /**
      * Retrieves the database vendor's preferred term for "schema".
@@ -579,7 +581,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return the vendor term for "schema"
      * @exception SQLException if a database access error occurs
      */
-    String getSchemaTerm() throws SQLException{return "schema";}
+    public String getSchemaTerm() throws SQLException{return "schema";}
 
     /**
      * Retrieves the database vendor's preferred term for "procedure".
@@ -587,7 +589,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return the vendor term for "procedure"
      * @exception SQLException if a database access error occurs
      */
-    String getProcedureTerm() throws SQLException{return "proc";}
+    public String getProcedureTerm() throws SQLException{return "proc";}
 
     /**
      * Retrieves the database vendor's preferred term for "catalog".
@@ -595,7 +597,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return the vendor term for "catalog"
      * @exception SQLException if a database access error occurs
      */
-    String getCatalogTerm() throws SQLException{return "catalog";}
+    public String getCatalogTerm() throws SQLException{return "catalog";}
 
     /**
      * Retrieves whether a catalog appears at the start of a fully qualified 
@@ -605,7 +607,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *         of a fully qualified table name; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean isCatalogAtStart() throws SQLException{return true;}
+    public boolean isCatalogAtStart() throws SQLException{return true;}
 
     /**
      * Retrieves the <code>String</code> that this database uses as the 
@@ -614,7 +616,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return the separator string
      * @exception SQLException if a database access error occurs
      */
-    String getCatalogSeparator() throws SQLException{return "-";}
+    public String getCatalogSeparator() throws SQLException{return "-";}
 
     /**
      * Retrieves whether a schema name can be used in a data manipulation statement.
@@ -622,7 +624,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsSchemasInDataManipulation() throws SQLException{return false;}
+    public boolean supportsSchemasInDataManipulation() throws SQLException{return false;}
 
     /**
      * Retrieves whether a schema name can be used in a procedure call statement.
@@ -630,7 +632,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsSchemasInProcedureCalls() throws SQLException{return false;}
+    public boolean supportsSchemasInProcedureCalls() throws SQLException{return false;}
 
     /**
      * Retrieves whether a schema name can be used in a table definition statement.
@@ -638,7 +640,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsSchemasInTableDefinitions() throws SQLException{return false;}
+    public boolean supportsSchemasInTableDefinitions() throws SQLException{return false;}
 
     /**
      * Retrieves whether a schema name can be used in an index definition statement.
@@ -646,7 +648,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsSchemasInIndexDefinitions() throws SQLException{return false;}
+    public boolean supportsSchemasInIndexDefinitions() throws SQLException{return false;}
 
     /**
      * Retrieves whether a schema name can be used in a privilege definition statement.
@@ -654,7 +656,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsSchemasInPrivilegeDefinitions() throws SQLException{return false;}
+    public boolean supportsSchemasInPrivilegeDefinitions() throws SQLException{return false;}
 
     /**
      * Retrieves whether a catalog name can be used in a data manipulation statement.
@@ -662,7 +664,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsCatalogsInDataManipulation() throws SQLException{return false;}
+    public boolean supportsCatalogsInDataManipulation() throws SQLException{return false;}
 
     /**
      * Retrieves whether a catalog name can be used in a procedure call statement.
@@ -670,7 +672,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsCatalogsInProcedureCalls() throws SQLException{return false;}
+    public boolean supportsCatalogsInProcedureCalls() throws SQLException{return false;}
 
     /**
      * Retrieves whether a catalog name can be used in a table definition statement.
@@ -678,7 +680,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsCatalogsInTableDefinitions() throws SQLException{return false;}
+    public boolean supportsCatalogsInTableDefinitions() throws SQLException{return false;}
 
     /**
      * Retrieves whether a catalog name can be used in an index definition statement.
@@ -686,7 +688,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsCatalogsInIndexDefinitions() throws SQLException{return false;}
+    public boolean supportsCatalogsInIndexDefinitions() throws SQLException{return false;}
 
     /**
      * Retrieves whether a catalog name can be used in a privilege definition statement.
@@ -694,7 +696,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsCatalogsInPrivilegeDefinitions() throws SQLException{return false;}
+    public boolean supportsCatalogsInPrivilegeDefinitions() throws SQLException{return false;}
 
 
     /**
@@ -704,7 +706,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsPositionedDelete() throws SQLException{return false;}
+    public boolean supportsPositionedDelete() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports positioned <code>UPDATE</code>
@@ -713,7 +715,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsPositionedUpdate() throws SQLException{return false;}
+    public boolean supportsPositionedUpdate() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports <code>SELECT FOR UPDATE</code>
@@ -722,7 +724,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsSelectForUpdate() throws SQLException{return false;}
+    public boolean supportsSelectForUpdate() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports stored procedure calls 
@@ -731,7 +733,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsStoredProcedures() throws SQLException{return false;}
+    public boolean supportsStoredProcedures() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports subqueries in comparison 
@@ -740,7 +742,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsSubqueriesInComparisons() throws SQLException{return false;}
+    public boolean supportsSubqueriesInComparisons() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports subqueries in 
@@ -749,7 +751,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsSubqueriesInExists() throws SQLException{return false;}
+    public boolean supportsSubqueriesInExists() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports subqueries in 
@@ -758,7 +760,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsSubqueriesInIns() throws SQLException{return false;}
+    public boolean supportsSubqueriesInIns() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports subqueries in quantified 
@@ -767,7 +769,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsSubqueriesInQuantifieds() throws SQLException{return false;}
+    public boolean supportsSubqueriesInQuantifieds() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports correlated subqueries.
@@ -775,7 +777,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsCorrelatedSubqueries() throws SQLException{return false;}
+    public boolean supportsCorrelatedSubqueries() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports SQL <code>UNION</code>.
@@ -783,7 +785,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsUnion() throws SQLException{return false;}
+    public boolean supportsUnion() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports SQL <code>UNION ALL</code>.
@@ -791,7 +793,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsUnionAll() throws SQLException{return false;}
+    public boolean supportsUnionAll() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports keeping cursors open 
@@ -801,7 +803,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *       <code>false</code> if they might not remain open
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsOpenCursorsAcrossCommit() throws SQLException{return false;}
+    public boolean supportsOpenCursorsAcrossCommit() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports keeping cursors open 
@@ -811,7 +813,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *       <code>false</code> if they might not remain open
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsOpenCursorsAcrossRollback() throws SQLException{return false;}
+    public boolean supportsOpenCursorsAcrossRollback() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports keeping statements open 
@@ -821,7 +823,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *       <code>false</code> if they might not remain open
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsOpenStatementsAcrossCommit() throws SQLException{return false;}
+    public boolean supportsOpenStatementsAcrossCommit() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports keeping statements open 
@@ -831,7 +833,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *       <code>false</code> if they might not remain open
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsOpenStatementsAcrossRollback() throws SQLException{return false;}
+    public boolean supportsOpenStatementsAcrossRollback() throws SQLException{return false;}
 
 	
 
@@ -850,7 +852,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxBinaryLiteralLength() throws SQLException{return 0;}
+    public int getMaxBinaryLiteralLength() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of characters this database allows 
@@ -861,7 +863,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxCharLiteralLength() throws SQLException{return 0;}
+    public int getMaxCharLiteralLength() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of characters this database allows
@@ -872,7 +874,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxColumnNameLength() throws SQLException{return 32;}
+    public int getMaxColumnNameLength() throws SQLException{return 32;}
 
     /**
      * Retrieves the maximum number of columns this database allows in a 
@@ -883,7 +885,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxColumnsInGroupBy() throws SQLException{return 0;}
+    public int getMaxColumnsInGroupBy() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of columns this database allows in an index.
@@ -893,7 +895,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxColumnsInIndex() throws SQLException{return 0;}
+    public int getMaxColumnsInIndex() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of columns this database allows in an 
@@ -904,7 +906,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxColumnsInOrderBy() throws SQLException{return 0;}
+    public int getMaxColumnsInOrderBy() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of columns this database allows in a 
@@ -915,7 +917,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxColumnsInSelect() throws SQLException{return 0;}
+    public int getMaxColumnsInSelect() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of columns this database allows in a table.
@@ -925,7 +927,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxColumnsInTable() throws SQLException{return 0;}
+    public int getMaxColumnsInTable() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of concurrent connections to this
@@ -936,7 +938,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxConnections() throws SQLException{return 0;}
+    public int getMaxConnections() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of characters that this database allows in a
@@ -947,7 +949,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxCursorNameLength() throws SQLException{return 0;}
+    public int getMaxCursorNameLength() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of bytes this database allows for an 
@@ -959,7 +961,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxIndexLength() throws SQLException{return 0;}
+    public int getMaxIndexLength() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of characters that this database allows in a
@@ -970,7 +972,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxSchemaNameLength() throws SQLException{return 0;}
+    public int getMaxSchemaNameLength() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of characters that this database allows in a
@@ -981,7 +983,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxProcedureNameLength() throws SQLException{return 0;}
+    public int getMaxProcedureNameLength() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of characters that this database allows in a
@@ -992,7 +994,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxCatalogNameLength() throws SQLException{return 0;}
+    public int getMaxCatalogNameLength() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of bytes this database allows in
@@ -1002,7 +1004,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *         zero means that there is no limit or the limit is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxRowSize() throws SQLException{return 0;}
+    public int getMaxRowSize() throws SQLException{return 0;}
 
     /**
      * Retrieves whether the return value for the method 
@@ -1012,7 +1014,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean doesMaxRowSizeIncludeBlobs() throws SQLException{return false;}
+    public boolean doesMaxRowSizeIncludeBlobs() throws SQLException{return false;}
 
     /**
      * Retrieves the maximum number of characters this database allows in
@@ -1023,7 +1025,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxStatementLength() throws SQLException{return 0;}
+    public int getMaxStatementLength() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of active statements to this database
@@ -1034,7 +1036,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxStatements() throws SQLException{return 0;}
+    public int getMaxStatements() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of characters this database allows in
@@ -1045,7 +1047,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxTableNameLength() throws SQLException{return 0;}
+    public int getMaxTableNameLength() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of tables this database allows in a
@@ -1056,7 +1058,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *         the limit is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxTablesInSelect() throws SQLException{return 0;}
+    public int getMaxTablesInSelect() throws SQLException{return 0;}
 
     /**
      * Retrieves the maximum number of characters this database allows in
@@ -1067,7 +1069,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *      is not known
      * @exception SQLException if a database access error occurs
      */
-    int getMaxUserNameLength() throws SQLException{return 0;}
+    public int getMaxUserNameLength() throws SQLException{return 0;}
 
     //----------------------------------------------------------------------
 
@@ -1079,7 +1081,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see Connection
      */
-    int getDefaultTransactionIsolation() throws SQLException{return 0;}
+    public int getDefaultTransactionIsolation() throws SQLException{return 0;}
 
     /**
      * Retrieves whether this database supports transactions. If not, invoking the
@@ -1090,7 +1092,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *         <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsTransactions() throws SQLException{return false;}
+    public boolean supportsTransactions() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports the given transaction isolation level.
@@ -1101,7 +1103,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see Connection
      */
-    boolean supportsTransactionIsolationLevel(int level)
+    public boolean supportsTransactionIsolationLevel(int level)
 	throws SQLException{return false;}
 
     /**
@@ -1111,7 +1113,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsDataDefinitionAndDataManipulationTransactions()
+    public boolean supportsDataDefinitionAndDataManipulationTransactions()
 	throws SQLException{return false;}
     /**
      * Retrieves whether this database supports only data manipulation 
@@ -1120,7 +1122,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    boolean supportsDataManipulationTransactionsOnly()
+    public boolean supportsDataManipulationTransactionsOnly()
 	throws SQLException{return false;}
 
     /**
@@ -1130,7 +1132,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean dataDefinitionCausesTransactionCommit()
+    public boolean dataDefinitionCausesTransactionCommit()
 	throws SQLException{return false;}
 
     /**
@@ -1140,7 +1142,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise 
      * @exception SQLException if a database access error occurs
      */
-    boolean dataDefinitionIgnoredInTransactions()
+    public boolean dataDefinitionIgnoredInTransactions()
 	throws SQLException{return false;}
 
     /**
@@ -1189,7 +1191,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see #getSearchStringEscape 
      */
-    ResultSet getProcedures(String catalog, String schemaPattern,
+    public ResultSet getProcedures(String catalog, String schemaPattern,
 			    String procedureNamePattern) throws SQLException{throw new T24FeatureNotSupportedException();}
 
     /**
@@ -1200,7 +1202,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getProcedures</code>.
      */
-    int procedureResultUnknown	= 0;
+    public int procedureResultUnknown	= 0;
 
     /**
      * Indicates that the procedure does not return a result.
@@ -1209,7 +1211,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getProcedures</code>.
      */
-    int procedureNoResult		= 1;
+    public int procedureNoResult		= 1;
 
     /**
      * Indicates that the procedure returns a result.
@@ -1218,7 +1220,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getProcedures</code>.
      */
-    int procedureReturnsResult	= 2;
+    public int procedureReturnsResult	= 2;
 
     /**
      * Retrieves a description of the given catalog's stored procedure parameter
@@ -1312,7 +1314,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see #getSearchStringEscape 
      */
-    ResultSet getProcedureColumns(String catalog,
+    public ResultSet getProcedureColumns(String catalog,
 				  String schemaPattern,
 				  String procedureNamePattern, 
 				  String columnNamePattern) throws SQLException{throw new T24FeatureNotSupportedException();}
@@ -1325,7 +1327,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> 
      * returned by the method <code>getProcedureColumns</code>.
      */
-    int procedureColumnUnknown = 0;
+    public int procedureColumnUnknown = 0;
 
     /**
      * Indicates that the column stores IN parameters.
@@ -1335,7 +1337,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> 
      * returned by the method <code>getProcedureColumns</code>.
      */
-    int procedureColumnIn = 1;
+    public int procedureColumnIn = 1;
 
     /**
      * Indicates that the column stores INOUT parameters.
@@ -1345,7 +1347,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> 
      * returned by the method <code>getProcedureColumns</code>.
      */
-    int procedureColumnInOut = 2;
+    public int procedureColumnInOut = 2;
 
     /**
      * Indicates that the column stores OUT parameters.
@@ -1355,7 +1357,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> 
     * returned by the method <code>getProcedureColumns</code>.
      */
-    int procedureColumnOut = 4;
+    public int procedureColumnOut = 4;
     /**
      * Indicates that the column stores return values.
      * <P>
@@ -1364,7 +1366,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> 
      * returned by the method <code>getProcedureColumns</code>.
      */
-    int procedureColumnReturn = 5;
+    public int procedureColumnReturn = 5;
 
     /**
      * Indicates that the column stores results.
@@ -1374,7 +1376,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> 
      * returned by the method <code>getProcedureColumns</code>.
      */
-    int procedureColumnResult = 3;
+    public int procedureColumnResult = 3;
 
     /**
      * Indicates that <code>NULL</code> values are not allowed.
@@ -1384,7 +1386,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getProcedureColumns</code>.
      */
-    int procedureNoNulls = 0;
+    public int procedureNoNulls = 0;
 
     /**
      * Indicates that <code>NULL</code> values are allowed.
@@ -1394,7 +1396,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getProcedureColumns</code>.
      */
-    int procedureNullable = 1;
+    public int procedureNullable = 1;
 
     /**
      * Indicates that whether <code>NULL</code> values are allowed
@@ -1405,7 +1407,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getProcedureColumns</code>.
      */
-    int procedureNullableUnknown = 2;
+    public int procedureNullableUnknown = 2;
 
 
     /**
@@ -1454,7 +1456,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see #getSearchStringEscape 
      */
-    ResultSet getTables(String catalog, String schemaPattern,
+    public ResultSet getTables(String catalog, String schemaPattern,
 			String tableNamePattern, String types[]) throws SQLException{throw new T24FeatureNotSupportedException();}
 
     /**
@@ -1473,7 +1475,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      *
      */
-    ResultSet getSchemas() throws SQLException{throw new T24FeatureNotSupportedException();}
+    public ResultSet getSchemas() throws SQLException{throw new T24FeatureNotSupportedException();}
 
     /**
      * Retrieves the catalog names available in this database.  The results
@@ -1488,7 +1490,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *         single <code>String</code> column that is a catalog name 
      * @exception SQLException if a database access error occurs
      */
-    ResultSet getCatalogs() throws SQLException{throw new T24FeatureNotSupportedException();}
+    public ResultSet getCatalogs() throws SQLException{throw new T24FeatureNotSupportedException();}
 
     /**
      * Retrieves the table types available in this database.  The results
@@ -1505,7 +1507,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *         single <code>String</code> column that is a table type 
      * @exception SQLException if a database access error occurs
      */
-    ResultSet getTableTypes() throws SQLException{throw new T24FeatureNotSupportedException();}
+    public ResultSet getTableTypes() throws SQLException{throw new T24FeatureNotSupportedException();}
 
     /**
      * Retrieves a description of table columns available in 
@@ -1592,7 +1594,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see #getSearchStringEscape 
      */
-    ResultSet getColumns(String catalog, String schemaPattern,
+    public ResultSet getColumns(String catalog, String schemaPattern,
 			 String tableNamePattern, String columnNamePattern)
 	throws SQLException{throw new T24FeatureNotSupportedException();}
 
@@ -1604,7 +1606,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> returned by the method
      * <code>getColumns</code>.
      */
-    int columnNoNulls = 0;
+    public int columnNoNulls = 0;
 
     /**
      * Indicates that the column definitely allows <code>NULL</code> values.
@@ -1614,7 +1616,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> returned by the method
      * <code>getColumns</code>.
      */
-    int columnNullable = 1;
+    public int columnNullable = 1;
 
     /**
      * Indicates that the nullability of columns is unknown.
@@ -1624,7 +1626,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> returned by the method
      * <code>getColumns</code>.
      */
-    int columnNullableUnknown = 2;
+    public int columnNullableUnknown = 2;
 
     /**
      * Retrieves a description of the access rights for a table's columns.
@@ -1662,7 +1664,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see #getSearchStringEscape 
      */
-    ResultSet getColumnPrivileges(String catalog, String schema,
+    public ResultSet getColumnPrivileges(String catalog, String schema,
 				  String table, String columnNamePattern) throws SQLException{throw new T24FeatureNotSupportedException();}
 
     /**
@@ -1705,7 +1707,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see #getSearchStringEscape 
      */
-    ResultSet getTablePrivileges(String catalog, String schemaPattern,
+    public ResultSet getTablePrivileges(String catalog, String schemaPattern,
 				 String tableNamePattern) throws SQLException{throw new T24FeatureNotSupportedException();}
 
     /**
@@ -1759,7 +1761,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>ResultSet</code> - each row is a column description 
      * @exception SQLException if a database access error occurs
      */
-    ResultSet getBestRowIdentifier(String catalog, String schema,
+    public ResultSet getBestRowIdentifier(String catalog, String schema,
 				   String table, int scope, boolean nullable) throws SQLException{throw new T24FeatureNotSupportedException();}
 	
     /**
@@ -1772,7 +1774,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getBestRowIdentifier</code>.
      */
-    int bestRowTemporary   = 0;
+    public int bestRowTemporary   = 0;
 
     /**
      * Indicates that the scope of the best row identifier is
@@ -1783,7 +1785,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getBestRowIdentifier</code>.
      */
-    int bestRowTransaction = 1;
+    public int bestRowTransaction = 1;
 
     /**
      * Indicates that the scope of the best row identifier is
@@ -1794,7 +1796,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getBestRowIdentifier</code>.
      */
-    int bestRowSession     = 2;
+    public int bestRowSession     = 2;
 
     /**
      * Indicates that the best row identifier may or may not be a pseudo column.
@@ -1804,7 +1806,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getBestRowIdentifier</code>.
      */
-    int bestRowUnknown	= 0;
+    public int bestRowUnknown	= 0;
 
     /**
      * Indicates that the best row identifier is NOT a pseudo column.
@@ -1814,7 +1816,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getBestRowIdentifier</code>.
      */
-    int bestRowNotPseudo	= 1;
+    public int bestRowNotPseudo	= 1;
 
     /**
      * Indicates that the best row identifier is a pseudo column.
@@ -1824,7 +1826,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getBestRowIdentifier</code>.
      */
-    int bestRowPseudo	= 2;
+    public int bestRowPseudo	= 2;
 
     /**
      * Retrieves a description of a table's columns that are automatically
@@ -1870,7 +1872,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *         column description 
      * @exception SQLException if a database access error occurs
      */
-    ResultSet getVersionColumns(String catalog, String schema,
+    public ResultSet getVersionColumns(String catalog, String schema,
 				String table) throws SQLException{throw new T24FeatureNotSupportedException();}
 	
     /**
@@ -1881,7 +1883,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getVersionColumns</code>.
      */
-    int versionColumnUnknown	= 0;
+    public int versionColumnUnknown	= 0;
 
     /**
      * Indicates that this version column is NOT a pseudo column.
@@ -1891,7 +1893,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getVersionColumns</code>.
      */
-    int versionColumnNotPseudo	= 1;
+    public int versionColumnNotPseudo	= 1;
 
     /**
      * Indicates that this version column is a pseudo column.
@@ -1901,7 +1903,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getVersionColumns</code>.
      */
-    int versionColumnPseudo	= 2;
+    public int versionColumnPseudo	= 2;
 
     /**
      * Retrieves a description of the given table's primary key columns.  They
@@ -1932,7 +1934,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>ResultSet</code> - each row is a primary key column description 
      * @exception SQLException if a database access error occurs
      */
-    ResultSet getPrimaryKeys(String catalog, String schema,
+    public ResultSet getPrimaryKeys(String catalog, String schema,
 			     String table) throws SQLException{throw new T24FeatureNotSupportedException();}
 
     /**
@@ -2010,7 +2012,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see #getExportedKeys 
      */
-    ResultSet getImportedKeys(String catalog, String schema,
+    public ResultSet getImportedKeys(String catalog, String schema,
 			      String table) throws SQLException{throw new T24FeatureNotSupportedException();}
 
     /**
@@ -2029,7 +2031,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>getImportedKeys</code>,  <code>getExportedKeys</code>,
      * and <code>getCrossReference</code>.
      */
-    int importedKeyCascade	= 0;
+    public int importedKeyCascade	= 0;
 
     /**
      * For the column <code>UPDATE_RULE</code>, indicates that
@@ -2045,7 +2047,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>getImportedKeys</code>,  <code>getExportedKeys</code>,
      * and <code>getCrossReference</code>.
      */
-    int importedKeyRestrict = 1;
+    public int importedKeyRestrict = 1;
 
     /**
      * For the columns <code>UPDATE_RULE</code>
@@ -2059,7 +2061,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>getImportedKeys</code>,  <code>getExportedKeys</code>,
      * and <code>getCrossReference</code>.
      */
-    int importedKeySetNull  = 2;
+    public int importedKeySetNull  = 2;
 
     /**
      * For the columns <code>UPDATE_RULE</code>
@@ -2072,7 +2074,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>getImportedKeys</code>,  <code>getExportedKeys</code>,
      * and <code>getCrossReference</code>.
      */
-    int importedKeyNoAction = 3;
+    public int importedKeyNoAction = 3;
 
     /**
      * For the columns <code>UPDATE_RULE</code>
@@ -2086,7 +2088,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>getImportedKeys</code>,  <code>getExportedKeys</code>,
      * and <code>getCrossReference</code>.
      */
-    int importedKeySetDefault  = 4;
+    public int importedKeySetDefault  = 4;
 
     /**
      * Indicates deferrability.  See SQL-92 for a definition.
@@ -2096,7 +2098,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>getImportedKeys</code>,  <code>getExportedKeys</code>,
      * and <code>getCrossReference</code>.
      */
-    int importedKeyInitiallyDeferred  = 5;
+    public int importedKeyInitiallyDeferred  = 5;
 
     /**
      * Indicates deferrability.  See SQL-92 for a definition.
@@ -2106,7 +2108,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>getImportedKeys</code>,  <code>getExportedKeys</code>,
      * and <code>getCrossReference</code>.
      */
-    int importedKeyInitiallyImmediate  = 6;
+    public int importedKeyInitiallyImmediate  = 6;
 
     /**
      * Indicates deferrability.  See SQL-92 for a definition.
@@ -2116,7 +2118,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>getImportedKeys</code>,  <code>getExportedKeys</code>,
      * and <code>getCrossReference</code>.
      */
-    int importedKeyNotDeferrable  = 7;
+    public int importedKeyNotDeferrable  = 7;
 
     /**
      * Retrieves a description of the foreign key columns that reference the
@@ -2194,7 +2196,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see #getImportedKeys 
      */
-    ResultSet getExportedKeys(String catalog, String schema,
+    public ResultSet getExportedKeys(String catalog, String schema,
 			      String table) throws SQLException{throw new T24FeatureNotSupportedException();}
 
     /**
@@ -2280,7 +2282,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @see #getImportedKeys 
      */
-    ResultSet getCrossReference(
+    public ResultSet getCrossReference(
 				String parentCatalog, String parentSchema, String parentTable,
 				String foreignCatalog, String foreignSchema, String foreignTable
 				) throws SQLException{throw new T24FeatureNotSupportedException();}
@@ -2349,7 +2351,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *         type description 
      * @exception SQLException if a database access error occurs
      */
-    ResultSet getTypeInfo() throws SQLException{throw new T24FeatureNotSupportedException();}
+    public ResultSet getTypeInfo() throws SQLException{throw new T24FeatureNotSupportedException();}
 	
     /**
      * Indicates that a <code>NULL</code> value is NOT allowed for this
@@ -2359,7 +2361,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getTypeInfo</code>.
      */
-    int typeNoNulls = 0;
+    public int typeNoNulls = 0;
 
     /**
      * Indicates that a <code>NULL</code> value is allowed for this
@@ -2369,7 +2371,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getTypeInfo</code>.
      */
-    int typeNullable = 1;
+    public int typeNullable = 1;
 
     /**
      * Indicates that it is not known whether a <code>NULL</code> value 
@@ -2379,7 +2381,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getTypeInfo</code>.
      */
-    int typeNullableUnknown = 2;
+    public int typeNullableUnknown = 2;
 
     /**
      * Indicates that <code>WHERE</code> search clauses are not supported
@@ -2389,7 +2391,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getTypeInfo</code>.
      */
-    int typePredNone = 0;
+    public int typePredNone = 0;
 
     /**
      * Indicates that the data type 
@@ -2400,7 +2402,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getTypeInfo</code>.
      */
-    int typePredChar = 1;
+    public int typePredChar = 1;
 
     /**
      * Indicates that the data type can be only be used in <code>WHERE</code> 
@@ -2411,7 +2413,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getTypeInfo</code>.
      */
-    int typePredBasic = 2;
+    public int typePredBasic = 2;
 
     /**
      * Indicates that all <code>WHERE</code> search clauses can be 
@@ -2421,7 +2423,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getTypeInfo</code>.
      */
-    int typeSearchable  = 3;
+    public int typeSearchable  = 3;
 
     /**
      * Retrieves a description of the given table's indices and statistics. They are
@@ -2481,7 +2483,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @return <code>ResultSet</code> - each row is an index column description 
      * @exception SQLException if a database access error occurs
      */
-    ResultSet getIndexInfo(String catalog, String schema, String table,
+    public ResultSet getIndexInfo(String catalog, String schema, String table,
 			   boolean unique, boolean approximate)
 	throws SQLException{throw new T24FeatureNotSupportedException();}
 
@@ -2493,7 +2495,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getIndexInfo</code>.
      */
-    short tableIndexStatistic = 0;
+    public short tableIndexStatistic = 0;
 
     /**
      * Indicates that this table index is a clustered index.
@@ -2502,7 +2504,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getIndexInfo</code>.
      */
-    short tableIndexClustered = 1;
+    public short tableIndexClustered = 1;
 
     /**
      * Indicates that this table index is a hashed index.
@@ -2511,7 +2513,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getIndexInfo</code>.
      */
-    short tableIndexHashed    = 2;
+    public short tableIndexHashed    = 2;
 
     /**
      * Indicates that this table index is not a clustered
@@ -2522,7 +2524,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>ResultSet</code> object returned by the method
      * <code>getIndexInfo</code>.
      */
-    short tableIndexOther     = 3;
+    public short tableIndexOther     = 3;
 
     //--------------------------JDBC 2.0-----------------------------
 
@@ -2535,7 +2537,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @see Connection
      * @since 1.2
      */
-    boolean supportsResultSetType(int type) throws SQLException{return false;}
+    public boolean supportsResultSetType(int type) throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports the given concurrency type 
@@ -2548,7 +2550,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @see Connection
      * @since 1.2
      */
-    boolean supportsResultSetConcurrency(int type, int concurrency)
+    public boolean supportsResultSetConcurrency(int type, int concurrency)
 	throws SQLException{return false;}
 
     /**
@@ -2565,7 +2567,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    boolean ownUpdatesAreVisible(int type) throws SQLException{return false;}
+    public boolean ownUpdatesAreVisible(int type) throws SQLException{return false;}
 
     /**
      * Retrieves whether a result set's own deletes are visible.
@@ -2579,7 +2581,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    boolean ownDeletesAreVisible(int type) throws SQLException{return false;}
+    public boolean ownDeletesAreVisible(int type) throws SQLException{return false;}
 
     /**
      * Retrieves whether a result set's own inserts are visible.
@@ -2593,7 +2595,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    boolean ownInsertsAreVisible(int type) throws SQLException{return false;}
+    public boolean ownInsertsAreVisible(int type) throws SQLException{return false;}
 
     /**
      * Retrieves whether updates made by others are visible.
@@ -2608,7 +2610,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    boolean othersUpdatesAreVisible(int type) throws SQLException{return false;}
+    public boolean othersUpdatesAreVisible(int type) throws SQLException{return false;}
 
     /**
      * Retrieves whether deletes made by others are visible.
@@ -2623,7 +2625,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    boolean othersDeletesAreVisible(int type) throws SQLException{return false;}
+    public boolean othersDeletesAreVisible(int type) throws SQLException{return false;}
 
     /**
      * Retrieves whether inserts made by others are visible.
@@ -2638,7 +2640,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    boolean othersInsertsAreVisible(int type) throws SQLException{return false;}
+    public boolean othersInsertsAreVisible(int type) throws SQLException{return false;}
 
     /**
      * Retrieves whether or not a visible row update can be detected by 
@@ -2653,7 +2655,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    boolean updatesAreDetected(int type) throws SQLException{return false;}
+    public boolean updatesAreDetected(int type) throws SQLException{return false;}
 
     /**
      * Retrieves whether or not a visible row delete can be detected by 
@@ -2670,7 +2672,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    boolean deletesAreDetected(int type) throws SQLException{return false;}
+    public boolean deletesAreDetected(int type) throws SQLException{return false;}
 
     /**
      * Retrieves whether or not a visible row insert can be detected
@@ -2685,7 +2687,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    boolean insertsAreDetected(int type) throws SQLException{return false;}
+    public boolean insertsAreDetected(int type) throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports batch updates.
@@ -2695,7 +2697,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    boolean supportsBatchUpdates() throws SQLException{return false;}
+    public boolean supportsBatchUpdates() throws SQLException{return false;}
 
     /**
      * Retrieves a description of the user-defined types (UDTs) defined 
@@ -2746,7 +2748,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @see #getSearchStringEscape 
      * @since 1.2
      */
-    ResultSet getUDTs(String catalog, String schemaPattern, 
+    public ResultSet getUDTs(String catalog, String schemaPattern, 
 		      String typeNamePattern, int[] types) 
 	throws SQLException{throw new T24FeatureNotSupportedException();}
 
@@ -2757,7 +2759,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    Connection getConnection() throws SQLException{return conn;}
+    public Connection getConnection() throws SQLException{return conn;}
 
     // ------------------- JDBC 3.0 -------------------------
 
@@ -2769,7 +2771,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    boolean supportsSavepoints() throws SQLException{return false;}
+    public boolean supportsSavepoints() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports named parameters to callable 
@@ -2780,7 +2782,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    boolean supportsNamedParameters() throws SQLException{return false;}
+    public boolean supportsNamedParameters() throws SQLException{return false;}
 
     /**
      * Retrieves whether it is possible to have multiple <code>ResultSet</code> objects
@@ -2793,7 +2795,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a datanase access error occurs
      * @since 1.4
      */
-    boolean supportsMultipleOpenResults() throws SQLException{return false;}
+    public boolean supportsMultipleOpenResults() throws SQLException{return false;}
 
     /**
      * Retrieves whether auto-generated keys can be retrieved after 
@@ -2807,7 +2809,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    boolean supportsGetGeneratedKeys() throws SQLException{return false;}
+    public boolean supportsGetGeneratedKeys() throws SQLException{return false;}
 
     /**
      * Retrieves a description of the user-defined type (UDT) hierarchies defined in a 
@@ -2850,7 +2852,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @see #getSearchStringEscape 
      * @since 1.4
      */
-    ResultSet getSuperTypes(String catalog, String schemaPattern, 
+    public ResultSet getSuperTypes(String catalog, String schemaPattern, 
 			    String typeNamePattern) throws SQLException{throw new T24FeatureNotSupportedException();}
     
     /**
@@ -2887,7 +2889,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @see #getSearchStringEscape 
      * @since 1.4
      */
-    ResultSet getSuperTables(String catalog, String schemaPattern,
+    public ResultSet getSuperTables(String catalog, String schemaPattern,
 			     String tableNamePattern) throws SQLException{throw new T24FeatureNotSupportedException();}
 
     /**
@@ -2897,7 +2899,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>NULLABLE</code> in the <code>ResultSet</code> object
      * returned by the method <code>getAttributes</code>.
      */
-    short attributeNoNulls = 0;
+    public short attributeNoNulls = 0;
 
     /**
      * Indicates that <code>NULL</code> values are definitely allowed.
@@ -2906,7 +2908,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getAttributes</code>.
      */
-    short attributeNullable = 1;
+    public short attributeNullable = 1;
 
     /**
      * Indicates that whether <code>NULL</code> values are allowed is not
@@ -2916,7 +2918,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> object
      * returned by the method <code>getAttributes</code>.
      */
-    short attributeNullableUnknown = 2;
+    public short attributeNullableUnknown = 2;
 
     /**
      * Retrieves a description of the given attribute of the given type 
@@ -2996,7 +2998,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @see #getSearchStringEscape      
      * @since 1.4
      */
-    ResultSet getAttributes(String catalog, String schemaPattern,
+    public ResultSet getAttributes(String catalog, String schemaPattern,
 			    String typeNamePattern, String attributeNamePattern) 
 	throws SQLException{throw new T24FeatureNotSupportedException();}
 
@@ -3011,7 +3013,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @see Connection
      * @since 1.4
      */
-    boolean supportsResultSetHoldability(int holdability) throws SQLException{return false;}
+    public boolean supportsResultSetHoldability(int holdability) throws SQLException{return false;}
 
     /**
      * Retrieves this database's default holdability for <code>ResultSet</code>
@@ -3023,7 +3025,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    int getResultSetHoldability() throws SQLException{return 0;}
+    public int getResultSetHoldability() throws SQLException{return 0;}
 
     /**
      * Retrieves the major version number of the underlying database.
@@ -3032,7 +3034,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    int getDatabaseMajorVersion() throws SQLException{return 0;}
+    public int getDatabaseMajorVersion() throws SQLException{return 0;}
 
     /**
      * Retrieves the minor version number of the underlying database.
@@ -3041,7 +3043,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    int getDatabaseMinorVersion() throws SQLException{return 0;}
+    public int getDatabaseMinorVersion() throws SQLException{return 0;}
 
     /**
      * Retrieves the major JDBC version number for this
@@ -3051,7 +3053,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    int getJDBCMajorVersion() throws SQLException{return 1;}
+    public int getJDBCMajorVersion() throws SQLException{return 1;}
 
     /**
      * Retrieves the minor JDBC version number for this
@@ -3061,7 +3063,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    int getJDBCMinorVersion() throws SQLException{return 1;}
+    public int getJDBCMinorVersion() throws SQLException{return 1;}
 
     /**
      *  A possible return value for the method 
@@ -3072,7 +3074,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <P>
      * @since 1.4
      */
-    int sqlStateXOpen = 1;
+    public int sqlStateXOpen = 1;
 
     /**
      *  A possible return value for the method 
@@ -3082,7 +3084,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <P>
      * @since 1.6
      */
-    int sqlStateSQL = 2;
+    public int sqlStateSQL = 2;
     
      /**
      *  A possible return value for the method 
@@ -3095,7 +3097,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      *
      * @since 1.4
      */
-    int sqlStateSQL99 = sqlStateSQL;
+    public int sqlStateSQL99 = sqlStateSQL;
 
     /**
      * Indicates whether the SQLSTATE returned by <code>SQLException.getSQLState</code>
@@ -3106,7 +3108,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @throws SQLException if a database access error occurs 
      * @since 1.4
      */
-    int getSQLStateType() throws SQLException{return 0;}
+    public int getSQLStateType() throws SQLException{return 0;}
 
     /**
      * Indicates whether updates made to a LOB are made on a copy or directly 
@@ -3116,7 +3118,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @throws SQLException if a database access error occurs
      * @since 1.4
      */
-    boolean locatorsUpdateCopy() throws SQLException{return false;}
+    public boolean locatorsUpdateCopy() throws SQLException{return false;}
 
     /**
      * Retrieves whether this database supports statement pooling.
@@ -3125,7 +3127,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @throws SQLExcpetion if a database access error occurs
      * @since 1.4
      */
-    boolean supportsStatementPooling() throws SQLException{return false;}
+    public boolean supportsStatementPooling() throws SQLException{return false;}
     
     //------------------------- JDBC 4.0 -----------------------------------
 
@@ -3149,7 +3151,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @throws SQLException if a database access error occurs
      * @since 1.6
      */
-    RowIdLifetime getRowIdLifetime() throws SQLException{return 0;}
+    public RowIdLifetime getRowIdLifetime() throws SQLException{return RowIdLifetime.ROWID_UNSUPPORTED;}
 
     /**
      * Retrieves the schema names available in this database.  The results
@@ -3175,7 +3177,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @see #getSearchStringEscape 
      * @since 1.6
      */
-    ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException{throw new T24FeatureNotSupportedException();}
+    public ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException{throw new T24FeatureNotSupportedException();}
     
     /**
      * Retrieves whether this database supports invoking user-defined or vendor functions 
@@ -3185,7 +3187,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.6
      */
-    boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException{return false;}
+    public boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException{return false;}
      
     /**
      * Retrieves whether a <code>SQLException</code> while autoCommit is <code>true</code> inidcates 
@@ -3198,7 +3200,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.6
      */
-    boolean autoCommitFailureClosesAllResultSets() throws SQLException{return false;}
+    public boolean autoCommitFailureClosesAllResultSets() throws SQLException{return false;}
 	/**
 	 * Retrieves a list of the client info properties 
 	 * that the driver supports.  The result set contains the following columns
@@ -3221,7 +3223,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
 	 * <p>
 	 * @since 1.6
 	 */
-	ResultSet getClientInfoProperties()
+	public ResultSet getClientInfoProperties()
 		throws SQLException{throw new T24FeatureNotSupportedException();}
     
     /**
@@ -3272,7 +3274,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @see #getSearchStringEscape 
      * @since 1.6
      */
-    ResultSet getFunctions(String catalog, String schemaPattern,
+    public ResultSet getFunctions(String catalog, String schemaPattern,
 			    String functionNamePattern) throws SQLException{throw new T24FeatureNotSupportedException();}
     /**
      * Retrieves a description of the given catalog's system or user 
@@ -3368,7 +3370,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * @see #getSearchStringEscape 
      * @since 1.6
      */
-    ResultSet getFunctionColumns(String catalog,
+    public ResultSet getFunctionColumns(String catalog,
 				  String schemaPattern,
 				  String functionNamePattern, 
 				  String columnNamePattern) throws SQLException{throw new T24FeatureNotSupportedException();}
@@ -3382,7 +3384,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * in the <code>ResultSet</code> 
      * returned by the method <code>getFunctionColumns</code>.
      */
-    int functionColumnUnknown = 0;
+    public int functionColumnUnknown = 0;
 
     /**
      * Indicates that the parameter or column is an IN parameter.
@@ -3393,7 +3395,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * returned by the method <code>getFunctionColumns</code>.
      * @since 1.6
      */
-    int functionColumnIn = 1;
+    public int functionColumnIn = 1;
 
     /**
      * Indicates that the parameter or column is an INOUT parameter.
@@ -3404,7 +3406,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * returned by the method <code>getFunctionColumns</code>.     
      * @since 1.6
      */
-    int functionColumnInOut = 2;
+    public int functionColumnInOut = 2;
 
     /**
      * Indicates that the parameter or column is an OUT parameter.
@@ -3415,7 +3417,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * returned by the method <code>getFunctionColumns</code>.
      * @since 1.6
      */
-    int functionColumnOut = 3;
+    public int functionColumnOut = 3;
     /**
      * Indicates that the parameter or column is a return value.
      * <P>
@@ -3425,7 +3427,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * returned by the method <code>getFunctionColumns</code>.     
      * @since 1.6
      */
-    int functionReturn = 4;
+    public int functionReturn = 4;
     
        /**
      * Indicates that the parameter or column is a column in a result set.
@@ -3436,7 +3438,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * returned by the method <code>getFunctionColumns</code>.     
      * @since 1.6
      */
-    int functionColumnResult = 5;
+    public int functionColumnResult = 5;
 
     
     /**
@@ -3448,7 +3450,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * returned by the method <code>getFunctionColumns</code>.     
      * @since 1.6
      */
-    int functionNoNulls = 0;
+    public int functionNoNulls = 0;
 
     /**
      * Indicates that <code>NULL</code> values are allowed.
@@ -3459,7 +3461,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * returned by the method <code>getFunctionColumns</code>.     
      * @since 1.6
      */
-    int functionNullable = 1;
+    public int functionNullable = 1;
 
     /**
      * Indicates that whether <code>NULL</code> values are allowed
@@ -3471,7 +3473,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * returned by the method <code>getFunctionColumns</code>.    
      * @since 1.6
      */
-    int functionNullableUnknown = 2;    
+    public int functionNullableUnknown = 2;    
        
     /**
      * Indicates that it is not known whether the function returns
@@ -3482,7 +3484,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>getFunctions</code>.
      * @since 1.6
      */
-    int functionResultUnknown	= 0;
+    public int functionResultUnknown	= 0;
 
     /**
      * Indicates that the function  does not return a table.
@@ -3492,7 +3494,7 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>getFunctions</code>.
      * @since 1.6
      */
-    int functionNoTable		= 1;
+    public int functionNoTable		= 1;
 
     /**
      * Indicates that the function  returns a table.
@@ -3502,7 +3504,17 @@ public class T24DatabaseMetaData implements DatabaseMetaData {
      * <code>getFunctions</code>.
      * @since 1.6
      */
-    int functionReturnsTable	= 2;
+    public int functionReturnsTable	= 2;
+    
+    
+    
+    /*Wrapper*/
+	public <T> T unwrap(java.lang.Class<T> iface) throws java.sql.SQLException {
+		throw new T24FeatureNotSupportedException();
+	}
+
+    public boolean isWrapperFor(java.lang.Class<?> iface) throws java.sql.SQLException{return false;}
+    
 
 }
 
