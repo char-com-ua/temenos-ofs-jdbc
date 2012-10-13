@@ -322,5 +322,12 @@ public class T24ResultSetMetaData implements ResultSetMetaData {
     	return "java.lang.String";
     }
 
+    /*Wrapper*/
+	public <T> T unwrap(java.lang.Class<T> iface) throws java.sql.SQLException {
+		throw new T24FeatureNotSupportedException();
+	}
+
+    public boolean isWrapperFor(java.lang.Class<?> iface) throws java.sql.SQLException{return false;}
+    
 }
 

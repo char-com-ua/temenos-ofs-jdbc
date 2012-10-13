@@ -414,7 +414,7 @@ public class T24Connection implements Connection {
      */
     public java.sql.DatabaseMetaData getMetaData() throws SQLException {
         //not supported yet. maybe in the future.
-        throw new T24FeatureNotSupportedException();
+        return new T24DatabaseMetaData(this);
     }
 
     /**
@@ -454,7 +454,7 @@ public class T24Connection implements Connection {
      * @throws SQLException
      */
     public boolean isClosed() throws SQLException {
-        return tcConnection == null;
+        return tcConnection == null && isTestMode==false;
     }
 
     /**
@@ -856,39 +856,38 @@ public class T24Connection implements Connection {
 	}
     
     
-    /*
+    
     //JAVA 6 VERSION
     
-    public java.sql.NClob createNClob() throws SQLException{
-    //no support.
-    throw new T24FeatureNotSupportedException();
-    }
+	public java.sql.NClob createNClob() throws SQLException{
+		//no support.
+		throw new T24FeatureNotSupportedException();
+	}
+
+
+	public java.sql.SQLXML createSQLXML() throws SQLException{
+		//no support.
+		throw new T24FeatureNotSupportedException();
+	}
+
+	public String getClientInfo(String name) throws SQLException{
+		//no support.
+		throw new T24FeatureNotSupportedException();
+	}
+
+
+	public java.util.Properties getClientInfo() throws SQLException{
+		//no support.
+		throw new T24FeatureNotSupportedException();
+	}
+
+	public void setClientInfo(String name, String value) throws java.sql.SQLClientInfoException{
+		//no support.
+	}
+
+	public void setClientInfo(java.util.Properties properties) throws java.sql.SQLClientInfoException{
+		//no support.
+	}
     
     
-    public java.sql.SQLXML createSQLXML() throws SQLException{
-    //no support.
-    throw new T24FeatureNotSupportedException();
-    }
-    
-    public String getClientInfo(String name) throws SQLException{
-    //no support.
-    throw new T24FeatureNotSupportedException();
-    }
-    
-    
-    public java.util.Properties getClientInfo() throws SQLException{
-    //no support.
-    throw new T24FeatureNotSupportedException();
-    }
-    
-    public void setClientInfo(String name, String value) throws java.sql.SQLClientInfoException{
-    //no support.
-    }
-    
-    public void setClientInfo(java.util.Properties properties) throws java.sql.SQLClientInfoException{
-    //no support.
-    }
-    
-    
-     */
 }
