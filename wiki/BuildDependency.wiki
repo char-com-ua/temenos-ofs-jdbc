@@ -2,7 +2,7 @@
 
 ==To build you need:==
 
- * java 1.5
+ * java 1.5 / java 1.6 since r177
  * [http://ant.apache.org/ apache ant] 1.7 and upper
  * [http://subversion.tigris.org/ svn command line] 1.4 and upper
  * temenos connector client (tcclient) installed
