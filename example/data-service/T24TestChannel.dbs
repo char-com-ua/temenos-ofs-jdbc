@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="T24TestChannel">
+   <description>T24 ofs jdbc driver that returns fake data to check DataServer compatibility.</description>
+   <config id="T24TestChannel">
+      <property name="org.wso2.ws.dataservice.driver">org.t24.driver.T24Driver</property>
+      <property name="org.wso2.ws.dataservice.protocol">jdbc:org:t24:TESTCHANNEL</property>
+      <property name="org.wso2.ws.dataservice.user">admin</property>
+      <property name="org.wso2.ws.dataservice.password">admin</property>
+   </config>
+   <query id="TestChannelEnq" useConfig="T24TestChannel">
+      <sql>SELECT SENDOFS ENQUIRY.SELECT,,{{USER}}/{{PASS}},%CUSTOMER&#xd;    @ID:EQ  =   set ?1&#xd;END</sql>
+      <result element="TestChannelEnqResponse" rowName="row" defaultNamespace="http://test/">
+         <element name="fieldInt" column="FIELD.INT" xsdType="xs:integer" namespace="http://test/" />
+         <element name="fieldDate" column="FIELD.DATE" xsdType="xs:date" namespace="http://test/" />
+      </result>
+      <param name="paramIn" sqlType="STRING" structType="[object HTMLInputElement]">
+         <validatePattern pattern=".+" />
+      </param>
+   </query>
+   <operation name="TestChannelEnq">
+      <call-query href="TestChannelEnq">
+         <with-param name="paramIn" query-param="paramIn" />
+      </call-query>
+   </operation>
+</data>
