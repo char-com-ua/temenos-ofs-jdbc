@@ -58,7 +58,7 @@ public class T24Driver implements Driver{
 	}
 
 	/**
-	 * Ñonstructs a new T24Driver.
+	 * Constructs a new T24Driver.
 	 * @throws SQLException if any sql exception occured
 	 */
 	public T24Driver() throws Exception{
