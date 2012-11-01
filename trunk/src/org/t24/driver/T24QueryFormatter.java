@@ -308,6 +308,8 @@ public class T24QueryFormatter {
 
         if ("const".equals(command)) {
             evaluateConst(fieldName, commandParams, colName, colValue, result);
+        } else if ("decodeMath".equals(command)) {
+            evaluateMathDecode(fieldName, commandParams, colName, colValue, result);
         } else if ("decode".equals(command)) {
             evaluateDecode(fieldName, commandParams, colName, colValue, result);
         } else if ("toCent".equals(command)) {
@@ -435,6 +437,44 @@ public class T24QueryFormatter {
         }
         result.put(fieldName, value);
     }
+    
+    // decodeMathGraterOrEqualsThen value   decodeMath  ?1 "1" "1" "2" "2" "3" "3" "4" "4" "5" "5" "3001" "2" "8001" "3" "20001" "4" "50001" "5" "1"
+    private void evaluateMathDecode(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
+        String value = "";
+        int curValue = 0;
+        boolean changed = false;
+		value = getValueForComandParam(0, commandParams, colName, colValue);
+        for (int i = 1; i < commandParams.size() - 1; i += 2) {
+			T24QueryFormatter.logger.info("!!!value = "+ value);
+        	
+        	try{
+        		if(value!=null && !"".equals(value)){
+        			int intValue = Integer.parseInt(value);
+        			int intParam = Integer.parseInt(commandParams.get(i).trim());
+				T24QueryFormatter.logger.info("!!!intValue = "+ intValue);
+				T24QueryFormatter.logger.info("!!!intParam = "+ intParam);
+        			
+					if (intValue >= intParam) {
+						curValue = Integer.parseInt(commandParams.get(i+1).trim());
+						changed = true;
+					}
+					if (intValue==intParam) {
+						break;
+					}
+        		}
+        	}catch(Exception e){
+				T24QueryFormatter.logger.info("!!!value = "+ e);
+        	}
+        }
+		T24QueryFormatter.logger.info("!!!changed = "+ changed);
+        
+        if (!changed && commandParams.size() % 2 == 0) {
+//            value = commandParams.get(commandParams.size() - 1);
+			value = getValueForComandParam(commandParams.size() - 1, commandParams, colName, colValue);
+        }
+        result.put(fieldName, ""+curValue);
+    }
+    
 
     private void evaluatePASS(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) {
         result.put(fieldName, con.tcPass);
