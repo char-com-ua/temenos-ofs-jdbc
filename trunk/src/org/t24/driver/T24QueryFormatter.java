@@ -443,7 +443,11 @@ public class T24QueryFormatter {
         String value = "";
         int curValue = 0;
         boolean changed = false;
-		value = getValueForComandParam(0, commandParams, colName, colValue);
+	value = getValueForComandParam(0, commandParams, colName, colValue);
+ 	if(value==null || "".equals(value)){
+	        result.put(fieldName, "");
+		return;
+	}
         for (int i = 1; i < commandParams.size() - 1; i += 2) {
 			T24QueryFormatter.logger.info("!!!value = "+ value);
         	
@@ -451,8 +455,6 @@ public class T24QueryFormatter {
         		if(value!=null && !"".equals(value)){
         			int intValue = Integer.parseInt(value);
         			int intParam = Integer.parseInt(commandParams.get(i).trim());
-				T24QueryFormatter.logger.info("!!!intValue = "+ intValue);
-				T24QueryFormatter.logger.info("!!!intParam = "+ intParam);
         			
 					if (intValue >= intParam) {
 						curValue = Integer.parseInt(commandParams.get(i+1).trim());
@@ -463,7 +465,7 @@ public class T24QueryFormatter {
 					}
         		}
         	}catch(Exception e){
-				T24QueryFormatter.logger.info("!!!value = "+ e);
+			T24QueryFormatter.logger.info("!!!value = "+ e);
         	}
         }
 		T24QueryFormatter.logger.info("!!!changed = "+ changed);
