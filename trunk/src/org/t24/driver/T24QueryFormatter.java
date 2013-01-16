@@ -310,6 +310,8 @@ public class T24QueryFormatter {
             evaluateConst(fieldName, commandParams, colName, colValue, result);
         } else if ("decodeMath".equals(command)) {
             evaluateMathDecode(fieldName, commandParams, colName, colValue, result);
+        } else if ("percent".equals(command)) {
+            evaluatePercent(fieldName, commandParams, colName, colValue, result);
         } else if ("decode".equals(command)) {
             evaluateDecode(fieldName, commandParams, colName, colValue, result);
         } else if ("toCent".equals(command)) {
@@ -443,11 +445,11 @@ public class T24QueryFormatter {
         String value = "";
         int curValue = 0;
         boolean changed = false;
-	value = getValueForComandParam(0, commandParams, colName, colValue);
- 	if(value==null || "".equals(value)){
-	        result.put(fieldName, "");
-		return;
-	}
+		value = getValueForComandParam(0, commandParams, colName, colValue);
+	 	if(value==null || "".equals(value)){
+		        result.put(fieldName, "");
+			return;
+		}
         for (int i = 1; i < commandParams.size() - 1; i += 2) {
 			T24QueryFormatter.logger.info("!!!value = "+ value);
         	
@@ -465,10 +467,8 @@ public class T24QueryFormatter {
 					}
         		}
         	}catch(Exception e){
-			T24QueryFormatter.logger.info("!!!value = "+ e);
         	}
         }
-		T24QueryFormatter.logger.info("!!!changed = "+ changed);
         
         if (!changed && commandParams.size() % 2 == 0) {
 //            value = commandParams.get(commandParams.size() - 1);
@@ -477,6 +477,31 @@ public class T24QueryFormatter {
         result.put(fieldName, ""+curValue);
     }
     
+    private void evaluatePercent(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) throws T24Exception {
+    	if(commandParams.size()<2){
+			throw new T24ParseException("Wrong parameters count for Percent command");
+    	}
+        String value1 = getValueForComandParam(0, commandParams, colName, colValue);
+		String value2 = getValueForComandParam(1, commandParams, colName, colValue);
+		boolean fromCent = false;
+        if (commandParams.size() % 2 == 1) {
+			fromCent = Boolean.parseBoolean(getValueForComandParam(commandParams.size() - 1, commandParams, colName, colValue));
+        }
+		
+	 	if(value1==null || "".equals(value1) || value2==null || "".equals(value2)){
+	        result.put(fieldName, "");
+			return;
+		}
+		BigDecimal bdec = new BigDecimal(value1);
+		bdec = bdec.multiply(new BigDecimal(value2));
+		bdec = bdec.multiply(new BigDecimal("0.01")).setScale(2,RoundingMode.HALF_UP);
+		if(fromCent){
+			bdec = bdec.multiply(new BigDecimal("0.01")).setScale(2,RoundingMode.HALF_UP);
+		}
+		
+		String value = bdec.toPlainString();
+		result.put(fieldName, value);
+    }
 
     private void evaluatePASS(String fieldName, List<String> commandParams, List<String> colName, List<String> colValue, Map<String, String> result) {
         result.put(fieldName, con.tcPass);
