@@ -75,6 +75,7 @@ When expression located outside SENDOFS+END operation:
  
 *functions*
 || *function* || *parameters* || *description* ||
+|| const || literal value || returns literal value specified after const function ||
 || set || REF || returns value of the REF-erenced parameter or column. see explanation above. ||
 || decode || REF  REPLACE_WHAT REPLACE_WITH REPLACE_WHAT2 REPLACE_WITH2 ... [DEFAULT] || It's like an oracle sql function decode. it takes REF parameter and replaces it's value according to REPLACE_WHAT REPLACE_WITH pairs. If there is unpaired parameter DEFAULT, then it will be used in case when value was not replaced. ||
 || toCent || REF || returns value of the referenced column multiplied by 100. expected that REF parameter is a number. ||
