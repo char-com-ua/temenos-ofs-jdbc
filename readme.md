@@ -13,7 +13,7 @@ The main target of this project is to provide a simple ability to create web ser
 
 
 ## Quick Start Web Service Based on T24 OFS Messages ##
-[QuickStartWebService](QuickStartWebService.md)
+[QuickStartWebService](wiki/QuickStartWebService.md)
 
 ## For java developers ##
 This driver is not full featured jdbc driver. There is no t24 metadata (no way to take it through OFS).
@@ -36,4 +36,3 @@ When you call `T24ResultSet.getDate()`, we just parse string in specified column
 ## If you have questions ##
 If you have any questions please contact [temenos-ofs-jdbc google group](http://groups.google.com/group/temenos-ofs-jdbc)
 
-<wiki:gadget url="http://jubic.googlecode.com/svn/rssreader.xml" up\_feeds="http://groups.google.com/group/temenos-ofs-jdbc/feed/rss\_v2\_0\_msgs.xml" height="300" width="700" border="1" up\_title="" up\_setup="false"/>
