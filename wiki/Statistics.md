@@ -5,5 +5,6 @@
 ![http://temenos-ofs-jdbc.googlecode.com/files/chartWsUsageDay2.png](http://temenos-ofs-jdbc.googlecode.com/files/chartWsUsageDay2.png)
 
 
-**хз что это**
+**what is that?**
+
 ![imggg](./img/ppt-big.png)
