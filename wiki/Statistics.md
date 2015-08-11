@@ -6,4 +6,4 @@
 
 
 **хз что это**
-![img/ppt-big.png]
+![imggg](./img/ppt-big.png)
