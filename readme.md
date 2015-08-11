@@ -1,3 +1,5 @@
+> WARNING: this is a temporary movement. use googlecode version!
+
 This is a simple jdbc driver wrapper over Temenos T24 OFS protocol.
 
 ## Info ##
