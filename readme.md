@@ -1,1 +1,1 @@
-## Read more on [wiki](./wiki) ##
+## Read more on [wiki](../../wiki) ##
