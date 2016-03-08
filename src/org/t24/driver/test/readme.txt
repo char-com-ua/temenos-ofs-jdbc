@@ -5,3 +5,5 @@ idea:
 if T24Connection.channel=TESTCHANNEL, it will connect nowhere
 then on any request it will return the same result based in text file (utf-8)
 
+todo:
+move to groovy test...

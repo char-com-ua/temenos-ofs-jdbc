@@ -154,5 +154,39 @@
 		<property name="tcclient.home" value="./.tools/tcclient" />
 	</target>
 	
+	<target name="groovy" description="start groovy console with tcclibs" >
+		<!--
+		"C:\Work\Java\jdk1.6.0_06\bin\java.exe" 
+			"-Xmx128m" 
+			-Dprogram.name="" 
+			-Dgroovy.home="C:\11\svn\mw\projects\services\ESB-Int\trunk\.tools\groovy\bin\.." 
+			-Dtools.jar="C:\Work\Java\jdk1.6.0_06\lib\tools.jar" 
+			-Dgroovy.starter.conf="C:\11\svn\mw\projects\services\ESB-Int\trunk\.tools\groovy\bin\..\conf\groovy-starter.conf" 
+			-Dscript.name="" 
+			-Dfile.encoding=windows-1251 
+			-classpath "C:\11\svn\mw\projects\services\ESB-Int\trunk\.tools\groovy\bin\..\lib\groovy-1.7.5.jar" 
+			org.codehaus.groovy.tools.GroovyStarter 
+			- -main groovy.ui.Console 
+			- -conf "C:\11\svn\mw\projects\services\ESB-Int\trunk\.tools\groovy\bin\..\conf\groovy-starter.conf" 
+			- -classpath "."  
+		-->
+		<java classname="org.codehaus.groovy.tools.GroovyStarter" fork="true" jvm="javaw" spawn="true">
+			<!--classpath refid="groovy.classpath"/-->
+			<classpath>
+				<pathelement location="./.tools/groovy/lib/groovy-all-2.4.4.jar"/>
+			</classpath>
+			<jvmarg value="-Dfile.encoding=windows-1251"/>
+			<jvmarg value="-Xmx128m"/>
+			<jvmarg value='-Dprogram.name=""'/>
+			<jvmarg value='-Dscript.name=""'/>
+			<jvmarg value='-Dgroovy.home=".tools/groovy"'/>
+			<jvmarg value='-Dgroovy.starter.conf=".tools/groovy/conf/groovy-starter.conf"'/>
+			
+			<arg value='--main'/>
+			<arg value='groovy.ui.Console'/>
+			<arg value='--calsspath'/>
+			<arg value='"."'/>
+		</java>
+	</target>
 
 </project>

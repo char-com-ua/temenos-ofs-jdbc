@@ -27,11 +27,11 @@ public class Test {
 		
 		String query = 
 			"SENDOFS ENQUIRY.SELECT,,{{USER}}/{{PASS}}/,ENQ.LWEXISTS\n" +
-				"F1:EQ  = getToken ?2 , -1\n" +
+//				"F1:EQ  = getToken ?2 , -1\n" +
 			"END\n" +
-			"?3 = set      ?FIELD.TEXT\n"       +
-			"?2 = toCent   ?FIELD.NUM\n"        +
-			"FILTER	 MATCHES   \"?{FIELD.INT}\"  \"?{1}\" \n" +
+//			"?3 = set      ?FIELD.TEXT\n"       +
+//			"?2 = toCent   ?FIELD.NUM\n"        +
+//			"FILTER	 MATCHES   \"?{FIELD.INT}\"  \"?{1}\" \n" +
 			"";
 			
 /*			
@@ -44,8 +44,8 @@ public class Test {
 */			
 
 		List param = new ArrayList();
-		param.add("(1|3)");
-		param.add("111,222,333,4444");
+//		param.add("(1|3)");
+//		param.add("111,222,333,4444");
 		
 
 		T24ResultSet rs = q.execute(query,param);

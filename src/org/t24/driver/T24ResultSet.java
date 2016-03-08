@@ -235,16 +235,16 @@ public class T24ResultSet implements ResultSet {
         md = new T24ResultSetMetaData(header);
     }
 
-    protected void t24ParseEnq(String s) throws SQLException {  	   	   	
-        int possition = s.indexOf(",\"");
-        int maxColCount = 0;
-        int columnCount = 0;
+	protected void t24ParseEnq(String s) throws SQLException {  	   	   	
+		int possition = s.indexOf(",\"");
+		int maxColCount = 0;
+		int columnCount = 0;
 		if (",,".equals(s)) throw new T24Exception("T24 OFS Error, requested enquiry not found:  response = " + s);
-        if (possition == -1) throw new T24Exception("T24 OFS Error:  response = " + s);
-        
-    	String colNameString  = s.substring(0, possition);
-    	colNameString  = colNameString.substring(colNameString.lastIndexOf(",") + 1);
-    	
+		if (possition == -1) throw new T24Exception("T24 OFS Error:  response = " + s);
+		
+		String colNameString  = s.substring(0, possition);
+		colNameString  = colNameString.substring(colNameString.lastIndexOf(",") + 1);
+		
 		String dataString  = s.substring(possition + 1, s.length()).trim();
 		s=null;
 		
@@ -265,53 +265,64 @@ public class T24ResultSet implements ResultSet {
 							
 		//DATA 	
 		ArrayList row = new ArrayList();
+		ArrayList headers = new ArrayList();
 		//delete first and last "
 		dataString = dataString.substring(1, dataString.length() - 1);
 		
 		Scanner scanRow = new Scanner(dataString).useDelimiter("\",\"");
-	    while (scanRow.hasNext()) {
-	    	String rowString = scanRow.next();
-	    	rowString = " " + rowString + " ";
+		while (scanRow.hasNext()) {
+			String rowString = scanRow.next();
+			rowString = " " + rowString + " ";
 			Scanner scanValue = new Scanner(rowString).useDelimiter("\"\t\"");
-		    while (scanValue.hasNext()) {
-    	        row.add(scanValue.next().trim());
-	        }
-	        if(row.size()==1 && maxColCount>1 ){
-	        	//skip header data...
-	        }else{
+			while (scanValue.hasNext()) {
+				row.add(scanValue.next().trim());
+			}
+			if(row.size()==1 && maxColCount>1 && data.size()==0 ){
+				//skip header data...
+				headers.add( row.get(0) );
+			}else{
 				if(row.size() != maxColCount){
 					columnCount = row.size();
 				}
 				data.add(row);
-	        }
-	        row = new ArrayList();
-        }
+			}
+			row = new ArrayList();
+		}
 		
-//        if (data.size() >= 1 && ((List) data.get(0)).size() == 1) {
-        if (data.size() >= 1) {
-        	Object o=data.get(0).get(0); //get first column from the first row
-            if (o != null) {
-                if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(o.toString(),"No records were found that matched the selection criteria"))) {
-                    data.clear();
-                    return;
-                }else if (o.toString().contains("ENQUIRY.ERROR: ")){
-                	throw new T24Exception("T24 OFS Error: " + o.toString());
-                }
-            }
-        }
+		if (data.size() >= 1) {
+			Object o=data.get(0).get(0); //get first column from the first row
+			if (o != null) {
+				if (ERROR_NO_RECORDS_FOUND.equals(properties.getProperty(o.toString(),"No records were found that matched the selection criteria"))) {
+					data.clear();
+					return;
+				}else if (o.toString().contains("ENQUIRY.ERROR: ")){
+					throw new T24Exception("T24 OFS Error: " + o.toString());
+				}
+			}
+		}
 
-        if(columnCount != maxColCount){
-        	throw new T24Exception("T24 response parser error. Header count missmatch data column count, headerCount(" + maxColCount + "), columnCount(" + columnCount + ")");
-        }
+		if(columnCount != maxColCount){
+			throw new T24Exception("T24 response parser error. Header count missmatch data column count, headerCount(" + maxColCount + "), columnCount(" + columnCount + ")");
+		}
 
-        if (md == null) {
-            ArrayList header = new ArrayList();
-            for (int i = 0; i < maxColCount; i++) {
-                header.add("#" + (i + 1));
-            }
-            md = new T24ResultSetMetaData(header);
-        }
-    }
+		if (md == null) {
+			ArrayList header = new ArrayList();
+			for (int i = 0; i < maxColCount; i++) {
+				header.add("#" + (i + 1));
+			}
+			md = new T24ResultSetMetaData(header);
+		}
+		
+		if( headers.size()>0 ){
+			//change the metadata and rows data sizes and values
+			for(int i=0; i<headers.size(); i++){
+				md.getColumnNames().add("@header"+(i+1));
+			}
+			for(int i=0; i<data.size(); i++){
+				data.get(i).addAll(headers);
+			}
+		}
+	}
     
     private String parseLocalRef(String ofsResp, String app) throws SQLException {
         try {

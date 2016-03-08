@@ -1,13 +1,1 @@
 ,CUST.XX::Customer Code/FULL.NAME::Full Customer Name/B.DATE:DATE:Birth/Reg.Date/LEGAL.ID::Legal ID/TAX.ID::Tax ID/PIN.CODE:ALPHANUMERIC:PIN-Code/MNEMONIC:ALPHANUMERIC:Mnemonic/Branch::Opened in Branch,"1234567890"	"QARAKД°ЕћД°YEV RAFД°Q TOFД°Q OДћLU"	"30 AUG 198"	"AZ1234567890"	""	"123456"	"RAF123456"	"HEAD OFFICE         "
-
-
-
-
-
-
-
-
-
-
-
-здесь "Birth/Reg.Date" имя column-a. но TCS берёт как два columna "Birth" и "Reg.Date".
