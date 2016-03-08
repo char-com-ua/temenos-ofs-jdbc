@@ -14,11 +14,12 @@ import java.text.SimpleDateFormat;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 import java.io.Reader;
 import java.io.InputStream;
 import java.io.FileOutputStream;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * A table of data representing a database result set, which
@@ -241,27 +242,25 @@ public class T24ResultSet implements ResultSet {
 		if (",,".equals(s)) throw new T24Exception("T24 OFS Error, requested enquiry not found:  response = " + s);
         if (possition == -1) throw new T24Exception("T24 OFS Error:  response = " + s);
         
-    	String headerString  = s.substring(0, possition);
-    	headerString  = headerString.substring(headerString.lastIndexOf(",") + 1);
+    	String colNameString  = s.substring(0, possition);
+    	colNameString  = colNameString.substring(colNameString.lastIndexOf(",") + 1);
     	
 		String dataString  = s.substring(possition + 1, s.length()).trim();
+		s=null;
+		
+		//COL NAMES
+		if (colNameString != null) {
+			ArrayList colName = new ArrayList();
+			Matcher m=Pattern.compile( "/([^:/]*):[^:]*:" ).matcher("/"+colNameString);
 
-		//HEADER
-		if (headerString != null) {
-			ArrayList header = new ArrayList();
-			String token;
-			StringTokenizer st = new StringTokenizer(headerString, "/");        	
-			
-			while (st.hasMoreTokens()) {
-				token = st.nextToken();
-				if (token.indexOf("::") != -1) {
-					token = token.substring(0, token.indexOf("::"));
-				}
-				header.add(token.toLowerCase());
+			while( m.find() ) {
+				colName.add( m.group(1).toLowerCase() );
 			}
-			maxColCount = header.size();
+			
+			maxColCount = colName.size();
 			columnCount = maxColCount;
-			md = new T24ResultSetMetaData(header);			
+			md = new T24ResultSetMetaData(colName);
+			colNameString = null;			
 		}
 							
 		//DATA 	
@@ -277,11 +276,14 @@ public class T24ResultSet implements ResultSet {
 		    while (scanValue.hasNext()) {
     	        row.add(scanValue.next().trim());
 	        }
-	        
-	        if(row.size() != maxColCount){
-	        	columnCount = row.size();
+	        if(row.size()==1 && maxColCount>1 ){
+	        	//skip header data...
+	        }else{
+				if(row.size() != maxColCount){
+					columnCount = row.size();
+				}
+				data.add(row);
 	        }
-	        data.add(row);
 	        row = new ArrayList();
         }
 		
