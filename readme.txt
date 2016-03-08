@@ -1,6 +1,6 @@
 temenos-ofs-jdbc project
 
-project home: http://code.google.com/p/temenos-ofs-jdbc/
+project home: https://github.com/dlukyanov/temenos-ofs-jdbc
 version:  ${svn.version}
 
 source:   ${svn.url}
