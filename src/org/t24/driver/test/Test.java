@@ -26,6 +26,7 @@ public class Test {
 		T24QueryFormatter q = new T24QueryFormatter(con, 120);
 		
 		String query = 
+/*
 			"SENDOFS ENQUIRY.SELECT,,{{USER}}/{{PASS}}/,ENQ.LWEXISTS\n" +
 //				"F1:EQ  = getToken ?2 , -1\n" +
 			"END\n" +
@@ -33,15 +34,13 @@ public class Test {
 //			"?2 = toCent   ?FIELD.NUM\n"        +
 //			"FILTER	 MATCHES   \"?{FIELD.INT}\"  \"?{1}\" \n" +
 			"";
+*/			
 			
-/*			
 			"SENDOFS CUSTOMER,,{{USER}}/{{PASS}}/,ENQ.LWEXISTS\n" +
-				"F1::  = set    ?2 \n" +
-				"F2::  = set    ?1 \n" +
-				"F3:*: = split  ?3 5 \n" +
+				"F1::  = const   555 \n" +
 			"END\n" +
 			"";
-*/			
+			
 
 		List param = new ArrayList();
 //		param.add("(1|3)");

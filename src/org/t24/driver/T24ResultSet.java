@@ -209,31 +209,45 @@ public class T24ResultSet implements ResultSet {
         }
         rowData.set(icol - 1, value);
     }
-    protected void t24ParseApp(String s) throws SQLException {
-    	String securityViolation = properties.getProperty(ERROR_SECURITY_VIOLATION,"SECURITY VIOLATION");
-    	String recordNotChanged = properties.getProperty(ERROR_RECORDS_NOT_CHANGED,"/-1/NO,COMPANY.BOOK:1:1=");
-        if (s.contains("/-1/NO") || s.contains(securityViolation) ) {
-        	if(!s.contains(recordNotChanged)){
+	protected void t24ParseApp(String input) throws SQLException {
+		String securityViolation = properties.getProperty(ERROR_SECURITY_VIOLATION,"SECURITY VIOLATION");
+		String recordNotChanged = properties.getProperty(ERROR_RECORDS_NOT_CHANGED,"/-1/NO,COMPANY.BOOK:1:1=");
+		if (input.contains("/-1/NO") || input.contains(securityViolation) ) {
+			if(!input.contains(recordNotChanged)){
 				//delete posible t24 ID from error message
-				String errMsg = s.replaceAll("^[^,]*,(.*)$", "$1");
+				String errMsg = input.replaceAll("^[^,]*,(.*)$", "$1");
 				throw new T24Exception("T24 OFS Error: " + errMsg);
-        	}
-        } 
-        ArrayList header = new ArrayList();
-        ArrayList row = new ArrayList();
+			}
+		} 
+		ArrayList header = new ArrayList();
+		ArrayList row = new ArrayList();
 
-        header.add("@id");
+		header.add("@id");
 		
-        if(s.indexOf('/')==-1)throw new T24Exception("T24 Application Error: " + s);
-        s = s.replaceAll("^([^/]*)/.*$", "$1");
-        if (s.length() == 0 || s.indexOf('/') >= 0 || s.startsWith("-")) {
-            throw new T24Exception("OFS Responce does not contain id: " + s);
-        }
-        row.add(s);
-        data.add(row);
+		if(input.indexOf('/')==-1)throw new T24Exception("T24 Application Error: " + input);
+		String id = input.replaceAll("^([^/]*)/.*$", "$1");
+		if (id.length() == 0 || id.indexOf('/') >= 0 || id.startsWith("-")) {
+			throw new T24Exception("OFS Responce does not contain id: " + id);
+		}
+		row.add(id);
+		data.add(row);
+		
+		//parse rest data
+		int index = 0;
+		Matcher m = Pattern.compile(",([\\w\\.]+:\\d+:\\d+)=").matcher(input);
+		while(m.find()) {
+			header.add(m.group(1).toLowerCase());
+			if(index>0){
+				String match = input.subSequence(index, m.start()).toString();
+				row.add(match);
+			}
+			index = m.end();
+		}
 
-        md = new T24ResultSetMetaData(header);
-    }
+		if (index > 0)row.add( input.subSequence(index, input.length()).toString() );
+
+		md = new T24ResultSetMetaData(header);
+	}
 
 	protected void t24ParseEnq(String s) throws SQLException {  	   	   	
 		int possition = s.indexOf(",\"");
